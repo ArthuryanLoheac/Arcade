@@ -7,8 +7,7 @@
 
 #pragma once
 
-namespace Key
-{
+namespace Key {
     enum KeyStatus {
         KEY_PRESSED,
         KEY_RELEASED
