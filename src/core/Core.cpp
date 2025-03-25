@@ -28,7 +28,7 @@ void Core::Core::openGameLib(const std::string &gameLibPath)
 
 void Core::Core::openDisplayLib(const std::string &displayLibPath)
 {
-    
+    (void)displayLibPath;
 }
 
 void Core::Core::closeGameLib()
