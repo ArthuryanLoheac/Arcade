@@ -27,10 +27,10 @@ public:
     );
 
     void update(float deltaTime) override;
-    Window getWindow(void) override;
-    std::vector<IDrawable> getDrawables(void) override;
-    std::vector<Sound> getSound(void) override;
-    void event(Event evt) override;
+    const Window &getWindow(void) override;
+    const std::vector<IDrawable> &getDrawables(void) override;
+    const std::vector<Sound> &getSound(void) override;
+    void event(const Event &events) override;
 
 private:
     enum class CellState {
