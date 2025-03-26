@@ -26,8 +26,6 @@ public:
         float timeLimit = 300.0f
     );
 
-    void start(void) override;
-    void end(void) override;
     void update(float deltaTime) override;
     Window getWindow(void) override;
     std::vector<IDrawable> getDrawables(void) override;
