@@ -22,3 +22,5 @@ public:
     virtual std::vector<Sound> getSound(void) = 0;
     virtual void event(Event) = 0;
 };
+
+std::unique_ptr<IGameModule> getGameModule();

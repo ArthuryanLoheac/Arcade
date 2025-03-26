@@ -18,3 +18,5 @@ public:
     virtual Event getEvent(void) = 0;
     virtual void handleSound(Sound) = 0;
 };
+
+std::unique_ptr<IDisplayModule> getDisplayModule();
