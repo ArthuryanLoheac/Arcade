@@ -52,15 +52,26 @@ private:
     bool checkWin();
     void revealAllMines();
 
+    void ensureFirstCellIsSafe(int x, int y);
+    void updateTimer(float deltaTime);
+    void updateScore(int newlyRevealedCells);
+    void displayMinesCounter();
+
     static constexpr int BOARD_WIDTH = 10;
     static constexpr int BOARD_HEIGHT = 10;
     static constexpr int NUM_MINES = 15;
     static constexpr int CELL_SIZE = 32;
+    static constexpr float DEFAULT_TIME_LIMIT = 300.0f;
+
     bool gameOver;
     bool playerWon;
     std::vector<std::vector<Cell>> board;
     int revealedCount;
     int flaggedCount;
+    float gameTime;
+    float timeLimit;
+    int score;
+    bool firstMove;
 
     std::vector<IDrawable> drawables;
     std::vector<Sound> sounds;
