@@ -7,7 +7,8 @@
 
 #pragma once
 
-namespace Key {
+namespace Key
+{
     enum KeyStatus {
         KEY_PRESSED,
         KEY_RELEASED
@@ -17,6 +18,8 @@ namespace Key {
         int y;
     };
     enum KeyCode {
+        NONE,
+
         KEY_A,
         KEY_B,
         KEY_C,
