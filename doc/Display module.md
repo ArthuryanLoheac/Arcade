@@ -12,7 +12,7 @@ class IDisplayModule {
         void draw(IDrawable) = 0;
         void display() = 0;
         void clear() = 0;
-        Event getEvent() = 0;
+        Event *getEvent() = 0;
         void handleSound(Sound) = 0;
 }
 ```

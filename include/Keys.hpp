@@ -17,6 +17,8 @@ namespace Key {
         int y;
     };
     enum KeyCode {
+        NONE,
+
         KEY_A,
         KEY_B,
         KEY_C,
