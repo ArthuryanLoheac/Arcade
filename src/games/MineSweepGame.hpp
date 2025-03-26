@@ -2,26 +2,29 @@
 ** EPITECH PROJECT, 2025
 ** Arcade
 ** File description:
-** MineSweepGame
+** MineSweepGame - Implémentation du jeu classique du Démineur
 */
 
-#ifndef MINESWEEPGAME_HPP_
-    #define MINESWEEPGAME_HPP_
+#pragma once
 
-    #pragma once
-
-    #include "interfaces/IGameModule.hpp"
-    #include <vector>
-    #include <random>
-    #include <memory>
-    #include "core/Window.hpp"
-    #include "interfaces/IDrawable.hpp"
-    #include "core/Sound.hpp"
-    #include "core/Event.hpp"
+#include "interfaces/IGameModule.hpp"
+#include <vector>
+#include <random>
+#include <memory>
+#include "core/Window.hpp"
+#include "interfaces/IDrawable.hpp"
+#include "core/Sound.hpp"
+#include "core/Event.hpp"
 
 class MineSweepGame : public IGameModule {
 public:
-    MineSweepGame();
+    MineSweepGame(
+        int boardWidth = 10,
+        int boardHeight = 10,
+        int numMines = 15,
+        int cellSize = 32,
+        float timeLimit = 300.0f
+    );
 
     void start(void) override;
     void end(void) override;
@@ -57,11 +60,11 @@ private:
     void updateScore(int newlyRevealedCells);
     void displayMinesCounter();
 
-    static constexpr int BOARD_WIDTH = 10;
-    static constexpr int BOARD_HEIGHT = 10;
-    static constexpr int NUM_MINES = 15;
-    static constexpr int CELL_SIZE = 32;
-    static constexpr float DEFAULT_TIME_LIMIT = 300.0f;
+    int boardWidth;
+    int boardHeight;
+    int numMines;
+    int cellSize;
+    float timeLimit;
 
     bool gameOver;
     bool playerWon;
@@ -69,7 +72,6 @@ private:
     int revealedCount;
     int flaggedCount;
     float gameTime;
-    float timeLimit;
     int score;
     bool firstMove;
 
@@ -78,5 +80,3 @@ private:
 
     Window window;
 };
-
-#endif /* !MINESWEEPGAME_HPP_ */
