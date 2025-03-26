@@ -19,12 +19,18 @@ typedef std::unique_ptr<IGameModule> (*getGame)();
 
 namespace Core {
 
+enum StateCore {
+    NONE,
+    EXIT_TO_MENU,
+    EXIT
+};
+
 class Core {
 public:
     Core();
     ~Core() = default;
-    void update();
-    void events();
+    StateCore update();
+    StateCore events();
     void draw();
 
 private:
@@ -52,6 +58,10 @@ private:
     };
 
     std::chrono::steady_clock::time_point lastFrameTime;
+    int _displayIndex = 0;
+    int _gameIndex = 0;
+
+    bool handleEventLibs(const Event &event);
 };
 
 class Error : public std::exception {
