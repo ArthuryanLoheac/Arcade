@@ -39,7 +39,7 @@ FLAGS = -I./include \
 		-I./src/interfaces \
 		-MMD -MP $(FLAGS_LIB) \
 
-FLAGS_SDL = `sdl2-config --cflags --libs` $(FLAGS_LIB) \
+FLAGS_SDL = $(FLAGS_LIB) -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer \
 			-I./src/interfaces \
 			-I./include \
 			-I./src/core \
@@ -47,6 +47,9 @@ FLAGS_SDL = `sdl2-config --cflags --libs` $(FLAGS_LIB) \
 FLAGS_TEST = $(FLAGS) -lcriterion --coverage \
 
 FLAGS_LIB = -std=c++20 -Wall -Wextra -Werror
+
+CXXFLAGS += -I/usr/include/SDL2 -I./src/interfaces -I./include -I./src/core
+LDFLAGS += -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer
 
 # ============= NAMES ============= #
 

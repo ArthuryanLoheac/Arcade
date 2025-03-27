@@ -63,6 +63,7 @@ namespace Key {
         MOUSE_BUTTON_4,
         MOUSE_BUTTON_5,
         MOUSE_SCROLL,
+        MOUSE_MOVE,
 
         SPACE,
         ENTER,

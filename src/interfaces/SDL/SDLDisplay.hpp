@@ -7,17 +7,31 @@
 
 #pragma once
 #include "IDisplayModule.hpp"
+#include "Window.hpp"
 #include <memory>
+#include <SDL2/SDL.h>
 
 std::unique_ptr<IDisplayModule> getDisplayModule();
 
 class SDLDisplay : public IDisplayModule
 {
 public:
-    void draw(IDrawable) override;
-    void display(void) override;
+    void createWindow(const Window &window) override;
     void clear(void) override;
+    void draw(const IDrawable &to_draw) override;
+    void display(void) override;
     Event getEvent(void) override;
-    void handleSound(Sound) override;
+    void handleSound(const Sound &sound) override;
+    ~SDLDisplay();
+private:
+    Event getEventKeyBoard(SDL_Event &e, Event::KeyStatus isDown);
+    Event getEventMouse(SDL_Event &e, Event::KeyStatus isDown);
+    typedef struct {
+        SDL_Renderer *renderer;
+        SDL_Window *window;
+    } App;
+
+    int LastMouseX, LastMouseY;
+    App app;
 };
 
