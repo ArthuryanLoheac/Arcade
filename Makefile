@@ -39,7 +39,7 @@ FLAGS = -I./include \
 		-I./src/interfaces \
 		-MMD -MP $(FLAGS_LIB) \
 
-FLAGS_SDL = $(FLAGS_LIB) -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer \
+FLAGS_SDL = $(FLAGS_LIB) -lSDL2 -lSDL2_image \
 			-I./src/interfaces \
 			-I./include \
 			-I./src/core \
@@ -68,6 +68,7 @@ SRC_MAIN	=	main.cpp \
 SRC	= 	src/core/Core.cpp \
 
 SRC_SDL = src/interfaces/SDL/SDLDisplay.cpp \
+		 src/interfaces/SDL/SDL2.cpp \
 
 SRC_TESTS	= 	tests/test_1.cpp \
 

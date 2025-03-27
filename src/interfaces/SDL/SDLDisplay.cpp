@@ -12,6 +12,7 @@
 #include <map>
 #include <Text.hpp>
 #include <Sprite.hpp>
+#include "SDL2.hpp"
 
 std::unique_ptr<IDisplayModule> getDisplayModule()
 {
@@ -24,14 +25,14 @@ void SDLDisplay::createWindow(const Window &window)
 
     rendererFlags = SDL_RENDERER_ACCELERATED;
     windowFlags = 0;
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    if (SDL2::SDL2_Init(SDL_INIT_VIDEO) < 0)
         exit(1);
-    app.window = SDL_CreateWindow(window.title.c_str(),
+    app.window = SDL2::SDL2_CreateWindow(window.title.c_str(),
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         window.size.first, window.size.second, windowFlags);
     if (!app.window)
         exit(1);
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+    SDL2::SDL2_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     app.renderer = SDL_CreateRenderer(app.window, -1, rendererFlags);
     if (!app.renderer)
         exit(1);
@@ -43,31 +44,31 @@ void SDLDisplay::draw(const IDrawable &drawable)
     if (dynamic_cast<const Text *>(&drawable))
         return;
     Sprite sprite = dynamic_cast<const Sprite &>(drawable);
-    SDL_Texture *texture = IMG_LoadTexture(app.renderer, sprite.getGUI_Textures()[0].c_str());
+    SDL_Texture *texture = SDL2::IMG2_LoadTexture(app.renderer, sprite.getGUI_Textures()[0].c_str());
 
     dest.x = drawable.getPosition().first;
     dest.y = drawable.getPosition().second;
-    SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
+    SDL2::SDL2_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
 
-    SDL_RenderCopy(app.renderer, texture, NULL, &dest);
+    SDL2::SDL2_RenderCopy(app.renderer, texture, NULL, &dest);
 }
 
 void SDLDisplay::display(void)
 {
-    SDL_RenderPresent(app.renderer);
+    SDL2::SDL2_RenderPresent(app.renderer);
 }
 
 void SDLDisplay::clear(void)
 {
-    SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
-    SDL_RenderClear(app.renderer);
+    SDL2::SDL2_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
+    SDL2::SDL2_RenderClear(app.renderer);
 }
 
 Event SDLDisplay::getEvent(void)
 {
     SDL_Event event;
 
-    if (!SDL_PollEvent(&event))
+    if (!SDL2::SDL2_PollEvent(&event))
         return Event(Key::KeyCode::NONE, std::any());
     switch (event.type)
     {
@@ -98,9 +99,9 @@ void SDLDisplay::handleSound(const Sound &sound)
 
 SDLDisplay::~SDLDisplay()
 {
-    SDL_DestroyRenderer(app.renderer);
-    SDL_DestroyWindow(app.window);
-    SDL_Quit();
+    SDL2::SDL2_DestroyRenderer(app.renderer);
+    SDL2::SDL2_DestroyWindow(app.window);
+    SDL2::SDL2_Quit();
 }
 
 Event SDLDisplay::getEventKeyBoard(SDL_Event &e, Event::KeyStatus isDown)

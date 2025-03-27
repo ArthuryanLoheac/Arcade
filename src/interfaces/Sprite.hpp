@@ -9,15 +9,14 @@
 #include "IDrawable.hpp"
 #include <vector>
 #include <string>
-#include <tuple>
 
 class Sprite : public IDrawable {
 public:
     std::vector<std::string> getGUI_Textures(void) const { return GUI_Textures; };
-    std::vector<char[2]> getCLI_Textures(void) const { return CLI_Textures; };
+    const std::vector<std::string> &getCLI_Textures() const { return CLI_Textures; }
     float getAnimationTime(void) const { return animationTime; };
     void setGUI_Textures(std::vector<std::string> GUI_Textures) { this->GUI_Textures = GUI_Textures; };
-    void setCLI_Textures(std::vector<char[2]> CLI_Textures) { this->CLI_Textures = CLI_Textures; };
+    void setCLI_Textures(std::vector<std::string> CLI_Textures) { this->CLI_Textures = CLI_Textures; }
     void setAnimationTime(float animationTime) { this->animationTime = animationTime; };
     
     std::pair<float, float> getScale(void) const override { return scale; };
@@ -32,7 +31,7 @@ public:
     void setPosition(std::pair<int, int> position) override { this->position = position; };
 private:
     std::vector<std::string> GUI_Textures;
-	std::vector<char[2]>  CLI_Textures;
+	std::vector<std::string> CLI_Textures;
 	float animationTime;
     std::pair<float, float> scale;
 	float rotation;
