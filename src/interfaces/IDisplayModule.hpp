@@ -9,6 +9,7 @@
 #include "IDrawable.hpp"
 #include "Event.hpp"
 #include "Sound.hpp"
+#include <memory>
 
 class IDisplayModule {
 public:
