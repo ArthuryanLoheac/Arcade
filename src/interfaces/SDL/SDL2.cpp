@@ -34,19 +34,28 @@ extern "C" {
         SDL_SetHint(name, value);
     }
 
-    SDL_Window *SDL2::SDL2_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
+    std::shared_ptr<SDL_Window> SDL2::SDL2_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags)
     {
-        return SDL_CreateWindow(title, x, y, w, h, flags);
+        SDL_Window *rawWindow = SDL_CreateWindow(title, x, y, w, h, flags);
+        if (!rawWindow)
+            return nullptr;
+        return std::shared_ptr<SDL_Window>(rawWindow, SDL_DestroyWindow);
     }
 
-    SDL_Renderer *SDL2::SDL2_CreateRenderer(SDL_Window *window, int index, Uint32 flags)
+    std::shared_ptr<SDL_Renderer> SDL2::SDL2_CreateRenderer(SDL_Window *window, int index, Uint32 flags)
     {
-        return SDL_CreateRenderer(window, index, flags);
+        SDL_Renderer *rawRenderer = SDL_CreateRenderer(window, index, flags);
+        if (!rawRenderer)
+            return nullptr;
+        return std::shared_ptr<SDL_Renderer>(rawRenderer, SDL_DestroyRenderer);
     }
 
-    SDL_Texture *SDL2::IMG2_LoadTexture(SDL_Renderer *renderer, const char *file)
+    std::shared_ptr<SDL_Texture> SDL2::IMG2_LoadTexture(SDL_Renderer *renderer, const char *file)
     {
-        return IMG_LoadTexture(renderer, file);
+        SDL_Texture *rawTexture = IMG_LoadTexture(renderer, file);
+        if (!rawTexture)
+            return nullptr;
+        return std::shared_ptr<SDL_Texture>(rawTexture, SDL_DestroyTexture);
     }
 
     void SDL2::SDL2_QueryTexture(SDL_Texture *texture, Uint32 *format, int *access, int *w, int *h)

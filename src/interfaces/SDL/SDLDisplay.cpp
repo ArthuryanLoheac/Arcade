@@ -33,7 +33,7 @@ void SDLDisplay::createWindow(const Window &window)
     if (!app.window)
         exit(1);
     SDL2::SDL2_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-    app.renderer = SDL_CreateRenderer(app.window, -1, rendererFlags);
+    app.renderer = SDL2::SDL2_CreateRenderer(app.window.get(), -1, rendererFlags);
     if (!app.renderer)
         exit(1);
 }
@@ -44,24 +44,24 @@ void SDLDisplay::draw(const IDrawable &drawable)
     if (dynamic_cast<const Text *>(&drawable))
         return;
     Sprite sprite = dynamic_cast<const Sprite &>(drawable);
-    SDL_Texture *texture = SDL2::IMG2_LoadTexture(app.renderer, sprite.getGUI_Textures()[0].c_str());
+    std::shared_ptr<SDL_Texture> texture = SDL2::IMG2_LoadTexture(app.renderer.get(), sprite.getGUI_Textures()[0].c_str());
 
     dest.x = drawable.getPosition().first;
     dest.y = drawable.getPosition().second;
-    SDL2::SDL2_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
+    SDL2::SDL2_QueryTexture(texture.get(), NULL, NULL, &dest.w, &dest.h);
 
-    SDL2::SDL2_RenderCopy(app.renderer, texture, NULL, &dest);
+    SDL2::SDL2_RenderCopy(app.renderer.get(), texture.get(), NULL, &dest);
 }
 
 void SDLDisplay::display(void)
 {
-    SDL2::SDL2_RenderPresent(app.renderer);
+    SDL2::SDL2_RenderPresent(app.renderer.get());
 }
 
 void SDLDisplay::clear(void)
 {
-    SDL2::SDL2_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
-    SDL2::SDL2_RenderClear(app.renderer);
+    SDL2::SDL2_SetRenderDrawColor(app.renderer.get(), 0, 0, 0, 255);
+    SDL2::SDL2_RenderClear(app.renderer.get());
 }
 
 Event SDLDisplay::getEvent(void)
@@ -99,8 +99,8 @@ void SDLDisplay::handleSound(const Sound &sound)
 
 SDLDisplay::~SDLDisplay()
 {
-    SDL2::SDL2_DestroyRenderer(app.renderer);
-    SDL2::SDL2_DestroyWindow(app.window);
+    SDL2::SDL2_DestroyRenderer(app.renderer.get());
+    SDL2::SDL2_DestroyWindow(app.window.get());
     SDL2::SDL2_Quit();
 }
 

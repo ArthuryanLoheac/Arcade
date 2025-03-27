@@ -26,9 +26,10 @@ public:
 private:
     Event getEventKeyBoard(SDL_Event &e, Event::KeyStatus isDown);
     Event getEventMouse(SDL_Event &e, Event::KeyStatus isDown);
+    
     typedef struct {
-        SDL_Renderer *renderer;
-        SDL_Window *window;
+        std::shared_ptr<SDL_Renderer> renderer;
+        std::shared_ptr<SDL_Window> window;
     } App;
 
     int LastMouseX, LastMouseY;
