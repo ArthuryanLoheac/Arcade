@@ -82,4 +82,46 @@ extern "C" {
     {
         SDL_RenderClear(renderer);
     }
+
+    void SDL2::SDL2_SetRenderDrawColor(SDL_Renderer *renderer, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+    {
+        SDL_SetRenderDrawColor(renderer, r, g, b, a);
+    }
+
+    std::shared_ptr<TTF_Font> SDL2::TTF2_OpenFont(const char *file, int ptsize)
+    {
+        TTF_Font *rawFont = TTF_OpenFont(file, ptsize);
+        if (!rawFont)
+            return nullptr;
+        return std::shared_ptr<TTF_Font>(rawFont, TTF_CloseFont);
+    }
+
+    std::shared_ptr<SDL_Surface> SDL2::TTF2_RenderText_Blended(TTF_Font *font, const char *text, SDL_Color fg)
+    {
+        SDL_Surface *rawSurface = TTF_RenderText_Blended(font, text, fg);
+        if (!rawSurface)
+            return nullptr;
+        return std::shared_ptr<SDL_Surface>(rawSurface, SDL_FreeSurface);
+    }
+
+    std::shared_ptr<SDL_Texture> SDL2::SDL2_CreateTextureFromSurface(SDL_Renderer *renderer, SDL_Surface *surface)
+    {
+        SDL_Texture *rawTexture = SDL_CreateTextureFromSurface(renderer, surface);
+        if (!rawTexture)
+            return nullptr;
+        return std::shared_ptr<SDL_Texture>(rawTexture, SDL_DestroyTexture);
+    }
+
+    std::shared_ptr<Mix_Chunk> SDL2::Mix2_LoadWAV(const char *file)
+    {
+        Mix_Chunk *rawChunk = Mix_LoadWAV(file);
+        if (!rawChunk)
+            return nullptr;
+        return std::shared_ptr<Mix_Chunk>(rawChunk, Mix_FreeChunk);
+    }
+
+    void SDL2::Mix2_PlayChannel(int channel, Mix_Chunk *chunk, int loops)
+    {
+        Mix_PlayChannel(channel, chunk, loops);
+    }
 }

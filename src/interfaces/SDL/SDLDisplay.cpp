@@ -9,10 +9,12 @@
 #include "Window.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <map>
 #include <Text.hpp>
 #include <Sprite.hpp>
 #include "SDL2.hpp"
+#include <iostream>
 
 std::unique_ptr<IDisplayModule> getDisplayModule()
 {
@@ -40,17 +42,16 @@ void SDLDisplay::createWindow(const Window &window)
 
 void SDLDisplay::draw(const IDrawable &drawable)
 {
-    SDL_Rect dest;
-    if (dynamic_cast<const Text *>(&drawable))
-        return;
-    Sprite sprite = dynamic_cast<const Sprite &>(drawable);
-    std::shared_ptr<SDL_Texture> texture = SDL2::IMG2_LoadTexture(app.renderer.get(), sprite.getGUI_Textures()[0].c_str());
+    Sprite sprite;
+    Text text;
 
-    dest.x = drawable.getPosition().first;
-    dest.y = drawable.getPosition().second;
-    SDL2::SDL2_QueryTexture(texture.get(), NULL, NULL, &dest.w, &dest.h);
-
-    SDL2::SDL2_RenderCopy(app.renderer.get(), texture.get(), NULL, &dest);
+    try {
+        sprite = dynamic_cast<const Sprite &>(drawable);
+        drawSprite(sprite);
+    } catch (std::bad_cast &e) {
+        text = dynamic_cast<const Text &>(drawable);
+        drawText(text);
+    }
 }
 
 void SDLDisplay::display(void)
@@ -94,7 +95,63 @@ Event SDLDisplay::getEvent(void)
 
 void SDLDisplay::handleSound(const Sound &sound)
 {
-    (void)sound;
+    std::shared_ptr<Mix_Chunk> music;
+    static int channel = 0;
+
+    if (sound.state == Sound::STOP) {
+        try {
+            Mix_HaltChannel(musics[sound.id].second);
+        }
+        catch(const std::exception& e) {}
+        return;
+    }
+    music = SDL2::Mix2_LoadWAV(sound.filePath.c_str());
+    if (!music) 
+        return;
+    if (sound.state == Sound::PLAY)
+        SDL2::Mix2_PlayChannel(channel, music.get(), 0);
+    else if (sound.state == Sound::LOOP)
+        SDL2::Mix2_PlayChannel(channel, music.get(), -1);
+    musics[sound.id] = std::make_pair(music, channel);
+    channel++;
+}
+
+void SDLDisplay::drawText(const Text &txt)
+{
+    const int fontSize = txt.getScale().first;
+    std::shared_ptr<TTF_Font> font;
+    std::shared_ptr<SDL_Surface> textSurface;
+    std::shared_ptr<SDL_Texture> textTexture;
+    SDL_Rect dstRect;
+    SDL_Color textColor = { (Uint8)std::get<0>(txt.getGUI_Color()),
+                            (Uint8)std::get<1>(txt.getGUI_Color()),
+                            (Uint8)std::get<2>(txt.getGUI_Color()),
+                            (Uint8)std::get<3>(txt.getGUI_Color())};
+
+
+    font = SDL2::TTF2_OpenFont(txt.getFontPath().c_str(), fontSize);
+    if (!font)
+        return;
+    textSurface = SDL2::TTF2_RenderText_Blended(font.get(), txt.getStr().c_str(), textColor);
+    if (!textSurface)
+        return;
+    textTexture = SDL2::SDL2_CreateTextureFromSurface(app.renderer.get(), textSurface.get());
+    if (!textTexture)
+        return;
+    dstRect = {txt.getPosition().first, txt.getPosition().second, textSurface->w, textSurface->h};
+    SDL2::SDL2_RenderCopy(app.renderer.get(), textTexture.get(), nullptr, &dstRect);
+}
+
+void SDLDisplay::drawSprite(const Sprite &sprite)
+{
+    SDL_Rect dest;
+    std::shared_ptr<SDL_Texture> texture = SDL2::IMG2_LoadTexture(app.renderer.get(), sprite.getGUI_Textures()[0].c_str());
+
+    dest.x = sprite.getPosition().first;
+    dest.y = sprite.getPosition().second;
+    SDL2::SDL2_QueryTexture(texture.get(), NULL, NULL, &dest.w, &dest.h);
+
+    SDL2::SDL2_RenderCopy(app.renderer.get(), texture.get(), NULL, &dest);
 }
 
 SDLDisplay::~SDLDisplay()
@@ -259,3 +316,4 @@ Event SDLDisplay::getEventMouse(SDL_Event &e, Event::KeyStatus isDown)
             break;
     }
 }
+
