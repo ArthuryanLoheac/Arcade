@@ -15,8 +15,6 @@
 
 class IGameModule {
     public:
-        virtual void start(void) = 0;
-        virtual void end(void) = 0;
         virtual void update(float deltaTime) = 0;
         virtual const Window &getWindow(void) = 0;
         virtual const std::vector<IDrawable> &getDrawables(void) = 0;

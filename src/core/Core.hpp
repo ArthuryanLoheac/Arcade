@@ -12,16 +12,26 @@
 
 #include "IDisplayModule.hpp"
 #include "IGameModule.hpp"
+#include <chrono>
 
 typedef std::unique_ptr<IDisplayModule> (*getDisplay)();
 typedef std::unique_ptr<IGameModule> (*getGame)();
 
 namespace Core {
 
+enum StateCore {
+    NONE,
+    EXIT_TO_MENU,
+    EXIT
+};
+
 class Core {
 public:
     Core();
     ~Core() = default;
+    StateCore update();
+    StateCore events();
+    void draw();
 
 private:
     void openGameLib(const std::string &gameLibPath);
@@ -46,6 +56,12 @@ private:
         "./dynlib/games/lib_arcade_pacman.so",
         "./dynlib/games/lib_arcade_centipede.so"
     };
+
+    std::chrono::steady_clock::time_point lastFrameTime;
+    int _displayIndex = 0;
+    int _gameIndex = 0;
+
+    bool handleEventLibs(const Event &event);
 };
 
 class Error : public std::exception {

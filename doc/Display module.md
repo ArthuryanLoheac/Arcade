@@ -5,6 +5,7 @@ The interface with all the functions to implement to develop your game
 
 ```Cpp
 
+
 std::unique_ptr<IDisplayModule> getDisplayModule(void);
 
 class IDisplayModule {
@@ -23,6 +24,7 @@ Takes a [Window Data Class](<Data structures.md#Window>) and creates a new windo
 #### `std::unique_ptr<IDisplayModule> getDisplayModule(void)`
 This is the entry point which is going to be called from the core to retrieve the displayModule.
 Return a std::unique_pointer to the current implementation of the displayModule.
+
 #### `void draw(IDrawable)`
 Displays element on window according to [IDrawable Data Class](<Data structures.md#IDrawable>) parameters.
 
