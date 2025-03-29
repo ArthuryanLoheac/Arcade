@@ -14,12 +14,13 @@
 #include <memory>
 
 class IGameModule {
-    public:
-        virtual void update(float deltaTime) = 0;
-        virtual const Window &getWindow(void) = 0;
-        virtual const std::vector<IDrawable> &getDrawables(void) = 0;
-        virtual const std::vector<Sound> &getSound(void) = 0;
-        virtual void event(const Event &events) = 0;
+public: 
+    virtual bool update(float deltaTime) = 0;
+    virtual const Window &getWindow(void) = 0;
+    virtual const std::vector<std::unique_ptr<IDrawable>> &getDrawables(void) = 0;
+    virtual const std::vector<Sound> &getSound(void) = 0;
+    virtual bool event(const Event &events) = 0;
+    virtual std::vector<std::pair<std::string, int>> getScores(void) = 0;
 };
 
 std::unique_ptr<IGameModule> getGameModule();

@@ -73,8 +73,8 @@ Core::StateCore Core::Core::events()
 void Core::Core::draw()
 {
     _display->clear();
-    for (auto drawable : _game->getDrawables())
-        _display->draw(drawable);
+    for (const std::unique_ptr<IDrawable>& drawable : _game->getDrawables())
+        _display->draw(*drawable.get());
     for (auto sound : _game->getSound())
         _display->handleSound(sound);
     _display->display();
