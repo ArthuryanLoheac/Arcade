@@ -9,8 +9,8 @@
 #include "IDrawable.hpp"
 #include "Event.hpp"
 #include "Sound.hpp"
-#include <memory>
 #include "Window.hpp"
+#include <memory>
 
 class IDisplayModule
 {
@@ -21,6 +21,6 @@ class IDisplayModule
         virtual void clear(void) = 0;
         virtual Event getEvent(void) = 0;
         virtual void handleSound(const Sound &sound) = 0;
-};                                                                             
+};
 
 std::unique_ptr<IDisplayModule> getDisplayModule();

@@ -1,34 +1,40 @@
 # Display module
 The interface with all the functions to implement to develop your game
 
-> The Window will be store localy in the displayModule
+> [!INFO] The Window will be store localy in the displayModule
 
 ```Cpp
 
-std::unique_ptr<IDisplayModule> getDisplayModule();
+
+std::unique_ptr<IDisplayModule> getDisplayModule(void);
 
 class IDisplayModule {
     public:
-        void draw(IDrawable) = 0;
-        void display() = 0;
-        void clear() = 0;
-        Event getEvent() = 0;
-        void handleSound(Sound) = 0;
+	    virtual void createWindow(const Window &) = 0;
+        virtual void draw(const IDrawable &) = 0;
+        virtual void display(void) = 0;
+        virtual void clear(void) = 0;
+        virtual Event getEvent(void) = 0;
+        virtual void handleSound(const Sound &) = 0;
 }
 ```
-#### getDisplayModule()
-return a make_unique pointer of the DipslayModule to get the module class
+
+#### `void createWindow(Window window)`
+Takes a [Window Data Class](<Data structures.md#Window>) and creates a new window according to it's parameters.
+#### `std::unique_ptr<IDisplayModule> getDisplayModule(void)`
+This is the entry point which is going to be called from the core to retrieve the displayModule.
+Return a std::unique_pointer to the current implementation of the displayModule.
 
 #### `void draw(IDrawable)`
-Displays element on window according to [IDrawable](<Data structures.md>) parameters.
+Displays element on window according to [IDrawable Data Class](<Data structures.md#IDrawable>) parameters.
 
 All element position are on the format GUI for CLI you will need to convert position.
-#### `void display()`
+#### `void display(void)`
 Display window with all elements in it.
-#### `void clear()`
+#### `void clear(void)`
 Clear the window to prepare for the new display.
-#### `EventClass getEvent()`
-Returns the next event in the correct format from as an [Event Data Class](<Data structures.md>) and **null** if none.
+#### `EventClass getEvent(void)`
+Returns the next event in the correct format from as an [Event Data Class](<Data structures.md#Event>) and **null** if none.
 
 All element position are on the format GUI for CLI you will need to convert position.
 #### `void handleSound(SoundClass)`
