@@ -9,10 +9,12 @@
 #include <memory>
 #include <vector>
 #include "dlfcn.h"
+#include <chrono>
+#include <iostream>
+#include <dirent.h>
 
 #include "IDisplayModule.hpp"
 #include "IGameModule.hpp"
-#include <chrono>
 
 typedef std::unique_ptr<IDisplayModule> (*getDisplay)();
 typedef std::unique_ptr<IGameModule> (*getGame)();
@@ -29,6 +31,7 @@ class Core {
 public:
     Core();
     ~Core() = default;
+
     StateCore update();
     StateCore events();
     void draw();
@@ -36,7 +39,6 @@ public:
 private:
     void openGameLib(const std::string &gameLibPath);
     void openDisplayLib(const std::string &displayLibPath);
-
     void closeGameLib();
     void closeDisplayLib();
 
@@ -46,16 +48,8 @@ private:
     void *_displayHandle;
     void *_gameHandle;
 
-    const std::vector<std::string> _displayLibs = {
-        "./dynlib/displays/lib_arcade_ncurses.so",
-        "./dynlib/displays/lib_arcade_sdl.so",
-        "./dynlib/displays/lib_arcade_sfml.so"
-    };
-    const std::vector<std::string> _gameLibs = {
-        "./dynlib/games/lib_arcade_minesweeper.so",
-        "./dynlib/games/lib_arcade_pacman.so",
-        "./dynlib/games/lib_arcade_centipede.so"
-    };
+    std::vector<std::string> _displayLibs;
+    std::vector<std::string> _gameLibs;
 
     std::chrono::steady_clock::time_point lastFrameTime;
     int _displayIndex = 0;
