@@ -26,11 +26,12 @@ public:
         float timeLimit = 300.0f
     );
 
-    void update(float deltaTime) override;
+    bool update(float deltaTime) override;
     const Window &getWindow(void) override;
-    const std::vector<IDrawable> &getDrawables(void) override;
+    const std::vector<std::unique_ptr<IDrawable>> &getDrawables(void) override;
     const std::vector<Sound> &getSound(void) override;
-    void event(const Event &events) override;
+    bool event(const Event &evt) override;
+    std::vector<std::pair<std::string, int>> getScores(void) override;
 
 private:
     enum class CellState {
@@ -73,8 +74,11 @@ private:
     int score;
     bool firstMove;
 
-    std::vector<IDrawable> drawables;
+    std::vector<std::unique_ptr<IDrawable>> drawables;
     std::vector<Sound> sounds;
+
+    std::string playerName;
+    std::vector<std::pair<std::string, int>> scoreHistory;
 
     Window window;
 };
