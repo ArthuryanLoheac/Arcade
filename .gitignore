@@ -12,3 +12,4 @@ unit_tests
 obj/
 build
 arcade
+*.so

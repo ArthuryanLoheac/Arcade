@@ -33,13 +33,23 @@ EXTENSION = cpp
 
 # ============= FLAGS ============= #
 
-FLAGS = -I./include -I./src \
-	$(shell find include src -type d -exec echo -I{} \;) \
-	-MMD -MP $(FLAGS_LIB) \
+FLAGS = -I./include \
+		-I./src \
+		-I./src/core \
+		-I./src/interfaces \
+		-MMD -MP $(FLAGS_LIB) \
+
+FLAGS_SDL = $(FLAGS_LIB) -lSDL2 -lSDL2_image \
+			-I./src/interfaces \
+			-I./include \
+			-I./src/core \
 
 FLAGS_TEST = $(FLAGS) -lcriterion --coverage \
 
 FLAGS_LIB = -std=c++20 -Wall -Wextra -Werror
+
+CXXFLAGS += -I/usr/include/SDL2 -I./src/interfaces -I./include -I./src/core
+LDFLAGS += -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer
 
 # ============= NAMES ============= #
 
@@ -47,13 +57,18 @@ NAME_LIB	= \
 
 NAME	=	arcade
 
+NAME_SDL = lib/arcade_sdl2.so
+
 # ============= SOURCES ============= #
 
 SRC_LIB	=	\
 
 SRC_MAIN	=	main.cpp \
 
-SRC	= 	$(shell find src -type f -name "*.cpp" ! -name "main.cpp") \
+SRC	= 	src/core/Core.cpp \
+
+SRC_SDL = src/interfaces/SDL/SDLDisplay.cpp \
+		 src/interfaces/SDL/SDL2.cpp \
 
 SRC_TESTS	= 	tests/test_1.cpp \
 
@@ -66,6 +81,9 @@ $(NAME): $(OBJ_SRC) $(OBJ_MAIN)
 
 $(NAME_LIB): $(OBJ)
 	ar rc $(NAME_LIB) $(OBJ)
+
+graphicals:
+	$(COMPILER) -o $(NAME_SDL) -shared -fPIC $(SRC_SDL) $(FLAGS_SDL)
 
 # ============= CLEANS ============= #
 

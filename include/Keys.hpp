@@ -7,7 +7,8 @@
 
 #pragma once
 
-namespace Key {
+namespace Key
+{
     enum KeyStatus {
         KEY_PRESSED,
         KEY_RELEASED
@@ -63,6 +64,7 @@ namespace Key {
         MOUSE_BUTTON_4,
         MOUSE_BUTTON_5,
         MOUSE_SCROLL,
+        MOUSE_MOVE,
 
         SPACE,
         ENTER,
