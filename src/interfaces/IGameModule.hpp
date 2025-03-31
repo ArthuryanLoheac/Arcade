@@ -15,7 +15,7 @@
 
 class IGameModule {
 public:
-    virtual ~IGameModule() = 0;
+    virtual ~IGameModule() = default;
     virtual bool update(float deltaTime) = 0;
     virtual const Window &getWindow(void) = 0;
     virtual const std::vector<std::unique_ptr<IDrawable>> &getDrawables(void) = 0;
