@@ -14,6 +14,7 @@
 
 class IGameModule {
 public:
+    virtual ~IGameModule() = 0;
     virtual bool update(float deltaTime) = 0;
     virtual Window getWindow(void) = 0;
     virtual std::vector<IDrawable> getDrawables(void) = 0;

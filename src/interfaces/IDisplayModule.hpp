@@ -14,6 +14,7 @@
 
 class IDisplayModule {
 public:
+    virtual ~IDisplayModule() = 0;
     virtual void draw(IDrawable) = 0;
     virtual void display(void) = 0;
     virtual void clear(void) = 0;

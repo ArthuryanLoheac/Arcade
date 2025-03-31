@@ -175,7 +175,7 @@ void Core::Core::openDisplay(const std::string &displayLibPath)
 void Core::Core::closeGame()
 {
     if (_game) {
-        // delete _game;
+        _game->~IGameModule();
         _game = nullptr;
     }
     if (_gameHandle) {
@@ -187,7 +187,7 @@ void Core::Core::closeGame()
 void Core::Core::closeDisplay()
 {
     if (_display) {
-        // delete _display;
+        _display->~IDisplayModule();
         _display = nullptr;
     }
     if (_displayHandle) {
