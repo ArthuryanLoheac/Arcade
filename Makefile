@@ -49,7 +49,7 @@ FLAGS_TEST = $(FLAGS) -lcriterion --coverage \
 
 FLAGS_LIB = -std=c++20 -Wall -Wextra -Werror
 
-CXXFLAGS += -I/usr/include/SDL2 -I./src/interfaces -I./include -I./src/core
+CXXFLAGS += -I/usr/include/SDL2 -I./src/displays/ -I./include -I./src/core
 LDFLAGS += -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer
 
 # ============= NAMES ============= #
@@ -68,8 +68,8 @@ SRC_MAIN	=	main.cpp \
 
 SRC	= 	src/core/Core.cpp \
 
-SRC_SDL = src/interfaces/SDL/SDLDisplay.cpp \
-		 src/interfaces/SDL/SDL2.cpp \
+SRC_SDL = src/displays/SDL/SDLDisplay.cpp \
+		 src/displays/SDL/SDL2.cpp \
 
 SRC_TESTS	= 	tests/test_1.cpp \
 
