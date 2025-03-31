@@ -6,6 +6,8 @@
 */
 
 #pragma once
+#include <memory>
+
 #include "IDrawable.hpp"
 #include "Event.hpp"
 #include "Sound.hpp"

@@ -7,10 +7,76 @@
 
 #include "Core.hpp"
 
+static bool verifyDisplayLib(const std::string &path)
+{
+    void *handle = dlopen(path.c_str(), RTLD_LAZY);
+    if (!handle) {
+        std::cerr << path << ": Couldn't open dynamic lib." << std::endl;
+        return false;
+    }
+    void* symbolPtr = dlsym(handle, "getDisplayModule");
+    if (!symbolPtr) {
+        std::cerr << path << ": Couldn't load entrypoint." << std::endl;
+        dlclose(handle);
+        return false;
+    }
+    try {
+        auto test = reinterpret_cast<getDisplay *>(symbolPtr);
+        (void)test;
+    } catch(const std::exception& e) {
+        std::cerr << path << ": Bad format for entry point." << std::endl;
+        return false;
+    }
+    dlclose(handle);
+    return true;
+}
+
+static bool verifyGameLib(const std::string &path)
+{
+    void *handle = dlopen(path.c_str(), RTLD_LAZY);
+    if (!handle) {
+        std::cerr << path << ": Couldn't open dynamic lib." << std::endl;
+        return false;
+    }
+    void* symbolPtr = dlsym(handle, "getGameModule");
+    if (!symbolPtr) {
+        std::cerr << path << ": Couldn't load entrypoint." << std::endl;
+        dlclose(handle);
+        return false;
+    }
+    try {
+        auto test = reinterpret_cast<getGame *>(symbolPtr);
+        (void)test;
+    } catch(const std::exception& e) {
+        std::cerr << path << ": Bad format for entry point." << std::endl;
+        return false;
+    }
+    dlclose(handle);
+    return true;
+}
+
 Core::Core::Core()
 {
     _display = nullptr;
     _game = nullptr;
+    _displayHandle = nullptr;
+    _gameHandle = nullptr;
+
+    DIR *dir = opendir("./lib");
+    struct dirent *entry;
+
+    if (dir != nullptr) {
+        while ((entry = readdir(dir)) != nullptr) {
+            if (entry->d_type == DT_REG) {
+                std::string filename = entry->d_name;
+                if (verifyDisplayLib("./lib/" + filename))
+                    _displayLibs.push_back("./lib/" + filename);
+                if (verifyGameLib("./lib/" + filename))
+                    _gameLibs.push_back("./lib/" + filename);
+            }
+        }
+        closedir(dir);
+    }
 }
 
 Core::StateCore Core::Core::update()
