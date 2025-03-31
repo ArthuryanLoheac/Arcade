@@ -1,0 +1,248 @@
+/*
+** EPITECH PROJECT, 2025
+** Arcade
+** File description:
+** SFMLDisplay
+*/
+
+#include "SFMLDisplay.hpp"
+#include "Window.hpp"
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+#include <map>
+#include <unordered_map>
+#include "Text.hpp"
+#include "Sprite.hpp"
+#include "SFML2.hpp"
+#include <iostream>
+
+const std::unordered_map<sf::Keyboard::Key, Key::KeyCode> SFMLDisplay::keyboardMap = {
+    {sf::Keyboard::A, Key::KeyCode::KEY_A},
+    {sf::Keyboard::B, Key::KeyCode::KEY_B},
+    {sf::Keyboard::C, Key::KeyCode::KEY_C},
+    {sf::Keyboard::D, Key::KeyCode::KEY_D},
+    {sf::Keyboard::E, Key::KeyCode::KEY_E},
+    {sf::Keyboard::F, Key::KeyCode::KEY_F},
+    {sf::Keyboard::G, Key::KeyCode::KEY_G},
+    {sf::Keyboard::H, Key::KeyCode::KEY_H},
+    {sf::Keyboard::I, Key::KeyCode::KEY_I},
+    {sf::Keyboard::J, Key::KeyCode::KEY_J},
+    {sf::Keyboard::K, Key::KeyCode::KEY_K},
+    {sf::Keyboard::L, Key::KeyCode::KEY_L},
+    {sf::Keyboard::M, Key::KeyCode::KEY_M},
+    {sf::Keyboard::N, Key::KeyCode::KEY_N},
+    {sf::Keyboard::O, Key::KeyCode::KEY_O},
+    {sf::Keyboard::P, Key::KeyCode::KEY_P},
+    {sf::Keyboard::Q, Key::KeyCode::KEY_Q},
+    {sf::Keyboard::R, Key::KeyCode::KEY_R},
+    {sf::Keyboard::S, Key::KeyCode::KEY_S},
+    {sf::Keyboard::T, Key::KeyCode::KEY_T},
+    {sf::Keyboard::U, Key::KeyCode::KEY_U},
+    {sf::Keyboard::V, Key::KeyCode::KEY_V},
+    {sf::Keyboard::W, Key::KeyCode::KEY_W},
+    {sf::Keyboard::X, Key::KeyCode::KEY_X},
+    {sf::Keyboard::Y, Key::KeyCode::KEY_Y},
+    {sf::Keyboard::Z, Key::KeyCode::KEY_Z},
+    {sf::Keyboard::Num0, Key::KeyCode::KEY_0},
+    {sf::Keyboard::Num1, Key::KeyCode::KEY_1},
+    {sf::Keyboard::Num2, Key::KeyCode::KEY_2},
+    {sf::Keyboard::Num3, Key::KeyCode::KEY_3},
+    {sf::Keyboard::Num4, Key::KeyCode::KEY_4},
+    {sf::Keyboard::Num5, Key::KeyCode::KEY_5},
+    {sf::Keyboard::Num6, Key::KeyCode::KEY_6},
+    {sf::Keyboard::Num7, Key::KeyCode::KEY_7},
+    {sf::Keyboard::Num8, Key::KeyCode::KEY_8},
+    {sf::Keyboard::Num9, Key::KeyCode::KEY_9},
+    {sf::Keyboard::Space, Key::KeyCode::SPACE},
+    {sf::Keyboard::Return, Key::KeyCode::ENTER},
+    {sf::Keyboard::Tab, Key::KeyCode::TAB},
+    {sf::Keyboard::Escape, Key::KeyCode::ECHAP},
+    {sf::Keyboard::Delete, Key::KeyCode::SUPPR},
+    {sf::Keyboard::F1, Key::KeyCode::FUNCTION_1},
+    {sf::Keyboard::F2, Key::KeyCode::FUNCTION_2},
+    {sf::Keyboard::F3, Key::KeyCode::FUNCTION_3},
+    {sf::Keyboard::F4, Key::KeyCode::FUNCTION_4},
+    {sf::Keyboard::F5, Key::KeyCode::FUNCTION_5},
+    {sf::Keyboard::F6, Key::KeyCode::FUNCTION_6},
+    {sf::Keyboard::F7, Key::KeyCode::FUNCTION_7},
+    {sf::Keyboard::F8, Key::KeyCode::FUNCTION_8},
+    {sf::Keyboard::F9, Key::KeyCode::FUNCTION_9},
+    {sf::Keyboard::F10, Key::KeyCode::FUNCTION_10},
+    {sf::Keyboard::F11, Key::KeyCode::FUNCTION_11},
+    {sf::Keyboard::F12, Key::KeyCode::FUNCTION_12},
+    {sf::Keyboard::Left, Key::KeyCode::LEFT},
+    {sf::Keyboard::Up, Key::KeyCode::UP},
+    {sf::Keyboard::Right, Key::KeyCode::RIGHT},
+    {sf::Keyboard::Down, Key::KeyCode::DOWN},
+    {sf::Keyboard::LShift, Key::KeyCode::L_SHIFT},
+    {sf::Keyboard::RShift, Key::KeyCode::R_SHIFT},
+    {sf::Keyboard::LControl, Key::KeyCode::L_CONTROL},
+    {sf::Keyboard::RControl, Key::KeyCode::R_CONTROL},
+    {sf::Keyboard::LAlt, Key::KeyCode::ALT},
+    {sf::Keyboard::RAlt, Key::KeyCode::ALTGR}
+};
+
+const std::unordered_map<sf::Mouse::Button, Key::KeyCode> SFMLDisplay::mouseMap = {
+    {sf::Mouse::Left, Key::KeyCode::MOUSE_LEFT},
+    {sf::Mouse::Middle, Key::KeyCode::MOUSE_MIDDLE},
+    {sf::Mouse::Right, Key::KeyCode::MOUSE_RIGHT},
+    {sf::Mouse::XButton1, Key::KeyCode::MOUSE_BUTTON_4},
+    {sf::Mouse::XButton2, Key::KeyCode::MOUSE_BUTTON_5}
+};
+
+std::unique_ptr<IDisplayModule> getDisplayModule()
+{
+    return std::make_unique<SFMLDisplay>();
+}
+
+void SFMLDisplay::createWindow(const Window &window)
+{
+    app.window = SFML2::SFML2_CreateWindow(window.title.c_str(), window.size.first, window.size.second);
+    if (!app.window)
+        exit(1);
+
+    if (!window.iconPath.empty()) {
+        std::shared_ptr<sf::Image> icon = SFML2::SFML2_LoadImage(window.iconPath.c_str());
+        if (icon)
+            SFML2::SFML2_SetIcon(app.window.get(), icon.get());
+    }
+}
+
+void SFMLDisplay::draw(const IDrawable &drawable)
+{
+    Sprite sprite;
+    Text text;
+
+    try {
+        sprite = dynamic_cast<const Sprite &>(drawable);
+        drawSprite(sprite);
+    } catch (std::bad_cast &e) {
+        text = dynamic_cast<const Text &>(drawable);
+        drawText(text);
+    }
+}
+
+void SFMLDisplay::display(void)
+{
+    SFML2::SFML2_Display(app.window.get());
+}
+
+void SFMLDisplay::clear(void)
+{
+    SFML2::SFML2_Clear(app.window.get(), sf::Color::Black);
+}
+
+Event SFMLDisplay::getEvent(void)
+{
+    sf::Event event;
+
+    if (!SFML2::SFML2_PollEvent(app.window.get(), &event))
+        return Event(Key::KeyCode::NONE, std::any());
+
+    switch (event.type)
+    {
+        case sf::Event::KeyPressed:
+            return getEventKeyBoard(event, Event::KeyStatus::KEY_PRESSED);
+        case sf::Event::KeyReleased:
+            return getEventKeyBoard(event, Event::KeyStatus::KEY_RELEASED);
+        case sf::Event::MouseMoved:
+            LastMouseX = event.mouseMove.x;
+            LastMouseY = event.mouseMove.y;
+            return Event(Key::KeyCode::MOUSE_MOVE, Event::MousePos{event.mouseMove.x, event.mouseMove.y});
+        case sf::Event::MouseButtonPressed:
+            return getEventMouse(event, Event::KeyStatus::KEY_PRESSED);
+        case sf::Event::MouseButtonReleased:
+            return getEventMouse(event, Event::KeyStatus::KEY_RELEASED);
+        case sf::Event::MouseWheelScrolled:
+            return Event(Key::KeyCode::MOUSE_SCROLL, Event::MouseStatusScroll{Event::MousePos{LastMouseX, LastMouseY}, event.mouseWheelScroll.delta});
+        default:
+            return getEvent();
+    }
+}
+
+Event SFMLDisplay::getEventKeyBoard(sf::Event &e, Event::KeyStatus isDown)
+{
+    auto it = keyboardMap.find(e.key.code);
+    if (it != keyboardMap.end()) {
+        return Event(it->second, isDown);
+    }
+    return getEvent();
+}
+
+Event SFMLDisplay::getEventMouse(sf::Event &e, Event::KeyStatus isDown)
+{
+    auto it = mouseMap.find(e.mouseButton.button);
+    if (it != mouseMap.end()) {
+        return Event(it->second, Event::MouseStatusClick{Event::MousePos{e.mouseButton.x, e.mouseButton.y}, isDown});
+    }
+    return getEvent();
+}
+
+void SFMLDisplay::handleSound(const Sound &sound)
+{
+    if (sound.state == Sound::STOP) {
+        try {
+            musics.at(sound.id).first->stop();
+        } catch (const std::exception& e) {}
+        return;
+    }
+
+    std::shared_ptr<sf::SoundBuffer> buffer = SFML2::SFML2_LoadSoundBuffer(sound.filePath.c_str());
+    if (!buffer)
+        return;
+
+    std::shared_ptr<sf::Sound> sfSound = std::make_shared<sf::Sound>();
+    sfSound->setBuffer(*buffer);
+
+    if (sound.state == Sound::LOOP)
+        sfSound->setLoop(true);
+    sfSound->play();
+    musics[sound.id] = std::make_pair(sfSound, buffer);
+}
+
+void SFMLDisplay::drawText(const Text &txt)
+{
+    std::shared_ptr<sf::Font> font = SFML2::SFML2_LoadFont(txt.getFontPath().c_str());
+    if (!font)
+        return;
+    sf::Text text;
+    text.setFont(*font);
+    text.setString(txt.getStr());
+    text.setCharacterSize(txt.getScale().first);
+    text.setFillColor(sf::Color(
+        std::get<0>(txt.getGUI_Color()),
+        std::get<1>(txt.getGUI_Color()),
+        std::get<2>(txt.getGUI_Color()),
+        std::get<3>(txt.getGUI_Color())
+    ));
+    text.setPosition(txt.getPosition().first, txt.getPosition().second);
+    text.setRotation(txt.getRotation());
+    SFML2::SFML2_DrawText(app.window.get(), &text);
+}
+
+void SFMLDisplay::drawSprite(const Sprite &sprite)
+{
+    if (sprite.getGUI_Textures().empty())
+        return;
+    std::shared_ptr<sf::Texture> texture = SFML2::SFML2_LoadTexture(sprite.getGUI_Textures()[0].c_str());
+    if (!texture)
+        return;
+    sf::Sprite sfSprite;
+    sfSprite.setTexture(*texture);
+    sfSprite.setPosition(sprite.getPosition().first, sprite.getPosition().second);
+    sfSprite.setScale(sprite.getScale().first, sprite.getScale().second);
+    sfSprite.setRotation(sprite.getRotation());
+    sfSprite.setColor(sf::Color(
+        std::get<0>(sprite.getGUI_Color()),
+        std::get<1>(sprite.getGUI_Color()),
+        std::get<2>(sprite.getGUI_Color()),
+        std::get<3>(sprite.getGUI_Color())
+    ));
+
+    SFML2::SFML2_DrawSprite(app.window.get(), &sfSprite);
+}
+
+SFMLDisplay::~SFMLDisplay()
+{
+    musics.clear();
+}
