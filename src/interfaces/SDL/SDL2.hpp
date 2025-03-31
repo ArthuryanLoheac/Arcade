@@ -37,5 +37,3 @@ class SDL2
         static std::shared_ptr<Mix_Chunk> Mix2_LoadWAV(const char *file);
         static void Mix2_PlayChannel(int channel, Mix_Chunk *chunk, int loops);
 };
-
-std::unique_ptr<IDisplayModule> getDisplayModule(void);

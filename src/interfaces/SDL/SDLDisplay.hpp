@@ -15,7 +15,7 @@
 #include <SDL2/SDL_mixer.h>
 #include <map>
 
-std::unique_ptr<IDisplayModule> getDisplayModule();
+// Removed the declaration of getDisplayModule here
 
 class SDLDisplay : public IDisplayModule
 {
