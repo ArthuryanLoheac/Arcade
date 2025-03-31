@@ -14,7 +14,8 @@
 #include <memory>
 
 class IGameModule {
-public: 
+public:
+    virtual ~IGameModule() = 0;
     virtual bool update(float deltaTime) = 0;
     virtual const Window &getWindow(void) = 0;
     virtual const std::vector<std::unique_ptr<IDrawable>> &getDrawables(void) = 0;

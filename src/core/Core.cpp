@@ -95,22 +95,22 @@ bool Core::Core::handleEventLibs(const Event &event)
     switch (event.key)
     {
         case Key::KeyCode::KEY_P:
-            openGameLib(_gameLibs[++_gameIndex % _gameLibs.size()]);
+            openGame(_gameLibs[++_gameIndex % _gameLibs.size()]);
             break;
         case Key::KeyCode::KEY_O:
             if (_gameIndex == 0)
-                openGameLib(_gameLibs[_gameLibs.size() - 1]);
+                openGame(_gameLibs[_gameLibs.size() - 1]);
             else
-                openGameLib(_gameLibs[--_gameIndex % _gameLibs.size()]);
+                openGame(_gameLibs[--_gameIndex % _gameLibs.size()]);
             break;
         case Key::KeyCode::KEY_I:
-            openDisplayLib(_displayLibs[++_displayIndex % _displayLibs.size()]);
+            openDisplay(_displayLibs[++_displayIndex % _displayLibs.size()]);
             break;
         case Key::KeyCode::KEY_U:
             if (_displayIndex == 0)
-                openDisplayLib(_displayLibs[_displayLibs.size() - 1]);
+                openDisplay(_displayLibs[_displayLibs.size() - 1]);
             else
-                openDisplayLib(_displayLibs[--_displayIndex % _displayLibs.size()]);
+                openDisplay(_displayLibs[--_displayIndex % _displayLibs.size()]);
             break;
         default:
             return false;
@@ -146,10 +146,10 @@ void Core::Core::draw()
     _display->display();
 }
 
-void Core::Core::openGameLib(const std::string &gameLibPath)
+void Core::Core::openGame(const std::string &gameLibPath)
 {
     if (_gameHandle)
-        closeGameLib();
+        closeGame();
     _gameHandle = dlopen(gameLibPath.c_str(), RTLD_LAZY);
     if (!_gameHandle)
         throw Error(dlerror(), "openGameLib");
@@ -159,15 +159,39 @@ void Core::Core::openGameLib(const std::string &gameLibPath)
     _game = (*getGameModule)();
 }
 
-void Core::Core::openDisplayLib(const std::string &displayLibPath)
+void Core::Core::openDisplay(const std::string &displayLibPath)
 {
-    (void)displayLibPath;
+    if (_displayHandle)
+        closeDisplay();
+    _displayHandle = dlopen(displayLibPath.c_str(), RTLD_LAZY);
+    if (!_displayHandle)
+        throw Error(dlerror(), "openDisplayLib");
+    getDisplay *getDisplayModule = (getDisplay *)dlsym(_displayHandle, "getDisplayModule");
+    if (!getDisplayModule)
+        throw Error(dlerror(), "openDisplayLib");
+    _display = (*getDisplayModule)();
 }
 
-void Core::Core::closeGameLib()
+void Core::Core::closeGame()
 {
+    if (_game) {
+        _game->~IGameModule();
+        _game = nullptr;
+    }
+    if (_gameHandle) {
+        dlclose(_gameHandle);
+        _gameHandle = nullptr;
+    }
 }
 
-void Core::Core::closeDisplayLib()
+void Core::Core::closeDisplay()
 {
+    if (_display) {
+        _display->~IDisplayModule();
+        _display = nullptr;
+    }
+    if (_displayHandle) {
+        dlclose(_displayHandle);
+        _displayHandle = nullptr;
+    }
 }
