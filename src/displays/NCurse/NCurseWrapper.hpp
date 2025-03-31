@@ -10,10 +10,10 @@
 #include <memory>
 #include <string>
 
-class NcurseWrapper {
+class NCurseWrapper {
 public:
-    NcurseWrapper();
-    ~NcurseWrapper();
+    NCurseWrapper(int height, int width);
+    ~NCurseWrapper();
 
     void clear();
     void refresh();
