@@ -37,7 +37,7 @@ FLAGS = -I./include \
 		-I./src \
 		-I./src/core \
 		-I./src/interfaces \
-		-MMD -MP $(FLAGS_LIB) \
+		-MMD -MP $(FLAGS_LIB) -ldl \
 
 FLAGS_SDL = $(FLAGS_LIB) -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer \
             -fPIC -shared \

@@ -15,8 +15,6 @@
 #include <SDL2/SDL_mixer.h>
 #include <map>
 
-// Removed the declaration of getDisplayModule here
-
 class SDLDisplay : public IDisplayModule
 {
 public:
