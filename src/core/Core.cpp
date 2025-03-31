@@ -10,10 +10,8 @@
 static bool verifyDisplayLib(const std::string &path)
 {
     void *handle = dlopen(path.c_str(), RTLD_LAZY);
-    if (!handle) {
-        std::cerr << path << ": Couldn't open dynamic lib as display." << std::endl;
+    if (!handle)
         return false;
-    }
     void* symbolPtr = dlsym(handle, "getDisplayModule");
     if (!symbolPtr) {
         std::cerr << path << ": Couldn't load entrypoint." << std::endl;
@@ -34,10 +32,8 @@ static bool verifyDisplayLib(const std::string &path)
 static bool verifyGameLib(const std::string &path)
 {
     void *handle = dlopen(path.c_str(), RTLD_LAZY);
-    if (!handle) {
-        std::cerr << path << ": Couldn't open dynamic lib as game" << std::endl;
+    if (!handle)
         return false;
-    }
     void* symbolPtr = dlsym(handle, "getGameModule");
     if (!symbolPtr) {
         std::cerr << path << ": Couldn't load entrypoint." << std::endl;
@@ -71,8 +67,10 @@ Core::Core::Core()
                 std::string filename = entry->d_name;
                 if (verifyDisplayLib("./lib/" + filename))
                     _displayLibs.push_back("./lib/" + filename);
-                if (verifyGameLib("./lib/" + filename))
+                else if (verifyGameLib("./lib/" + filename))
                     _gameLibs.push_back("./lib/" + filename);
+                else
+                    std::cerr << filename << ": Not a valid library." << std::endl;
             }
         }
         closedir(dir);
