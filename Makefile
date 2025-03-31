@@ -67,7 +67,7 @@ SRC_LIB	=	\
 SRC_MAIN	=	main.cpp \
 
 SRC	= 	src/core/Core.cpp \
-		src/core/CoreGame.cpp \
+		src/core/CoreMenu.cpp \
 
 SRC_SDL = src/displays/SDL/SDLDisplay.cpp \
 		 src/displays/SDL/SDL2.cpp \

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** Arcade
 ** File description:
-** CoreGame
+** CoreMenu
 */
 
 #pragma once
@@ -10,10 +10,10 @@
 #include "Core.hpp"
 
 namespace Core {
-    class CoreGame : public IGameModule {
+    class CoreMenu : public IGameModule {
         public:
-            CoreGame(Core &core);
-            ~CoreGame() override;
+            CoreMenu(Core &core);
+            ~CoreMenu() override;
             bool update(float deltaTime) override;
             const Window &getWindow(void) override;
             const std::vector<std::unique_ptr<IDrawable>> &getDrawables(void) override;
