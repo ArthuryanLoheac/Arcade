@@ -101,7 +101,7 @@ void SFMLDisplay::createWindow(const Window &window)
         window.title);
 
     if (!_window)
-        exit(1);
+        throw std::runtime_error("Failed to create SFML window");
 
     _window->setFramerateLimit(60);
     if (!window.iconPath.empty()) {
