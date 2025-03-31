@@ -39,10 +39,11 @@ FLAGS = -I./include \
 		-I./src/interfaces \
 		-MMD -MP $(FLAGS_LIB) \
 
-FLAGS_SDL = $(FLAGS_LIB) -lSDL2 -lSDL2_image \
-			-I./src/interfaces \
-			-I./include \
-			-I./src/core \
+FLAGS_SDL = $(FLAGS_LIB) -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer \
+            -fPIC -shared \
+            -I./src/interfaces \
+            -I./include \
+            -I./src/core \
 
 FLAGS_TEST = $(FLAGS) -lcriterion --coverage \
 

@@ -11,7 +11,7 @@ static bool verifyDisplayLib(const std::string &path)
 {
     void *handle = dlopen(path.c_str(), RTLD_LAZY);
     if (!handle) {
-        std::cerr << path << ": Couldn't open dynamic lib." << std::endl;
+        std::cerr << path << ": Couldn't open dynamic lib as display." << std::endl;
         return false;
     }
     void* symbolPtr = dlsym(handle, "getDisplayModule");
@@ -35,7 +35,7 @@ static bool verifyGameLib(const std::string &path)
 {
     void *handle = dlopen(path.c_str(), RTLD_LAZY);
     if (!handle) {
-        std::cerr << path << ": Couldn't open dynamic lib." << std::endl;
+        std::cerr << path << ": Couldn't open dynamic lib as game" << std::endl;
         return false;
     }
     void* symbolPtr = dlsym(handle, "getGameModule");

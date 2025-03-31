@@ -10,6 +10,7 @@
 #include <memory>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
+#include "IDisplayModule.hpp"
 
 class SDL2
 {
@@ -36,3 +37,5 @@ class SDL2
         static std::shared_ptr<Mix_Chunk> Mix2_LoadWAV(const char *file);
         static void Mix2_PlayChannel(int channel, Mix_Chunk *chunk, int loops);
 };
+
+std::unique_ptr<IDisplayModule> getDisplayModule(void);

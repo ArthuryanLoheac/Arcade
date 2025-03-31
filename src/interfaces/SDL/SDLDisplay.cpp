@@ -16,7 +16,7 @@
 #include "SDL2.hpp"
 #include <iostream>
 
-std::unique_ptr<IDisplayModule> getDisplayModule()
+std::unique_ptr<IDisplayModule> getDisplayModule(void)
 {
     return std::make_unique<SDLDisplay>();
 }

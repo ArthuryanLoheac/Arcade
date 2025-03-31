@@ -6,9 +6,9 @@
 */
 
 #include <iostream>
+#include "src/core/Core.hpp"
 
-int main ( void )
+int main(void)
 {
-    std::cout << "Hello World\n";
-    return 0;
+    Core::Core core;
 }
