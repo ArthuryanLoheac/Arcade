@@ -62,17 +62,17 @@ Core::Core::Core()
     _displayHandle = nullptr;
     _gameHandle = nullptr;
 
-    DIR *dir = opendir("./dynlib");
+    DIR *dir = opendir("./lib");
     struct dirent *entry;
 
     if (dir != nullptr) {
         while ((entry = readdir(dir)) != nullptr) {
             if (entry->d_type == DT_REG) {
                 std::string filename = entry->d_name;
-                if (verifyDisplayLib("./dynlib/" + filename))
-                    _displayLibs.push_back("./dynlib/" + filename);
-                if (verifyGameLib("./dynlib/" + filename))
-                    _gameLibs.push_back("./dynlib/" + filename);
+                if (verifyDisplayLib("./lib/" + filename))
+                    _displayLibs.push_back("./lib/" + filename);
+                if (verifyGameLib("./lib/" + filename))
+                    _gameLibs.push_back("./lib/" + filename);
             }
         }
         closedir(dir);
