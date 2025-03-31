@@ -13,7 +13,6 @@
 #include <unordered_map>
 #include "Text.hpp"
 #include "Sprite.hpp"
-#include "SFML2.hpp"
 #include <iostream>
 
 const std::unordered_map<sf::Keyboard::Key, Key::KeyCode> SFMLDisplay::keyboardMap = {
@@ -97,14 +96,18 @@ std::unique_ptr<IDisplayModule> getDisplayModule()
 
 void SFMLDisplay::createWindow(const Window &window)
 {
-    app.window = SFML2::SFML2_CreateWindow(window.title.c_str(), window.size.first, window.size.second);
-    if (!app.window)
+    _window = std::make_shared<sf::RenderWindow>(
+        sf::VideoMode(window.size.first, window.size.second),
+        window.title);
+
+    if (!_window)
         exit(1);
 
+    _window->setFramerateLimit(60);
     if (!window.iconPath.empty()) {
-        std::shared_ptr<sf::Image> icon = SFML2::SFML2_LoadImage(window.iconPath.c_str());
-        if (icon)
-            SFML2::SFML2_SetIcon(app.window.get(), icon.get());
+        auto icon = std::make_shared<sf::Image>();
+        if (icon->loadFromFile(window.iconPath))
+            _window->setIcon(icon->getSize().x, icon->getSize().y, icon->getPixelsPtr());
     }
 }
 
@@ -124,19 +127,19 @@ void SFMLDisplay::draw(const IDrawable &drawable)
 
 void SFMLDisplay::display(void)
 {
-    SFML2::SFML2_Display(app.window.get());
+    _window->display();
 }
 
 void SFMLDisplay::clear(void)
 {
-    SFML2::SFML2_Clear(app.window.get(), sf::Color::Black);
+    _window->clear(sf::Color::Black);
 }
 
 Event SFMLDisplay::getEvent(void)
 {
     sf::Event event;
 
-    if (!SFML2::SFML2_PollEvent(app.window.get(), &event))
+    if (!_window->pollEvent(event))
         return Event(Key::KeyCode::NONE, std::any());
 
     switch (event.type)
@@ -146,15 +149,15 @@ Event SFMLDisplay::getEvent(void)
         case sf::Event::KeyReleased:
             return getEventKeyBoard(event, Event::KeyStatus::KEY_RELEASED);
         case sf::Event::MouseMoved:
-            LastMouseX = event.mouseMove.x;
-            LastMouseY = event.mouseMove.y;
+            _lastMouseX = event.mouseMove.x;
+            _lastMouseY = event.mouseMove.y;
             return Event(Key::KeyCode::MOUSE_MOVE, Event::MousePos{event.mouseMove.x, event.mouseMove.y});
         case sf::Event::MouseButtonPressed:
             return getEventMouse(event, Event::KeyStatus::KEY_PRESSED);
         case sf::Event::MouseButtonReleased:
             return getEventMouse(event, Event::KeyStatus::KEY_RELEASED);
         case sf::Event::MouseWheelScrolled:
-            return Event(Key::KeyCode::MOUSE_SCROLL, Event::MouseStatusScroll{Event::MousePos{LastMouseX, LastMouseY}, event.mouseWheelScroll.delta});
+            return Event(Key::KeyCode::MOUSE_SCROLL, Event::MouseStatusScroll{Event::MousePos{_lastMouseX, _lastMouseY}, event.mouseWheelScroll.delta});
         default:
             return getEvent();
     }
@@ -182,29 +185,36 @@ void SFMLDisplay::handleSound(const Sound &sound)
 {
     if (sound.state == Sound::STOP) {
         try {
-            musics.at(sound.id).first->stop();
+            _musics.at(sound.id).first->stop();
         } catch (const std::exception& e) {}
         return;
     }
 
-    std::shared_ptr<sf::SoundBuffer> buffer = SFML2::SFML2_LoadSoundBuffer(sound.filePath.c_str());
-    if (!buffer)
+    auto buffer = std::make_shared<sf::SoundBuffer>();
+    if (!buffer->loadFromFile(sound.filePath))
         return;
 
-    std::shared_ptr<sf::Sound> sfSound = std::make_shared<sf::Sound>();
+    auto sfSound = std::make_shared<sf::Sound>();
     sfSound->setBuffer(*buffer);
 
     if (sound.state == Sound::LOOP)
         sfSound->setLoop(true);
     sfSound->play();
-    musics[sound.id] = std::make_pair(sfSound, buffer);
+    _musics[sound.id] = std::make_pair(sfSound, buffer);
 }
 
 void SFMLDisplay::drawText(const Text &txt)
 {
-    std::shared_ptr<sf::Font> font = SFML2::SFML2_LoadFont(txt.getFontPath().c_str());
-    if (!font)
-        return;
+    std::shared_ptr<sf::Font> font;
+
+    if (_fonts.find(txt.getFontPath()) == _fonts.end()) {
+        font = std::make_shared<sf::Font>();
+        if (!font->loadFromFile(txt.getFontPath()))
+            return;
+        _fonts[txt.getFontPath()] = font;
+    } else {
+        font = _fonts[txt.getFontPath()];
+    }
     sf::Text text;
     text.setFont(*font);
     text.setString(txt.getStr());
@@ -217,16 +227,25 @@ void SFMLDisplay::drawText(const Text &txt)
     ));
     text.setPosition(txt.getPosition().first, txt.getPosition().second);
     text.setRotation(txt.getRotation());
-    SFML2::SFML2_DrawText(app.window.get(), &text);
+    _window->draw(text);
 }
 
 void SFMLDisplay::drawSprite(const Sprite &sprite)
 {
     if (sprite.getGUI_Textures().empty())
         return;
-    std::shared_ptr<sf::Texture> texture = SFML2::SFML2_LoadTexture(sprite.getGUI_Textures()[0].c_str());
-    if (!texture)
-        return;
+
+    std::string texturePath = sprite.getGUI_Textures()[0];
+    std::shared_ptr<sf::Texture> texture;
+
+    if (_textures.find(texturePath) == _textures.end()) {
+        texture = std::make_shared<sf::Texture>();
+        if (!texture->loadFromFile(texturePath))
+            return;
+        _textures[texturePath] = texture;
+    } else {
+        texture = _textures[texturePath];
+    }
     sf::Sprite sfSprite;
     sfSprite.setTexture(*texture);
     sfSprite.setPosition(sprite.getPosition().first, sprite.getPosition().second);
@@ -239,10 +258,12 @@ void SFMLDisplay::drawSprite(const Sprite &sprite)
         std::get<3>(sprite.getGUI_Color())
     ));
 
-    SFML2::SFML2_DrawSprite(app.window.get(), &sfSprite);
+    _window->draw(sfSprite);
 }
 
 SFMLDisplay::~SFMLDisplay()
 {
-    musics.clear();
+    _musics.clear();
+    _textures.clear();
+    _fonts.clear();
 }

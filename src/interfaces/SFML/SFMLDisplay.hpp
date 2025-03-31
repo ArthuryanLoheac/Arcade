@@ -36,14 +36,13 @@ private:
     void drawText(const Text &txt);
     void drawSprite(const Sprite &sprite);
 
-    typedef struct {
-        std::shared_ptr<sf::RenderWindow> window;
-    } App;
+    std::shared_ptr<sf::RenderWindow> _window;
+    std::map<std::string, std::pair<std::shared_ptr<sf::Sound>, std::shared_ptr<sf::SoundBuffer>>> _musics;
+    std::map<std::string, std::shared_ptr<sf::Texture>> _textures;
+    std::map<std::string, std::shared_ptr<sf::Font>> _fonts;
 
-    std::map<std::string, std::pair<std::shared_ptr<sf::Sound>, std::shared_ptr<sf::SoundBuffer>>> musics;
-
-    int LastMouseX, LastMouseY;
-    App app;
+    int _lastMouseX = 0;
+    int _lastMouseY = 0;
 
     static const std::unordered_map<sf::Keyboard::Key, Key::KeyCode> keyboardMap;
     static const std::unordered_map<sf::Mouse::Button, Key::KeyCode> mouseMap;
