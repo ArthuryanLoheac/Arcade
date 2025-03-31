@@ -36,4 +36,7 @@ public:
         enum Key::KeyCode key,
         std::any value
     ): key(key), value(value) {};
+
+    enum Key::KeyCode key;
+    std::any value;
 };

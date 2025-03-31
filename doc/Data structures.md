@@ -50,6 +50,9 @@ Event::Event(
 	enum Key::KeyCode key;
 	any value;
 );
+public:
+	enum Key::KeyCode key;
+	any value;
 
 enum KeyStatus {
 	KEY_PRESSED,
