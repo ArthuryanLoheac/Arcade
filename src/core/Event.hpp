@@ -9,6 +9,7 @@
 #include <any>
 #include <Keys.hpp>
 
+
 class Event {
 public:
     enum KeyStatus {
@@ -36,6 +37,6 @@ public:
         std::any value
     ): key(key), value(value) {};
 
-    const enum Key::KeyCode key;
-    const std::any value;
+    enum Key::KeyCode key;
+    std::any value;
 };

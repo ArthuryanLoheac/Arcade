@@ -11,6 +11,7 @@
 #include "IDrawable.hpp"
 #include "Sound.hpp"
 #include "Event.hpp"
+#include <memory>
 
 class IGameModule {
 public: 
