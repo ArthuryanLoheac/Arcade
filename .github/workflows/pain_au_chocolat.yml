@@ -57,7 +57,9 @@ jobs:
         run: make
       - name: "Make Graphicals"
         timeout-minutes: 2
-        run: make graphicals
+        run: |
+          mkdir -p lib
+          make graphicals
       - name: "Check existing executables"
         run: |
           LIST=$(echo $EXECUTABLES | tr ',' ' ')
