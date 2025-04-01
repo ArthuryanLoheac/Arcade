@@ -12,13 +12,14 @@
 
 class Sprite : public IDrawable {
 public:
+    Sprite() = default;
     std::vector<std::string> getGUI_Textures(void) const { return GUI_Textures; };
     const std::vector<std::string> &getCLI_Textures() const { return CLI_Textures; }
     float getAnimationTime(void) const { return animationTime; };
     void setGUI_Textures(std::vector<std::string> GUI_Textures) { this->GUI_Textures = GUI_Textures; };
     void setCLI_Textures(std::vector<std::string> CLI_Textures) { this->CLI_Textures = CLI_Textures; }
     void setAnimationTime(float animationTime) { this->animationTime = animationTime; };
-    
+
     std::pair<float, float> getScale(void) const override { return scale; };
     float getRotation(void) const override { return rotation; };
     std::pair<CLI_Color, CLI_Color> getCLI_Color(void) const override { return CLI_color; };

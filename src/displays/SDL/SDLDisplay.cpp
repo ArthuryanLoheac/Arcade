@@ -66,10 +66,13 @@ Event SDLDisplay::getEvent(void)
 {
     SDL_Event event;
 
-    if (!SDL2::SDL2_PollEvent(&event))
+    if (!SDL2::SDL2_PollEvent(&event)){
         return Event(Key::KeyCode::NONE, std::any());
+    }
     switch (event.type)
     {
+        case SDL_QUIT:
+            return Event(Key::KeyCode::FUNCTION_4, Event::KeyStatus::KEY_PRESSED);
         case SDL_KEYDOWN:
             return getEventKeyBoard(event, Event::KeyStatus::KEY_PRESSED);
         case SDL_KEYUP:

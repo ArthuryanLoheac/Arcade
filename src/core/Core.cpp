@@ -6,6 +6,7 @@
 */
 
 #include "Core.hpp"
+#include "CoreMenu.hpp"
 
 static bool verifyDisplayLib(const std::string &path)
 {
@@ -75,6 +76,7 @@ Core::Core::Core()
         }
         closedir(dir);
     }
+    _game = std::make_unique<CoreMenu>(*this);
 }
 
 Core::StateCore Core::Core::update()
@@ -129,7 +131,7 @@ Core::StateCore Core::Core::events()
             if (_game->event(event))
                 return StateCore::EXIT_TO_MENU;
         }
-        Event event = _display->getEvent();
+        event = _display->getEvent();
     }
     return StateCore::NONE;
 }
@@ -180,6 +182,8 @@ void Core::Core::openDisplay(const std::string &displayLibPath)
     }
     auto module = createModule();
     _display = std::move(module);
+    _game->getWindow();
+    _display->createWindow(_game->getWindow());
 }
 
 void Core::Core::closeGame()

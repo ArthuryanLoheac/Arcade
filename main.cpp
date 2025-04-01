@@ -17,5 +17,9 @@ int main(int ac, char **av) {
     Core::Core core;
 
     core.openDisplay(av[1]);
+    while (core.events() != Core::StateCore::EXIT) {
+        core.update();
+        core.draw();
+    }
     return 0;
 }
