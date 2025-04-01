@@ -40,7 +40,6 @@ FLAGS = -I./include \
 		-MMD -MP $(FLAGS_LIB) -ldl \
 
 FLAGS_SDL = $(FLAGS_LIB) -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer \
-            -fPIC -shared \
             -I./src/interfaces \
             -I./include \
             -I./src/core \
@@ -48,9 +47,6 @@ FLAGS_SDL = $(FLAGS_LIB) -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer \
 FLAGS_TEST = $(FLAGS) -lcriterion --coverage \
 
 FLAGS_LIB = -std=c++20 -Wall -Wextra -Werror
-
-CXXFLAGS += -I/usr/include/SDL2 -I./src/displays/ -I./include -I./src/core
-LDFLAGS += -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer
 
 # ============= NAMES ============= #
 
