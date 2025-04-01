@@ -44,12 +44,14 @@ FLAGS_SDL = $(FLAGS_LIB) -lSDL2 -lSDL2_image \
 			-I./include \
 			-I./src/core \
 
+FLAGS_NCURSE = $(FLAGS_LIB) \
+			-I./src/interfaces \
+			-I./include \
+			-I./src/core \
+
 FLAGS_TEST = $(FLAGS) -lcriterion --coverage \
 
 FLAGS_LIB = -std=c++20 -Wall -Wextra -Werror
-
-CXXFLAGS += -I/usr/include/SDL2 -I./src/interfaces -I./include -I./src/core
-LDFLAGS += -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer
 
 # ============= NAMES ============= #
 
@@ -59,6 +61,8 @@ NAME	=	arcade
 
 NAME_SDL = lib/arcade_sdl2.so
 
+NAME_NCURSE = lib/arcade_ncurse.so
+
 # ============= SOURCES ============= #
 
 SRC_LIB	=	\
@@ -67,8 +71,11 @@ SRC_MAIN	=	main.cpp \
 
 SRC	= 	src/core/Core.cpp \
 
-SRC_SDL = src/interfaces/SDL/SDLDisplay.cpp \
-		 src/interfaces/SDL/SDL2.cpp \
+SRC_SDL	=	src/interfaces/SDL/SDLDisplay.cpp \
+			src/interfaces/SDL/SDL2.cpp \
+
+SRC_NCURSE	=	src/displays/NCurse/NCurseDisplay.cpp \
+				src/displays/NCurse/NCurseWrapper.cpp
 
 SRC_TESTS	= 	tests/test_1.cpp \
 
@@ -84,6 +91,7 @@ $(NAME_LIB): $(OBJ)
 
 graphicals:
 	$(COMPILER) -o $(NAME_SDL) -shared -fPIC $(SRC_SDL) $(FLAGS_SDL)
+	$(COMPILER) -o $(NAME_NCURSE) -shared -fPIC $(SRC_NCURSE) $(FLAGS_NCURSE)
 
 # ============= CLEANS ============= #
 
