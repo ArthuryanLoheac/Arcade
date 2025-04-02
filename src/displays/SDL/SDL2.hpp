@@ -29,6 +29,9 @@ class SDL2
         static int SDL2_PollEvent(SDL_Event *event);
         static void SDL2_SetRenderDrawColor(SDL_Renderer *renderer, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
         static void SDL2_RenderClear(SDL_Renderer *renderer);
+        static std::shared_ptr<SDL_Surface> IMG2_Load(const char *file);
+        static void SDL2_SetWindowIcon(SDL_Window *window, SDL_Surface *icon);
+        static void SDL2_FreeSurface(SDL_Surface *surface);
 
         static std::shared_ptr<TTF_Font> TTF2_OpenFont(const char *file, int ptsize);
         static std::shared_ptr<SDL_Surface> TTF2_RenderText_Blended(TTF_Font *font, const char *text, SDL_Color fg);

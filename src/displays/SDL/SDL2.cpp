@@ -83,6 +83,19 @@ extern "C" {
         SDL_RenderClear(renderer);
     }
 
+    std::shared_ptr<SDL_Surface> SDL2::IMG2_Load(const char *file)
+    {
+        SDL_Surface *rawSurface = IMG_Load(file);
+        if (!rawSurface)
+            return nullptr;
+        return std::shared_ptr<SDL_Surface>(rawSurface, SDL_FreeSurface);
+    }
+
+    void SDL2::SDL2_SetWindowIcon(SDL_Window *window, SDL_Surface *icon)
+    {
+        SDL_SetWindowIcon(window, icon);
+    }
+
     void SDL2::SDL2_SetRenderDrawColor(SDL_Renderer *renderer, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
     {
         SDL_SetRenderDrawColor(renderer, r, g, b, a);
