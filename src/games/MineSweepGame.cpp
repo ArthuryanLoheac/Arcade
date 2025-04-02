@@ -14,7 +14,7 @@
 #include <sstream>
 #include <fstream>
 
-std::unique_ptr<IGameModule> getGameModule()
+extern "C" std::unique_ptr<IGameModule> getGameModule()
 {
     return std::make_unique<MineSweepGame>();
 }
@@ -64,19 +64,23 @@ bool MineSweepGame::update(float deltaTime)
             std::string texturePath;
             std::string cliTexture = "[]";
             if (cell.state == CellState::HIDDEN) {
-                texturePath = "src/games/MineSweeper/caché.png";
+                texturePath = "asset/MineSweeper/caché.png";
                 cliTexture = "##";
             } else if (cell.state == CellState::FLAGGED) {
-                texturePath = "src/games/MineSweeper/drapeau.png";
+                texturePath = "asset/MineSweeper/drapeau.png";
                 cliTexture = "!F";
             } else if (cell.hasMine) {
-                texturePath = "src/games/MineSweeper/bombe.png";
+                if (cell.exploded) {
+                    texturePath = "asset/MineSweeper/bombe_rouge.png";
+                } else {
+                    texturePath = "asset/MineSweeper/bombe.png";
+                }
                 cliTexture = "**";
             } else {
                 if (cell.adjacentMines >= 1 && cell.adjacentMines <= 8) {
-                    texturePath = "src/games/MineSweeper/" + std::to_string(cell.adjacentMines) + ".png";
+                    texturePath = "asset/MineSweeper/" + std::to_string(cell.adjacentMines) + ".png";
                 } else {
-                    texturePath = "src/games/MineSweeper/découvert.png";
+                    texturePath = "asset/MineSweeper/découvert.png";
                 }
                 cliTexture = (cell.adjacentMines == 0) ? "  " : std::to_string(cell.adjacentMines) + " ";
             }
@@ -237,7 +241,7 @@ void MineSweepGame::calculateAdjacentMines()
 
 void MineSweepGame::revealCell(int x, int y)
 {
-    if (x < 0 || x >= boardWidth || y < 0 || y >= boardHeight || 
+    if (x < 0 || x >= boardWidth || y < 0 || y >= boardHeight ||
         board[y][x].state == CellState::REVEALED ||
         board[y][x].state == CellState::FLAGGED) {
         return;
@@ -249,6 +253,7 @@ void MineSweepGame::revealCell(int x, int y)
     }
     if (board[y][x].hasMine) {
         board[y][x].state = CellState::REVEALED;
+        board[y][x].exploded = true;
         gameOver = true;
         playerWon = false;
         revealAllMines();
@@ -314,7 +319,7 @@ void MineSweepGame::revealAllMines()
     for (int y = 0; y < boardHeight; ++y) {
         for (int x = 0; x < boardWidth; ++x) {
             if (board[y][x].hasMine) {
-                if (board[y][x].state == CellState::REVEALED) {
+                if (board[y][x].exploded) {
                 } else if (board[y][x].state != CellState::FLAGGED) {
                     board[y][x].state = CellState::REVEALED;
                 }

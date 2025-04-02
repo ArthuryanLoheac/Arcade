@@ -44,6 +44,7 @@ private:
         bool hasMine;
         CellState state;
         int adjacentMines;
+        bool exploded = false;
     };
 
     void initializeBoard();
