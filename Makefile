@@ -102,6 +102,7 @@ clean:
 
 fclean: clean
 	rm -f $(NAME) $(NAME_LIB) unit_tests
+	rm -f $(NAME_SDL) $(NAME_NCURSE)
 
 # ============= COMPILATION ============= #
 
