@@ -13,7 +13,7 @@ Core::CoreMenu::CoreMenu(Core &core)
     s.setCLI_Textures(std::vector<std::string>{"HI"});
     s.setGUI_Color(std::make_tuple(255, 255, 255, 255));
     s.setGUI_Textures(std::vector<std::string>{"assets/arcade.png"});
-    s.setPosition(std::make_pair(0, 0));
+    s.setPosition(std::make_pair(500, 0));
     s.setRotation(0);
     s.setScale(std::make_pair(0.5f, 0.5f));
     _drawables.push_back(std::make_unique<Sprite>(s));

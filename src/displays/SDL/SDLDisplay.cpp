@@ -151,6 +151,8 @@ void SDLDisplay::drawSprite(const Sprite &sprite)
     dest.y = sprite.getPosition().second;
     SDL2::SDL2_QueryTexture(texture.get(), NULL, NULL, &dest.w, &dest.h);
 
+    dest.w = dest.w * sprite.getScale().first;
+    dest.h = dest.h * sprite.getScale().second;
     SDL2::SDL2_RenderCopy(app.renderer.get(), texture.get(), NULL, &dest);
 }
 
