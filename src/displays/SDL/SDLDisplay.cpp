@@ -7,16 +7,13 @@
 
 #include "SDLDisplay.hpp"
 #include "Window.hpp"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
 #include <map>
 #include <Text.hpp>
 #include <Sprite.hpp>
 #include "SDL2.hpp"
 #include <iostream>
 
-std::unique_ptr<IDisplayModule> getDisplayModule()
+extern "C" std::unique_ptr<IDisplayModule> getDisplayModule(void)
 {
     return std::make_unique<SDLDisplay>();
 }
@@ -69,10 +66,13 @@ Event SDLDisplay::getEvent(void)
 {
     SDL_Event event;
 
-    if (!SDL2::SDL2_PollEvent(&event))
+    if (!SDL2::SDL2_PollEvent(&event)){
         return Event(Key::KeyCode::NONE, std::any());
+    }
     switch (event.type)
     {
+        case SDL_QUIT:
+            return Event(Key::KeyCode::FUNCTION_4, Event::KeyStatus::KEY_PRESSED);
         case SDL_KEYDOWN:
             return getEventKeyBoard(event, Event::KeyStatus::KEY_PRESSED);
         case SDL_KEYUP:

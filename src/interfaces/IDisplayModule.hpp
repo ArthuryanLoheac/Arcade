@@ -17,7 +17,7 @@
 class IDisplayModule
 {
     public:
-        virtual ~IDisplayModule() = 0;
+        virtual ~IDisplayModule() = default;
         virtual void createWindow(const Window &window) = 0;
         virtual void draw(const IDrawable &to_draw) = 0;
         virtual void display(void) = 0;
@@ -25,5 +25,3 @@ class IDisplayModule
         virtual Event getEvent(void) = 0;
         virtual void handleSound(const Sound &sound) = 0;
 };
-
-std::unique_ptr<IDisplayModule> getDisplayModule();

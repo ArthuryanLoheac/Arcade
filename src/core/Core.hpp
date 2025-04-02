@@ -35,12 +35,15 @@ public:
     StateCore update();
     StateCore events();
     void draw();
+    
+    std::vector<std::string> getDisplayLibs() const { return _displayLibs; }
+    std::vector<std::string> getGameLibs() const { return _gameLibs; }
 
+    void closeDisplay();
+    void openDisplay(const std::string &displayLibPath);
 private:
     void openGame(const std::string &gameLibPath);
-    void openDisplay(const std::string &displayLibPath);
     void closeGame();
-    void closeDisplay();
 
     std::unique_ptr<IDisplayModule> _display;
     std::unique_ptr<IGameModule> _game;

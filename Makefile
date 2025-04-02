@@ -37,12 +37,12 @@ FLAGS = -I./include \
 		-I./src \
 		-I./src/core \
 		-I./src/interfaces \
-		-MMD -MP $(FLAGS_LIB) \
+		-MMD -MP $(FLAGS_LIB) -ldl \
 
-FLAGS_SDL = $(FLAGS_LIB) -lSDL2 -lSDL2_image \
-			-I./src/interfaces \
-			-I./include \
-			-I./src/core \
+FLAGS_SDL = $(FLAGS_LIB) -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer \
+            -I./src/interfaces \
+            -I./include \
+            -I./src/core \
 
 FLAGS_NCURSE = $(FLAGS_LIB) \
 			-I./src/interfaces \
@@ -70,9 +70,10 @@ SRC_LIB	=	\
 SRC_MAIN	=	main.cpp \
 
 SRC	= 	src/core/Core.cpp \
+		src/core/CoreMenu.cpp \
 
-SRC_SDL	=	src/interfaces/SDL/SDLDisplay.cpp \
-			src/interfaces/SDL/SDL2.cpp \
+SRC_SDL = src/displays/SDL/SDLDisplay.cpp \
+		 src/displays/SDL/SDL2.cpp \
 
 SRC_NCURSE	=	src/displays/NCurse/NCurseDisplay.cpp \
 				src/displays/NCurse/NCurseWrapper.cpp

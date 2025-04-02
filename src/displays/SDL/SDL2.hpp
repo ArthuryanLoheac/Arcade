@@ -10,6 +10,7 @@
 #include <memory>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
+#include "IDisplayModule.hpp"
 
 class SDL2
 {

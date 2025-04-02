@@ -6,14 +6,13 @@
 */
 
 #include "Core.hpp"
+#include "CoreMenu.hpp"
 
 static bool verifyDisplayLib(const std::string &path)
 {
     void *handle = dlopen(path.c_str(), RTLD_LAZY);
-    if (!handle) {
-        std::cerr << path << ": Couldn't open dynamic lib." << std::endl;
+    if (!handle)
         return false;
-    }
     void* symbolPtr = dlsym(handle, "getDisplayModule");
     if (!symbolPtr) {
         std::cerr << path << ": Couldn't load entrypoint." << std::endl;
@@ -34,10 +33,8 @@ static bool verifyDisplayLib(const std::string &path)
 static bool verifyGameLib(const std::string &path)
 {
     void *handle = dlopen(path.c_str(), RTLD_LAZY);
-    if (!handle) {
-        std::cerr << path << ": Couldn't open dynamic lib." << std::endl;
+    if (!handle)
         return false;
-    }
     void* symbolPtr = dlsym(handle, "getGameModule");
     if (!symbolPtr) {
         std::cerr << path << ": Couldn't load entrypoint." << std::endl;
@@ -71,12 +68,15 @@ Core::Core::Core()
                 std::string filename = entry->d_name;
                 if (verifyDisplayLib("./lib/" + filename))
                     _displayLibs.push_back("./lib/" + filename);
-                if (verifyGameLib("./lib/" + filename))
+                else if (verifyGameLib("./lib/" + filename))
                     _gameLibs.push_back("./lib/" + filename);
+                else
+                    std::cerr << filename << ": Not a valid library." << std::endl;
             }
         }
         closedir(dir);
     }
+    _game = std::make_unique<CoreMenu>(*this);
 }
 
 Core::StateCore Core::Core::update()
@@ -131,7 +131,7 @@ Core::StateCore Core::Core::events()
             if (_game->event(event))
                 return StateCore::EXIT_TO_MENU;
         }
-        Event event = _display->getEvent();
+        event = _display->getEvent();
     }
     return StateCore::NONE;
 }
@@ -149,27 +149,41 @@ void Core::Core::draw()
 void Core::Core::openGame(const std::string &gameLibPath)
 {
     if (_gameHandle)
-        closeGame();
-    _gameHandle = dlopen(gameLibPath.c_str(), RTLD_LAZY);
-    if (!_gameHandle)
-        throw Error(dlerror(), "openGameLib");
-    getGame *getGameModule = (getGame *)dlsym(_gameHandle, "getGameModule");
-    if (!getGameModule)
-        throw Error(dlerror(), "openGameLib");
-    _game = (*getGameModule)();
+        closeDisplay();
+    void *handle = dlopen(gameLibPath.c_str(), RTLD_LAZY);
+    if (!handle) {
+        std::cerr << "Error loading library: " << dlerror() << std::endl;
+        exit(84);
+    }
+    auto createModule = reinterpret_cast<std::unique_ptr<IGameModule> (*)()>(dlsym(handle, "getGameModule"));
+    if (!createModule) {
+        std::cerr << "Error loading symbol: " << dlerror() << std::endl;
+        dlclose(handle);
+        exit(84);
+    }
+    auto module = createModule();
+    _game = std::move(module);
 }
 
 void Core::Core::openDisplay(const std::string &displayLibPath)
 {
     if (_displayHandle)
         closeDisplay();
-    _displayHandle = dlopen(displayLibPath.c_str(), RTLD_LAZY);
-    if (!_displayHandle)
-        throw Error(dlerror(), "openDisplayLib");
-    getDisplay *getDisplayModule = (getDisplay *)dlsym(_displayHandle, "getDisplayModule");
-    if (!getDisplayModule)
-        throw Error(dlerror(), "openDisplayLib");
-    _display = (*getDisplayModule)();
+    void *handle = dlopen(displayLibPath.c_str(), RTLD_LAZY);
+    if (!handle) {
+        std::cerr << "Error loading library: " << dlerror() << std::endl;
+        exit(84);
+    }
+    auto createModule = reinterpret_cast<std::unique_ptr<IDisplayModule> (*)()>(dlsym(handle, "getDisplayModule"));
+    if (!createModule) {
+        std::cerr << "Error loading symbol: " << dlerror() << std::endl;
+        dlclose(handle);
+        exit(84);
+    }
+    auto module = createModule();
+    _display = std::move(module);
+    _game->getWindow();
+    _display->createWindow(_game->getWindow());
 }
 
 void Core::Core::closeGame()
