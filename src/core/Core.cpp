@@ -61,6 +61,7 @@ Core::Core::Core()
 
     DIR *dir = opendir("./lib");
     struct dirent *entry;
+    _gameLibs.push_back("Menu");
 
     if (dir != nullptr) {
         while ((entry = readdir(dir)) != nullptr) {
@@ -95,18 +96,31 @@ bool Core::Core::handleEventLibs(const Event &event)
     switch (event.key)
     {
         case Key::KeyCode::KEY_P:
-            openGame(_gameLibs[++_gameIndex % _gameLibs.size()]);
+            if (_gameLibs.size() == 0)
+                break;
+            _gameIndex = _gameIndex + 1 % _gameLibs.size();
+            if (_gameLibs[_gameIndex] == "Menu")
+                _game = std::make_unique<CoreMenu>(*this);
+            else
+                openGame(_gameLibs[_gameIndex]);
             break;
         case Key::KeyCode::KEY_O:
-            if (_gameIndex == 0)
-                openGame(_gameLibs[_gameLibs.size() - 1]);
+            if (_gameLibs.size() == 0)
+                break;
+            _gameIndex = _gameIndex - 1 % _gameLibs.size();
+            if (_gameLibs[_gameIndex] == "Menu")
+                _game = std::make_unique<CoreMenu>(*this);
             else
-                openGame(_gameLibs[--_gameIndex % _gameLibs.size()]);
+                openGame(_gameLibs[_gameIndex]);
             break;
         case Key::KeyCode::KEY_I:
+            if (_displayLibs.size() == 0)
+                break;
             openDisplay(_displayLibs[++_displayIndex % _displayLibs.size()]);
             break;
         case Key::KeyCode::KEY_U:
+            if (_displayLibs.size() == 0)
+                break;
             if (_displayIndex == 0)
                 openDisplay(_displayLibs[_displayLibs.size() - 1]);
             else
