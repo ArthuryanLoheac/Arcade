@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** Arcade
 ** File description:
-** MineSweepGame - Implémentation du jeu classique du Démineur
+** MineSweepGame
 */
 
 #pragma once
