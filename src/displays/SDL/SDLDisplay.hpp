@@ -13,6 +13,7 @@
 #include <memory>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 #include <map>
 
 class SDLDisplay : public IDisplayModule
@@ -38,6 +39,8 @@ private:
     } App;
 
     std::map<std::string, std::pair<std::shared_ptr<Mix_Chunk>, int>> musics;
+    std::map<std::string, std::shared_ptr<TTF_Font>> fonts;
+    std::map<std::string, std::shared_ptr<SDL_Texture>> textTextures;
 
     int LastMouseX, LastMouseY;
     App app;

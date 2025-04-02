@@ -31,12 +31,15 @@ class SDL2
         static void SDL2_RenderClear(SDL_Renderer *renderer);
         static std::shared_ptr<SDL_Surface> IMG2_Load(const char *file);
         static void SDL2_SetWindowIcon(SDL_Window *window, SDL_Surface *icon);
-        static void SDL2_FreeSurface(SDL_Surface *surface);
 
         static std::shared_ptr<TTF_Font> TTF2_OpenFont(const char *file, int ptsize);
         static std::shared_ptr<SDL_Surface> TTF2_RenderText_Blended(TTF_Font *font, const char *text, SDL_Color fg);
         static std::shared_ptr<SDL_Texture> SDL2_CreateTextureFromSurface(SDL_Renderer *renderer, SDL_Surface *surface);
+        static void TTF2_Quit(void);
+        static int TTF2_Init(void);
 
         static std::shared_ptr<Mix_Chunk> Mix2_LoadWAV(const char *file);
         static void Mix2_PlayChannel(int channel, Mix_Chunk *chunk, int loops);
+        static void Mix2_CloseAudio(void);
+        static int Mix2_OpenAudio(int frequency, Uint16 format, int channels, int chunksize);
 };

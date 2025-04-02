@@ -125,6 +125,26 @@ extern "C" {
         return std::shared_ptr<SDL_Texture>(rawTexture, SDL_DestroyTexture);
     }
 
+    void SDL2::TTF2_Quit(void)
+    {
+        TTF_Quit();
+    }
+
+    int SDL2::TTF2_Init(void)
+    {
+        return TTF_Init();
+    }
+
+    void SDL2::Mix2_CloseAudio(void)
+    {
+        Mix_CloseAudio();
+    }
+
+    int SDL2::Mix2_OpenAudio(int frequency, Uint16 format, int channels, int chunksize)
+    {
+        return Mix_OpenAudio(frequency, format, channels, chunksize);
+    }
+
     std::shared_ptr<Mix_Chunk> SDL2::Mix2_LoadWAV(const char *file)
     {
         Mix_Chunk *rawChunk = Mix_LoadWAV(file);

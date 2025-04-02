@@ -1,22 +1,27 @@
 #include "CoreMenu.hpp"
 #include "Text.hpp"
 #include "Sprite.hpp"
+#include "CLI_Colors.hpp"
 
 Core::CoreMenu::CoreMenu(Core &core)
     : _window(std::make_pair(800, 800), "Arcade", "assets/arcade.png")
 {
     std::vector<std::string> displays = core.getDisplayLibs();
     std::vector<std::string> games = core.getGameLibs();
+    int i = 0;
 
-    Sprite s;
-    s.setAnimationTime(0);
-    s.setCLI_Textures(std::vector<std::string>{"HI"});
-    s.setGUI_Color(std::make_tuple(255, 255, 255, 255));
-    s.setGUI_Textures(std::vector<std::string>{"assets/arcade.png"});
-    s.setPosition(std::make_pair(500, 0));
-    s.setRotation(0);
-    s.setScale(std::make_pair(0.5f, 0.5f));
-    _drawables.push_back(std::make_unique<Sprite>(s));
+    for (auto c:core.getDisplayLibs()) {
+        Text text;
+        text.setCLI_Color(std::make_pair(CLI_Color::CLI_WHITE, CLI_Color::CLI_BLACK));
+        text.setGUI_Color(std::make_tuple(255, 255, 255, 255));
+        text.setFontPath("assets/fonts/NotoSans.ttf");
+        text.setPosition(std::make_pair(100, 100 + i * 50));
+        text.setScale(std::make_pair(20, 20));
+        text.setStr(c);
+        text.setRotation(0);
+        _drawables.push_back(std::make_unique<Text>(text));
+        i++;
+    }
 }
 
 Core::CoreMenu::~CoreMenu()
