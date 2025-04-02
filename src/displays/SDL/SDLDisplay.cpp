@@ -20,31 +20,41 @@ extern "C" std::unique_ptr<IDisplayModule> getDisplayModule(void)
 
 void SDLDisplay::createWindow(const Window &window)
 {
-    int rendererFlags = SDL_RENDERER_ACCELERATED;
-    int windowFlags = 0;
+    int rendererFlags, windowFlags;
+    rendererFlags = SDL_RENDERER_ACCELERATED;
+    windowFlags = 0;
 
-    if (SDL2::SDL2_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
-        throw std::runtime_error("Failed to initialize SDL");
-
-    if (SDL2::TTF2_Init() < 0)
-        throw std::runtime_error("Failed to initialize TTF");
-
-    if (SDL2::Mix2_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
-        throw std::runtime_error("Failed to initialize Mixer");
-
+    if (std::getenv("SDL_AUDIODRIVER") == nullptr) {
+        std::cerr << "No audio device detected. Setting SDL_AUDIODRIVER to dummy." << std::endl;
+        setenv("SDL_AUDIODRIVER", "dummy", 1);
+    }
+    if (SDL2::SDL2_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+        std::cerr << "Error initializing SDL: " << SDL_GetError() << std::endl;
+        exit(1);
+    }
+    if (SDL2::TTF2_Init() < 0) {
+        std::cerr << "Error initializing SDL_ttf: " << TTF_GetError() << std::endl;
+        exit(1);
+    }
+    if (SDL2::Mix2_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        std::cerr << "Error initializing SDL_mixer: " << Mix_GetError() << std::endl;
+        std::cerr << "Audio will be disabled." << std::endl;
+    }
     app.window = SDL2::SDL2_CreateWindow(window.title.c_str(),
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         window.size.first, window.size.second, windowFlags);
-    if (!app.window)
-        throw std::runtime_error("Failed to create window");
-
+    if (!app.window) {
+        std::cerr << "Error creating SDL window: " << SDL_GetError() << std::endl;
+        exit(1);
+    }
     SDL2::SDL2_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     app.renderer = SDL2::SDL2_CreateRenderer(app.window.get(), -1, rendererFlags);
-    if (!app.renderer)
-        throw std::runtime_error("Failed to create renderer");
-
+    if (!app.renderer) {
+        std::cerr << "Error creating SDL renderer: " << SDL_GetError() << std::endl;
+        exit(1);
+    }
     std::shared_ptr<SDL_Surface> icon = SDL2::IMG2_Load("assets/arcade.png");
-    if (icon)
+    if (icon.get())
         SDL2::SDL2_SetWindowIcon(app.window.get(), icon.get());
 }
 
