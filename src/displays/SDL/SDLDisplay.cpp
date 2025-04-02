@@ -32,7 +32,7 @@ void SDLDisplay::createWindow(const Window &window)
     windowFlags = 0;
 
     if (std::getenv("SDL_AUDIODRIVER") == nullptr) {
-        exitError("SDL_AUDIODRIVER not set, sound will be disabled", false);
+        exitError("SDL_AUDIODRIVER not set, Setting it", false);
         setenv("SDL_AUDIODRIVER", "dummy", 1);
     }
     if (SDL2::SDL2_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
