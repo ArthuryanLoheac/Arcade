@@ -24,5 +24,9 @@ namespace Core {
             std::vector<std::unique_ptr<IDrawable>> _drawables;
             Window _window;
             std::vector<Sound> _sounds;
+
+            void AddText(const std::string &str, int x, int y, int fontSize,
+                std::tuple <int, int, int, int> colorGUI = std::make_tuple(255, 255, 255, 255),
+                enum CLI_Color colorCLI = CLI_Color::CLI_WHITE);
     };
 }
