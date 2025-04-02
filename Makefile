@@ -49,7 +49,7 @@ FLAGS_SDL = $(FLAGS_LIB) -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer \
             -I./include \
             -I./src/core \
 
-FLAGS_NCURSE = $(FLAGS_LIB) \
+FLAGS_NCURSE = $(FLAGS_LIB) -lncurses \
 			-I./src/interfaces \
 			-I./include \
 			-I./src/core \

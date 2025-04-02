@@ -18,23 +18,41 @@ extern "C" std::unique_ptr<IDisplayModule> getDisplayModule(void)
     return std::make_unique<SDLDisplay>();
 }
 
+static void exitError(const std::string &msg, bool ex = true)
+{
+    std::cerr << msg << std::endl;
+    if (ex)
+        exit(84);
+}
+
 void SDLDisplay::createWindow(const Window &window)
 {
     int rendererFlags, windowFlags;
-
     rendererFlags = SDL_RENDERER_ACCELERATED;
     windowFlags = 0;
-    if (SDL2::SDL2_Init(SDL_INIT_VIDEO) < 0)
-        exit(1);
+
+    if (std::getenv("SDL_AUDIODRIVER") == nullptr) {
+        exitError("SDL_AUDIODRIVER not set, Setting it", false);
+        setenv("SDL_AUDIODRIVER", "dummy", 1);
+    }
+    if (SDL2::SDL2_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
+        exitError("Error initializing SDL");
+    if (SDL2::TTF2_Init() < 0)
+        exitError("Error initializing SDL_ttf / Text will be disabled", false);
+    if (SDL2::Mix2_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+        exitError("Error initializing SDL_mixer / Sound will be disabled", false);
     app.window = SDL2::SDL2_CreateWindow(window.title.c_str(),
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         window.size.first, window.size.second, windowFlags);
     if (!app.window)
-        exit(1);
+        exitError("Error creating SDL window");
     SDL2::SDL2_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     app.renderer = SDL2::SDL2_CreateRenderer(app.window.get(), -1, rendererFlags);
     if (!app.renderer)
-        exit(1);
+        exitError("Error creating SDL renderer");
+    std::shared_ptr<SDL_Surface> icon = SDL2::IMG2_Load("assets/arcade.png");
+    if (icon.get())
+        SDL2::SDL2_SetWindowIcon(app.window.get(), icon.get());
 }
 
 void SDLDisplay::draw(const IDrawable &drawable)
@@ -118,28 +136,39 @@ void SDLDisplay::handleSound(const Sound &sound)
 
 void SDLDisplay::drawText(const Text &txt)
 {
-    const int fontSize = txt.getScale().first;
-    std::shared_ptr<TTF_Font> font;
-    std::shared_ptr<SDL_Surface> textSurface;
-    std::shared_ptr<SDL_Texture> textTexture;
+    const int fontSize = txt.getScale().first ;
+    std::string fontKey = txt.getFontPath();
     SDL_Rect dstRect;
     SDL_Color textColor = { (Uint8)std::get<0>(txt.getGUI_Color()),
                             (Uint8)std::get<1>(txt.getGUI_Color()),
                             (Uint8)std::get<2>(txt.getGUI_Color()),
                             (Uint8)std::get<3>(txt.getGUI_Color())};
 
+    if (fonts.find(fontKey) == fonts.end()) {
+        fonts[fontKey] = SDL2::TTF2_OpenFont(txt.getFontPath().c_str(), fontSize);
+        if (!fonts[fontKey]){
+            std::cerr << "Error: " << TTF_GetError() << std::endl;
+            return;
+        }
+    }
 
-    font = SDL2::TTF2_OpenFont(txt.getFontPath().c_str(), fontSize);
-    if (!font)
-        return;
-    textSurface = SDL2::TTF2_RenderText_Blended(font.get(), txt.getStr().c_str(), textColor);
-    if (!textSurface)
-        return;
-    textTexture = SDL2::SDL2_CreateTextureFromSurface(app.renderer.get(), textSurface.get());
-    if (!textTexture)
-        return;
-    dstRect = {txt.getPosition().first, txt.getPosition().second, textSurface->w, textSurface->h};
-    SDL2::SDL2_RenderCopy(app.renderer.get(), textTexture.get(), nullptr, &dstRect);
+    std::string textKey = fontKey + txt.getStr();
+    if (textTextures.find(textKey) == textTextures.end()) {
+        std::shared_ptr<SDL_Surface> textSurface = SDL2::TTF2_RenderText_Blended(fonts[fontKey].get(), txt.getStr().c_str(), textColor);
+        if (!textSurface){
+            std::cerr << "Error: " << TTF_GetError() << std::endl;
+            return;
+        }
+        textTextures[textKey] = SDL2::SDL2_CreateTextureFromSurface(app.renderer.get(), textSurface.get());
+        if (!textTextures[textKey]){
+            std::cerr << "Error: " << TTF_GetError() << std::endl;
+            return;
+        }
+    }
+
+    dstRect = {txt.getPosition().first, txt.getPosition().second, 0, 0};
+    SDL2::SDL2_QueryTexture(textTextures[textKey].get(), nullptr, nullptr, &dstRect.w, &dstRect.h);
+    SDL2::SDL2_RenderCopy(app.renderer.get(), textTextures[textKey].get(), nullptr, &dstRect);
 }
 
 void SDLDisplay::drawSprite(const Sprite &sprite)
@@ -151,6 +180,8 @@ void SDLDisplay::drawSprite(const Sprite &sprite)
     dest.y = sprite.getPosition().second;
     SDL2::SDL2_QueryTexture(texture.get(), NULL, NULL, &dest.w, &dest.h);
 
+    dest.w = dest.w * sprite.getScale().first;
+    dest.h = dest.h * sprite.getScale().second;
     SDL2::SDL2_RenderCopy(app.renderer.get(), texture.get(), NULL, &dest);
 }
 

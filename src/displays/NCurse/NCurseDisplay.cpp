@@ -7,6 +7,12 @@
 
 #include "NCurseDisplay.hpp"
 
+extern "C" std::unique_ptr<IDisplayModule> getDisplayModule(void)
+{
+    return std::make_unique<NCurseDisplay>();
+}
+
+
 NCurseDisplay::NCurseDisplay()
 {
     _window = nullptr;
