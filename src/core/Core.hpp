@@ -35,7 +35,7 @@ public:
     StateCore update();
     StateCore events();
     void draw();
-    
+
     std::vector<std::string> getDisplayLibs() const { return _displayLibs; }
     std::vector<std::string> getGameLibs() const { return _gameLibs; }
 

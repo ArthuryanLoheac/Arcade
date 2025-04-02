@@ -10,19 +10,20 @@
 NCurseWrapper::NCurseWrapper(int height, int width)
 {
     initscr();
-    cbreak();
-    noecho();
+    raw();
     keypad(stdscr, TRUE);
+    noecho();
+    timeout(0);
+    cbreak();
     curs_set(0);
     start_color();
-
+    mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
     window = newwin(height, width, 0, 0);
     refresh();
 }
 
 NCurseWrapper::~NCurseWrapper()
 {
-    delwin(window);
     endwin();
 }
 
