@@ -32,10 +32,10 @@ void SDLDisplay::createWindow(const Window &window)
     if (!app.window)
         exit(1);
     SDL2::SDL2_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-    std::shared_ptr<SDL_Surface> icon = SDL2::IMG2_Load("assets/icon.png");
+    app.renderer = SDL2::SDL2_CreateRenderer(app.window.get(), -1, rendererFlags);
+    std::shared_ptr<SDL_Surface> icon = SDL2::IMG2_Load("assets/arcade.png");
     if (icon.get())
         SDL2::SDL2_SetWindowIcon(app.window.get(), icon.get());
-    app.renderer = SDL2::SDL2_CreateRenderer(app.window.get(), -1, rendererFlags);
     if (!app.renderer)
         exit(1);
 }
