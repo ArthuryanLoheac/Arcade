@@ -18,13 +18,7 @@
 
 class MineSweepGame : public IGameModule {
 public:
-    MineSweepGame(
-        int boardWidth = 10,
-        int boardHeight = 10,
-        int numMines = 15,
-        int cellSize = 32,
-        float timeLimit = 300.0f
-    );
+    MineSweepGame();
 
     bool update(float deltaTime) override;
     const Window &getWindow(void) override;

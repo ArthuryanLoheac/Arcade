@@ -21,9 +21,9 @@ extern "C" std::unique_ptr<IGameModule> getGameModule()
 
 IGameModule::~IGameModule() {}
 
-MineSweepGame::MineSweepGame(int boardWidth, int boardHeight, int numMines, int cellSize, float timeLimit)
-    : boardWidth(boardWidth), boardHeight(boardHeight), numMines(numMines), cellSize(cellSize),
-      timeLimit(timeLimit), gameOver(false), playerWon(false), revealedCount(0),
+MineSweepGame::MineSweepGame()
+    : boardWidth(10), boardHeight(10), numMines(15), cellSize(32),
+      timeLimit(300.0f), gameOver(false), playerWon(false), revealedCount(0),
       flaggedCount(0), gameTime(0.0f), score(0), firstMove(true),
       window({600, 500}, "Minesweeper", "")
 {
