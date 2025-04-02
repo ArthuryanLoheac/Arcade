@@ -95,18 +95,26 @@ bool Core::Core::handleEventLibs(const Event &event)
     switch (event.key)
     {
         case Key::KeyCode::KEY_P:
+            if (_gameLibs.size() == 0)
+                break;
             openGame(_gameLibs[++_gameIndex % _gameLibs.size()]);
             break;
         case Key::KeyCode::KEY_O:
+            if (_gameLibs.size() == 0)
+                break;
             if (_gameIndex == 0)
                 openGame(_gameLibs[_gameLibs.size() - 1]);
             else
                 openGame(_gameLibs[--_gameIndex % _gameLibs.size()]);
             break;
         case Key::KeyCode::KEY_I:
+            if (_displayLibs.size() == 0)
+                break;
             openDisplay(_displayLibs[++_displayIndex % _displayLibs.size()]);
             break;
         case Key::KeyCode::KEY_U:
+            if (_displayLibs.size() == 0)
+                break;
             if (_displayIndex == 0)
                 openDisplay(_displayLibs[_displayLibs.size() - 1]);
             else
