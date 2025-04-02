@@ -39,6 +39,11 @@ FLAGS = -I./include \
 		-I./src/interfaces \
 		-MMD -MP $(FLAGS_LIB) -ldl \
 
+FLAGS_GAMES = -I./include \
+		-I./src \
+		-I./src/core \
+		-I./src/interfaces \
+
 FLAGS_SDL = $(FLAGS_LIB) -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer \
             -I./src/interfaces \
             -I./include \
@@ -63,6 +68,8 @@ NAME_SDL = lib/arcade_sdl2.so
 
 NAME_NCURSE = lib/arcade_ncurse.so
 
+NAME_MINESWEEP = lib/arcade_minesweeper.so
+
 # ============= SOURCES ============= #
 
 SRC_LIB	=	\
@@ -78,11 +85,13 @@ SRC_SDL = src/displays/SDL/SDLDisplay.cpp \
 SRC_NCURSE	=	src/displays/NCurse/NCurseDisplay.cpp \
 				src/displays/NCurse/NCurseWrapper.cpp
 
+SRC_MINESWEEP	=	src/games/MineSweepGame.hpp
+
 SRC_TESTS	= 	tests/test_1.cpp \
 
 # ============= RULES ============= #
 
-all: $(NAME) $(NAME_LIB)
+all: core graphicals games
 
 $(NAME): $(OBJ_SRC) $(OBJ_MAIN)
 	$(COMPILER) -o $(NAME) $(OBJ_SRC) $(OBJ_MAIN) $(FLAGS)
@@ -90,18 +99,31 @@ $(NAME): $(OBJ_SRC) $(OBJ_MAIN)
 $(NAME_LIB): $(OBJ)
 	ar rc $(NAME_LIB) $(OBJ)
 
+core: $(OBJ_SRC) $(OBJ_MAIN)
+	$(COMPILER) -o $(NAME) $(OBJ_SRC) $(OBJ_MAIN) $(FLAGS)
+
 graphicals:
 	$(COMPILER) -o $(NAME_SDL) -shared -fPIC $(SRC_SDL) $(FLAGS_SDL)
 	$(COMPILER) -o $(NAME_NCURSE) -shared -fPIC $(SRC_NCURSE) $(FLAGS_NCURSE)
+
+games:
+	$(COMPILER) -o $(NAME_MINESWEEP) -shared -fPIC $(SRC_MINESWEEP) $(FLAGS_GAMES)
 
 # ============= CLEANS ============= #
 
 clean:
 	rm -rf $(OBJ_DIR)
 	rm -f *.gcda *.gcno
+	rm -f tests/*.gcda tests/*.gcno
 
 fclean: clean
-	rm -f $(NAME) $(NAME_LIB) unit_tests
+	rm -f $(NAME)
+	rm -f $(NAME_LIB)
+	rm -f $(NAME_SDL)
+	rm -f $(NAME_NCURSE)
+	rm -f $(NAME_MINESWEEP)
+	rm -f unit_tests
+	rm -f lib/*.so lib/*.d
 
 # ============= COMPILATION ============= #
 
