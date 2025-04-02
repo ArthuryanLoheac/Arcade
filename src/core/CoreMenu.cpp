@@ -18,8 +18,9 @@ Core::CoreMenu::CoreMenu(Core &core)
         i++;
     }
     AddText("Games:", 50, 100 + i * 50, 30);
+    i++;
     for (auto c:core.getGameLibs()) {
-        AddText(c, 100, 200 + i * 50, 20);
+        AddText(c, 100, 100 + i * 50, 20);
         i++;
     }
 }
@@ -47,7 +48,7 @@ bool Core::CoreMenu::update(float deltaTime)
     for (auto &d : _drawables) {
         if (dynamic_cast<Text *>(d.get())) {
             Text &txt = dynamic_cast<Text &>(*d);
-            if (txt.getStr() == core->getDisplayLibPath()) {
+            if (txt.getStr() == core->getDisplayLibPath() || txt.getStr() == core->getGameLibPath()) {
                 txt.setCLI_Color(std::make_pair(CLI_Color::CLI_RED, CLI_Color::CLI_BLACK));
                 txt.setGUI_Color(std::make_tuple(255, 0, 0, 255));
             } else {
