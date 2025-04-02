@@ -4,20 +4,17 @@
 #include "CLI_Colors.hpp"
 
 
-
 Core::CoreMenu::CoreMenu(Core &core)
     : _window(std::make_pair(800, 800), "Arcade", "assets/arcade.png")
 {
     std::vector<std::string> displays = core.getDisplayLibs();
     std::vector<std::string> games = core.getGameLibs();
+    this->core = &core;
     int i = 0;
 
     AddText("Displays:", 50, 50, 30);
     for (auto c:core.getDisplayLibs()) {
-        if (core.getDisplayLibPath() == c)
-            AddText(c, 100, 100 + i * 50, 20, std::make_tuple(255, 0, 0, 255));
-        else
-            AddText(c, 100, 100 + i * 50, 20);
+        AddText(c, 100, 100 + i * 50, 20);
         i++;
     }
     AddText("Games:", 50, 100 + i * 50, 30);
@@ -47,6 +44,18 @@ Core::CoreMenu::~CoreMenu()
 bool Core::CoreMenu::update(float deltaTime)
 {
     (void)deltaTime;
+    for (auto &d : _drawables) {
+        if (dynamic_cast<Text *>(d.get())) {
+            Text &txt = dynamic_cast<Text &>(*d);
+            if (txt.getStr() == core->getDisplayLibPath()) {
+                txt.setCLI_Color(std::make_pair(CLI_Color::CLI_RED, CLI_Color::CLI_BLACK));
+                txt.setGUI_Color(std::make_tuple(255, 0, 0, 255));
+            } else {
+                txt.setCLI_Color(std::make_pair(CLI_Color::CLI_WHITE, CLI_Color::CLI_BLACK));
+                txt.setGUI_Color(std::tuple(255, 255, 255, 255));
+            }
+        }
+    }
     return false;
 }
 
