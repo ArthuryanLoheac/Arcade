@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** Arcade
 ** File description:
-** MineSweepGame - Implémentation du jeu classique du Démineur
+** MineSweepGame
 */
 
 #pragma once
@@ -18,13 +18,7 @@
 
 class MineSweepGame : public IGameModule {
 public:
-    MineSweepGame(
-        int boardWidth = 10,
-        int boardHeight = 10,
-        int numMines = 15,
-        int cellSize = 32,
-        float timeLimit = 300.0f
-    );
+    MineSweepGame();
 
     bool update(float deltaTime) override;
     const Window &getWindow(void) override;
@@ -44,6 +38,7 @@ private:
         bool hasMine;
         CellState state;
         int adjacentMines;
+        bool exploded = false;
     };
 
     void initializeBoard();
