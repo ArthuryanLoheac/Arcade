@@ -12,7 +12,6 @@ extern "C" std::unique_ptr<IDisplayModule> getDisplayModule(void)
     return std::make_unique<NCurseDisplay>();
 }
 
-
 NCurseDisplay::NCurseDisplay()
 {
     _window = nullptr;
@@ -55,12 +54,42 @@ void NCurseDisplay::clear(void)
 
 Event NCurseDisplay::getEvent(void)
 {
-    int ch = getch();
-    Event event(Key::KEY_A, 0);
+    int ch = -1;
+    int x = 0, y = 0;
+    Key::KeyCode key = Key::NONE;
 
-    std::cout << "Key pressed: " << ch << std::endl;
+    ch = getch();
 
-    return event;
+    key = getKeyBoardCode(ch);
+    if (key != Key::NONE)
+        return Event(key, Key::KeyStatus::KEY_PRESSED);
+    key = getMouseCode(x, y);
+    if (key != Key::NONE)
+        return Event(key, Event::MousePos{x, y});
+    return Event(Key::NONE, std::any());
+}
+
+Key::KeyCode NCurseDisplay::getMouseCode(int &x, int &y)
+{
+    MEVENT event;
+
+    if (getmouse(&event) == OK) {
+        x = event.x;
+        y = event.y;
+        if (event.bstate & BUTTON1_PRESSED) return Key::MOUSE_LEFT;
+        if (event.bstate & BUTTON2_PRESSED) return Key::MOUSE_MIDDLE;
+        if (event.bstate & BUTTON3_PRESSED) return Key::MOUSE_RIGHT;
+        if (event.bstate & BUTTON4_PRESSED) return Key::MOUSE_BUTTON_4;
+        if (event.bstate & BUTTON5_PRESSED) return Key::MOUSE_BUTTON_5;
+        if (event.bstate & REPORT_MOUSE_POSITION) return Key::MOUSE_MOVE;
+    }
+    return Key::NONE;
+}
+
+Key::KeyCode NCurseDisplay::getKeyBoardCode(int ch)
+{
+    auto it = _keyMap.find(ch);
+    return (it != _keyMap.end()) ? it->second : Key::NONE;
 }
 
 void NCurseDisplay::handleSound(const Sound &sound)
