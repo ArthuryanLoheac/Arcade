@@ -93,12 +93,15 @@ Core::StateCore Core::Core::update()
 
 bool Core::Core::handleEventLibs(const Event &event)
 {
-    switch (event.key)
-    {
+    try {
+        if (std::any_cast<Event::KeyStatus>(event.value) != Event::KeyStatus::KEY_RELEASED)
+            return false;
+    } catch (const std::bad_any_cast& e) {}
+    switch (event.key) {
         case Key::KeyCode::KEY_P:
             if (_gameLibs.size() == 0)
                 break;
-            _gameIndex = _gameIndex + 1 % _gameLibs.size();
+            _gameIndex = (_gameIndex + 1) % _gameLibs.size();
             if (_gameLibs[_gameIndex] == "Menu")
                 _game = std::make_unique<CoreMenu>(*this);
             else
@@ -107,7 +110,7 @@ bool Core::Core::handleEventLibs(const Event &event)
         case Key::KeyCode::KEY_O:
             if (_gameLibs.size() == 0)
                 break;
-            _gameIndex = _gameIndex - 1 % _gameLibs.size();
+            _gameIndex =(_gameIndex - 1) % _gameLibs.size();
             if (_gameLibs[_gameIndex] == "Menu")
                 _game = std::make_unique<CoreMenu>(*this);
             else
