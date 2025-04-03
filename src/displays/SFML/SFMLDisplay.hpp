@@ -16,8 +16,6 @@
 #include <map>
 #include <unordered_map>
 
-std::unique_ptr<IDisplayModule> getDisplayModule();
-
 class SFMLDisplay : public IDisplayModule
 {
 public:

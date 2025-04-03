@@ -89,7 +89,7 @@ const std::unordered_map<sf::Mouse::Button, Key::KeyCode> SFMLDisplay::mouseMap 
     {sf::Mouse::XButton2, Key::KeyCode::MOUSE_BUTTON_5}
 };
 
-std::unique_ptr<IDisplayModule> getDisplayModule()
+extern "C" std::unique_ptr<IDisplayModule> getDisplayModule()
 {
     return std::make_unique<SFMLDisplay>();
 }

@@ -33,26 +33,28 @@ EXTENSION = cpp
 
 # ============= FLAGS ============= #
 
+FLAGS_INCLUDE = -I./include \
+		-I./src \
+		-I./src/core \
+		-I./src/interfaces \
+
 FLAGS = -I./include \
 		-I./src \
 		-I./src/core \
 		-I./src/interfaces \
 		-MMD -MP $(FLAGS_LIB) -ldl \
 
-FLAGS_GAMES = -I./include -shared -fPIC \
-		-I./src \
-		-I./src/core \
-		-I./src/interfaces \
+FLAGS_GAMES = -shared -fPIC \
+		$(FLAGS_INCLUDE)
 
 FLAGS_SDL = $(FLAGS_LIB) -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer \
-            -I./src/interfaces \
-            -I./include \
-            -I./src/core \
+            $(FLAGS_INCLUDE)
 
 FLAGS_NCURSE = $(FLAGS_LIB) -lncurses \
-			-I./src/interfaces \
-			-I./include \
-			-I./src/core \
+			$(FLAGS_INCLUDE)
+
+FLAGS_SFML = $(FLAGS_LIB) -lsfml-graphics -lsfml-window -lsfml-system \
+			$(FLAGS_INCLUDE)
 
 FLAGS_TEST = $(FLAGS) -lcriterion --coverage \
 
@@ -67,6 +69,8 @@ NAME	=	arcade
 NAME_SDL = lib/arcade_sdl2.so
 
 NAME_NCURSE = lib/arcade_ncurse.so
+
+NAME_SFML = lib/arcade_sfml.so
 
 NAME_MINESWEEP = lib/arcade_minesweeper.so
 
@@ -84,6 +88,8 @@ SRC_SDL = src/displays/SDL/SDLDisplay.cpp \
 
 SRC_NCURSE	=	src/displays/NCurse/NCurseDisplay.cpp \
 				src/displays/NCurse/NCurseWrapper.cpp
+
+SRC_SFML	=	src/displays/SFML/SFMLDisplay.cpp \
 
 SRC_MINESWEEP	=	src/games/MineSweepGame.cpp
 
@@ -105,6 +111,7 @@ core: $(OBJ_SRC) $(OBJ_MAIN)
 graphicals:
 	$(COMPILER) -o $(NAME_SDL) -shared -fPIC $(SRC_SDL) $(FLAGS_SDL)
 	$(COMPILER) -o $(NAME_NCURSE) -shared -fPIC $(SRC_NCURSE) $(FLAGS_NCURSE)
+	$(COMPILER) -o $(NAME_SFML) -shared -fPIC $(SRC_SFML) $(FLAGS_SFML)
 
 games:
 	$(COMPILER) -o $(NAME_MINESWEEP) $(SRC_MINESWEEP) $(FLAGS_GAMES)
