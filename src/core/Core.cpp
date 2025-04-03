@@ -163,7 +163,7 @@ void Core::Core::draw()
 void Core::Core::openGame(const std::string &gameLibPath)
 {
     if (_gameHandle)
-        closeDisplay();
+        closeGame();
     void *handle = dlopen(gameLibPath.c_str(), RTLD_LAZY);
     if (!handle) {
         std::cerr << "Error loading library: " << dlerror() << std::endl;

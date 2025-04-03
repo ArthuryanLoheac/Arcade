@@ -19,8 +19,6 @@ extern "C" std::unique_ptr<IGameModule> getGameModule()
     return std::make_unique<MineSweepGame>();
 }
 
-IGameModule::~IGameModule() {}
-
 MineSweepGame::MineSweepGame()
     : boardWidth(10), boardHeight(10), numMines(15), cellSize(32),
       timeLimit(300.0f), gameOver(false), playerWon(false), revealedCount(0),

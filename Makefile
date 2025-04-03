@@ -39,7 +39,7 @@ FLAGS = -I./include \
 		-I./src/interfaces \
 		-MMD -MP $(FLAGS_LIB) -ldl \
 
-FLAGS_GAMES = -I./include \
+FLAGS_GAMES = -I./include -shared -fPIC \
 		-I./src \
 		-I./src/core \
 		-I./src/interfaces \
@@ -85,7 +85,7 @@ SRC_SDL = src/displays/SDL/SDLDisplay.cpp \
 SRC_NCURSE	=	src/displays/NCurse/NCurseDisplay.cpp \
 				src/displays/NCurse/NCurseWrapper.cpp
 
-SRC_MINESWEEP	=	src/games/MineSweepGame.hpp
+SRC_MINESWEEP	=	src/games/MineSweepGame.cpp
 
 SRC_TESTS	= 	tests/test_1.cpp \
 
@@ -107,7 +107,7 @@ graphicals:
 	$(COMPILER) -o $(NAME_NCURSE) -shared -fPIC $(SRC_NCURSE) $(FLAGS_NCURSE)
 
 games:
-	$(COMPILER) -o $(NAME_MINESWEEP) -shared -fPIC $(SRC_MINESWEEP) $(FLAGS_GAMES)
+	$(COMPILER) -o $(NAME_MINESWEEP) $(SRC_MINESWEEP) $(FLAGS_GAMES)
 
 # ============= CLEANS ============= #
 
