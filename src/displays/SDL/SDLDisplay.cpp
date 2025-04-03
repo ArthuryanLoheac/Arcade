@@ -18,23 +18,41 @@ extern "C" std::unique_ptr<IDisplayModule> getDisplayModule(void)
     return std::make_unique<SDLDisplay>();
 }
 
+static void exitError(const std::string &msg, bool ex = true)
+{
+    std::cerr << msg << std::endl;
+    if (ex)
+        exit(84);
+}
+
 void SDLDisplay::createWindow(const Window &window)
 {
     int rendererFlags, windowFlags;
-
     rendererFlags = SDL_RENDERER_ACCELERATED;
     windowFlags = 0;
-    if (SDL2::SDL2_Init(SDL_INIT_VIDEO) < 0)
-        exit(1);
+
+    if (std::getenv("SDL_AUDIODRIVER") == nullptr) {
+        exitError("SDL_AUDIODRIVER not set, Setting it", false);
+        setenv("SDL_AUDIODRIVER", "dummy", 1);
+    }
+    if (SDL2::SDL2_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
+        exitError("Error initializing SDL");
+    if (SDL2::TTF2_Init() < 0)
+        exitError("Error initializing SDL_ttf / Text will be disabled", false);
+    if (SDL2::Mix2_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+        exitError("Error initializing SDL_mixer / Sound will be disabled", false);
     app.window = SDL2::SDL2_CreateWindow(window.title.c_str(),
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         window.size.first, window.size.second, windowFlags);
     if (!app.window)
-        exit(1);
+        exitError("Error creating SDL window");
     SDL2::SDL2_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     app.renderer = SDL2::SDL2_CreateRenderer(app.window.get(), -1, rendererFlags);
     if (!app.renderer)
-        exit(1);
+        exitError("Error creating SDL renderer");
+    std::shared_ptr<SDL_Surface> icon = SDL2::IMG2_Load("assets/arcade.png");
+    if (icon.get())
+        SDL2::SDL2_SetWindowIcon(app.window.get(), icon.get());
 }
 
 void SDLDisplay::draw(const IDrawable &drawable)
@@ -118,28 +136,39 @@ void SDLDisplay::handleSound(const Sound &sound)
 
 void SDLDisplay::drawText(const Text &txt)
 {
-    const int fontSize = txt.getScale().first;
-    std::shared_ptr<TTF_Font> font;
-    std::shared_ptr<SDL_Surface> textSurface;
-    std::shared_ptr<SDL_Texture> textTexture;
+    const int fontSize = txt.getScale().first ;
+    std::string fontKey = txt.getFontPath();
     SDL_Rect dstRect;
     SDL_Color textColor = { (Uint8)std::get<0>(txt.getGUI_Color()),
                             (Uint8)std::get<1>(txt.getGUI_Color()),
                             (Uint8)std::get<2>(txt.getGUI_Color()),
                             (Uint8)std::get<3>(txt.getGUI_Color())};
 
+    if (fonts.find(fontKey) == fonts.end()) {
+        fonts[fontKey] = SDL2::TTF2_OpenFont(txt.getFontPath().c_str(), fontSize);
+        if (!fonts[fontKey]){
+            std::cerr << "Error: " << TTF_GetError() << std::endl;
+            return;
+        }
+    }
 
-    font = SDL2::TTF2_OpenFont(txt.getFontPath().c_str(), fontSize);
-    if (!font)
-        return;
-    textSurface = SDL2::TTF2_RenderText_Blended(font.get(), txt.getStr().c_str(), textColor);
-    if (!textSurface)
-        return;
-    textTexture = SDL2::SDL2_CreateTextureFromSurface(app.renderer.get(), textSurface.get());
-    if (!textTexture)
-        return;
-    dstRect = {txt.getPosition().first, txt.getPosition().second, textSurface->w, textSurface->h};
-    SDL2::SDL2_RenderCopy(app.renderer.get(), textTexture.get(), nullptr, &dstRect);
+    std::string textKey = fontKey + txt.getStr();
+    if (textTextures.find(textKey) == textTextures.end()) {
+        std::shared_ptr<SDL_Surface> textSurface = SDL2::TTF2_RenderText_Blended(fonts[fontKey].get(), txt.getStr().c_str(), textColor);
+        if (!textSurface){
+            std::cerr << "Error: " << TTF_GetError() << std::endl;
+            return;
+        }
+        textTextures[textKey] = SDL2::SDL2_CreateTextureFromSurface(app.renderer.get(), textSurface.get());
+        if (!textTextures[textKey]){
+            std::cerr << "Error: " << TTF_GetError() << std::endl;
+            return;
+        }
+    }
+
+    dstRect = {txt.getPosition().first, txt.getPosition().second, 0, 0};
+    SDL2::SDL2_QueryTexture(textTextures[textKey].get(), nullptr, nullptr, &dstRect.w, &dstRect.h);
+    SDL2::SDL2_RenderCopy(app.renderer.get(), textTextures[textKey].get(), nullptr, &dstRect);
 }
 
 void SDLDisplay::drawSprite(const Sprite &sprite)
@@ -151,6 +180,8 @@ void SDLDisplay::drawSprite(const Sprite &sprite)
     dest.y = sprite.getPosition().second;
     SDL2::SDL2_QueryTexture(texture.get(), NULL, NULL, &dest.w, &dest.h);
 
+    dest.w = dest.w * sprite.getScale().first;
+    dest.h = dest.h * sprite.getScale().second;
     SDL2::SDL2_RenderCopy(app.renderer.get(), texture.get(), NULL, &dest);
 }
 
@@ -163,134 +194,133 @@ SDLDisplay::~SDLDisplay()
 
 Event SDLDisplay::getEventKeyBoard(SDL_Event &e, Event::KeyStatus isDown)
 {
-    switch (e.key.keysym.sym)
-    {
+    switch (e.key.keysym.sym) {
         case SDLK_a:
-            return Event(Key::KeyCode::KEY_A, isDown);
+            return Event(Key::KeyCode::KEY_A, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_b:
-            return Event(Key::KeyCode::KEY_B, isDown);
+            return Event(Key::KeyCode::KEY_B, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_c:
-            return Event(Key::KeyCode::KEY_C, isDown);
+            return Event(Key::KeyCode::KEY_C, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_d:
-            return Event(Key::KeyCode::KEY_D, isDown);
+            return Event(Key::KeyCode::KEY_D, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_e:
-            return Event(Key::KeyCode::KEY_E, isDown);
+            return Event(Key::KeyCode::KEY_E, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_f:
-            return Event(Key::KeyCode::KEY_F, isDown);
+            return Event(Key::KeyCode::KEY_F, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_g:
-            return Event(Key::KeyCode::KEY_G, isDown);
+            return Event(Key::KeyCode::KEY_G, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_h:
-            return Event(Key::KeyCode::KEY_H, isDown);
+            return Event(Key::KeyCode::KEY_H, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_i:
-            return Event(Key::KeyCode::KEY_I, isDown);
+            return Event(Key::KeyCode::KEY_I, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_j:
-            return Event(Key::KeyCode::KEY_J, isDown);
+            return Event(Key::KeyCode::KEY_J, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_k:
-            return Event(Key::KeyCode::KEY_K, isDown);
+            return Event(Key::KeyCode::KEY_K, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_l:
-            return Event(Key::KeyCode::KEY_L, isDown);
+            return Event(Key::KeyCode::KEY_L, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_m:
-            return Event(Key::KeyCode::KEY_M, isDown);
+            return Event(Key::KeyCode::KEY_M, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_n:
-            return Event(Key::KeyCode::KEY_N, isDown);
+            return Event(Key::KeyCode::KEY_N, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_o:
-            return Event(Key::KeyCode::KEY_O, isDown);
+            return Event(Key::KeyCode::KEY_O, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_p:
-            return Event(Key::KeyCode::KEY_P, isDown);
+            return Event(Key::KeyCode::KEY_P, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_q:
-            return Event(Key::KeyCode::KEY_Q, isDown);
+            return Event(Key::KeyCode::KEY_Q, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_r:
-            return Event(Key::KeyCode::KEY_R, isDown);
+            return Event(Key::KeyCode::KEY_R, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_s:
-            return Event(Key::KeyCode::KEY_S, isDown);
+            return Event(Key::KeyCode::KEY_S, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_t:
-            return Event(Key::KeyCode::KEY_T, isDown);
+            return Event(Key::KeyCode::KEY_T, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_u:
-            return Event(Key::KeyCode::KEY_U, isDown);
+            return Event(Key::KeyCode::KEY_U, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_v:
-            return Event(Key::KeyCode::KEY_V, isDown);
+            return Event(Key::KeyCode::KEY_V, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_w:
-            return Event(Key::KeyCode::KEY_W, isDown);
+            return Event(Key::KeyCode::KEY_W, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_x:
-            return Event(Key::KeyCode::KEY_X, isDown);
+            return Event(Key::KeyCode::KEY_X, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_y:
-            return Event(Key::KeyCode::KEY_Y, isDown);
+            return Event(Key::KeyCode::KEY_Y, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_z:
-            return Event(Key::KeyCode::KEY_Z, isDown);
+            return Event(Key::KeyCode::KEY_Z, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_0:
-            return Event(Key::KeyCode::KEY_0, isDown);
+            return Event(Key::KeyCode::KEY_0, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_1:
-            return Event(Key::KeyCode::KEY_1, isDown);
+            return Event(Key::KeyCode::KEY_1, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_2:
-            return Event(Key::KeyCode::KEY_2, isDown);
+            return Event(Key::KeyCode::KEY_2, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_3:
-            return Event(Key::KeyCode::KEY_3, isDown);
+            return Event(Key::KeyCode::KEY_3, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_4:
-            return Event(Key::KeyCode::KEY_4, isDown);
+            return Event(Key::KeyCode::KEY_4, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_5:
-            return Event(Key::KeyCode::KEY_5, isDown);
+            return Event(Key::KeyCode::KEY_5, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_6:
-            return Event(Key::KeyCode::KEY_6, isDown);
+            return Event(Key::KeyCode::KEY_6, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_7:
-            return Event(Key::KeyCode::KEY_7, isDown);
+            return Event(Key::KeyCode::KEY_7, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_8:
-            return Event(Key::KeyCode::KEY_8, isDown);
+            return Event(Key::KeyCode::KEY_8, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_9:
-            return Event(Key::KeyCode::KEY_9, isDown);
+            return Event(Key::KeyCode::KEY_9, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_SPACE:
-            return Event(Key::KeyCode::SPACE, isDown);
+            return Event(Key::KeyCode::SPACE, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_RETURN:
-            return Event(Key::KeyCode::ENTER, isDown);
+            return Event(Key::KeyCode::ENTER, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_TAB:
-            return Event(Key::KeyCode::TAB, isDown);
+            return Event(Key::KeyCode::TAB, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_ESCAPE:
-            return Event(Key::KeyCode::ECHAP, isDown);
+            return Event(Key::KeyCode::ECHAP, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_DELETE:
-            return Event(Key::KeyCode::SUPPR, isDown);
+            return Event(Key::KeyCode::SUPPR, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_F1:
-            return Event(Key::KeyCode::FUNCTION_1, isDown);
+            return Event(Key::KeyCode::FUNCTION_1, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_F2:
-            return Event(Key::KeyCode::FUNCTION_2, isDown);
+            return Event(Key::KeyCode::FUNCTION_2, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_F3:
-            return Event(Key::KeyCode::FUNCTION_3, isDown);
+            return Event(Key::KeyCode::FUNCTION_3, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_F4:
-            return Event(Key::KeyCode::FUNCTION_4, isDown);
+            return Event(Key::KeyCode::FUNCTION_4, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_F5:
-            return Event(Key::KeyCode::FUNCTION_5, isDown);
+            return Event(Key::KeyCode::FUNCTION_5, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_F6:
-            return Event(Key::KeyCode::FUNCTION_6, isDown);
+            return Event(Key::KeyCode::FUNCTION_6, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_F7:
-            return Event(Key::KeyCode::FUNCTION_7, isDown);
+            return Event(Key::KeyCode::FUNCTION_7, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_F8:
-            return Event(Key::KeyCode::FUNCTION_8, isDown);
+            return Event(Key::KeyCode::FUNCTION_8, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_F9:
-            return Event(Key::KeyCode::FUNCTION_9, isDown);
+            return Event(Key::KeyCode::FUNCTION_9, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_F10:
-            return Event(Key::KeyCode::FUNCTION_10, isDown);
+            return Event(Key::KeyCode::FUNCTION_10, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_F11:
-            return Event(Key::KeyCode::FUNCTION_11, isDown);
+            return Event(Key::KeyCode::FUNCTION_11, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_F12:
-            return Event(Key::KeyCode::FUNCTION_12, isDown);
+            return Event(Key::KeyCode::FUNCTION_12, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_LEFT:
-            return Event(Key::KeyCode::LEFT, isDown);
+            return Event(Key::KeyCode::LEFT, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_UP:
-            return Event(Key::KeyCode::UP, isDown);
+            return Event(Key::KeyCode::UP, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_RIGHT:
-            return Event(Key::KeyCode::RIGHT, isDown);
+            return Event(Key::KeyCode::RIGHT, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_DOWN:
-            return Event(Key::KeyCode::DOWN, isDown);
+            return Event(Key::KeyCode::DOWN, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_LSHIFT:
-            return Event(Key::KeyCode::L_SHIFT, isDown);
+            return Event(Key::KeyCode::L_SHIFT, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_RSHIFT:
-            return Event(Key::KeyCode::R_SHIFT, isDown);
+            return Event(Key::KeyCode::R_SHIFT, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_LCTRL:
-            return Event(Key::KeyCode::L_CONTROL, isDown);
+            return Event(Key::KeyCode::L_CONTROL, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_RCTRL:
-            return Event(Key::KeyCode::R_CONTROL, isDown);
+            return Event(Key::KeyCode::R_CONTROL, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_LALT:
-            return Event(Key::KeyCode::ALT, isDown);
+            return Event(Key::KeyCode::ALT, std::make_any<Event::KeyStatus>(isDown));
         case SDLK_RALT:
-            return Event(Key::KeyCode::ALTGR, isDown);
+            return Event(Key::KeyCode::ALTGR, std::make_any<Event::KeyStatus>(isDown));
         default:
             return getEvent();
             break;

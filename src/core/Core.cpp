@@ -61,6 +61,7 @@ Core::Core::Core()
 
     DIR *dir = opendir("./lib");
     struct dirent *entry;
+    _gameLibs.push_back("Menu");
 
     if (dir != nullptr) {
         while ((entry = readdir(dir)) != nullptr) {
@@ -92,21 +93,39 @@ Core::StateCore Core::Core::update()
 
 bool Core::Core::handleEventLibs(const Event &event)
 {
-    switch (event.key)
-    {
+    try {
+        if (std::any_cast<Event::KeyStatus>(event.value) != Event::KeyStatus::KEY_RELEASED)
+            return false;
+    } catch (const std::bad_any_cast& e) {}
+    switch (event.key) {
         case Key::KeyCode::KEY_P:
-            openGame(_gameLibs[++_gameIndex % _gameLibs.size()]);
+            if (_gameLibs.size() == 0)
+                break;
+            _gameIndex = (_gameIndex + 1) % _gameLibs.size();
+            if (_gameLibs[_gameIndex] == "Menu") {
+                _game = std::make_unique<CoreMenu>(*this);
+                refreshLibs();
+            } else
+                openGame(_gameLibs[_gameIndex]);
             break;
         case Key::KeyCode::KEY_O:
-            if (_gameIndex == 0)
-                openGame(_gameLibs[_gameLibs.size() - 1]);
-            else
-                openGame(_gameLibs[--_gameIndex % _gameLibs.size()]);
+            if (_gameLibs.size() == 0)
+                break;
+            _gameIndex =(_gameIndex - 1) % _gameLibs.size();
+            if (_gameLibs[_gameIndex] == "Menu") {
+                _game = std::make_unique<CoreMenu>(*this);
+                refreshLibs();
+            } else
+                openGame(_gameLibs[_gameIndex]);
             break;
         case Key::KeyCode::KEY_I:
+            if (_displayLibs.size() == 0)
+                break;
             openDisplay(_displayLibs[++_displayIndex % _displayLibs.size()]);
             break;
         case Key::KeyCode::KEY_U:
+            if (_displayLibs.size() == 0)
+                break;
             if (_displayIndex == 0)
                 openDisplay(_displayLibs[_displayLibs.size() - 1]);
             else
@@ -127,10 +146,9 @@ Core::StateCore Core::Core::events()
             return StateCore::EXIT_TO_MENU;
         if (event.key == Key::KeyCode::FUNCTION_4)
             return StateCore::EXIT;
-        if (handleEventLibs(event)) {
-            if (_game->event(event))
-                return StateCore::EXIT_TO_MENU;
-        }
+        handleEventLibs(event);
+        if (_game->event(event))
+            return StateCore::EXIT_TO_MENU;
         event = _display->getEvent();
     }
     return StateCore::NONE;
@@ -149,7 +167,7 @@ void Core::Core::draw()
 void Core::Core::openGame(const std::string &gameLibPath)
 {
     if (_gameHandle)
-        closeDisplay();
+        closeGame();
     void *handle = dlopen(gameLibPath.c_str(), RTLD_LAZY);
     if (!handle) {
         std::cerr << "Error loading library: " << dlerror() << std::endl;
@@ -163,6 +181,7 @@ void Core::Core::openGame(const std::string &gameLibPath)
     }
     auto module = createModule();
     _game = std::move(module);
+    refreshLibs();
 }
 
 void Core::Core::openDisplay(const std::string &displayLibPath)
@@ -182,7 +201,6 @@ void Core::Core::openDisplay(const std::string &displayLibPath)
     }
     auto module = createModule();
     _display = std::move(module);
-    _game->getWindow();
     _display->createWindow(_game->getWindow());
 }
 
@@ -195,6 +213,14 @@ void Core::Core::closeGame()
     if (_gameHandle) {
         dlclose(_gameHandle);
         _gameHandle = nullptr;
+    }
+}
+
+void Core::Core::refreshLibs()
+{
+    if (_display){
+        _display->createWindow(_game->getWindow());
+        openDisplay(_displayLibs[_displayIndex]);
     }
 }
 

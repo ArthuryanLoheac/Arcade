@@ -14,6 +14,7 @@
 class Text : public IDrawable
 {
 public:
+    Text() = default;
     std::string getFontPath(void) const { return fontPath; };
     std::string getStr(void) const { return str; };
     void setFontPath(std::string fontPath) { this->fontPath = fontPath; };

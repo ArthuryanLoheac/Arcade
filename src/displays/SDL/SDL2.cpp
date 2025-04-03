@@ -83,6 +83,19 @@ extern "C" {
         SDL_RenderClear(renderer);
     }
 
+    std::shared_ptr<SDL_Surface> SDL2::IMG2_Load(const char *file)
+    {
+        SDL_Surface *rawSurface = IMG_Load(file);
+        if (!rawSurface)
+            return nullptr;
+        return std::shared_ptr<SDL_Surface>(rawSurface, SDL_FreeSurface);
+    }
+
+    void SDL2::SDL2_SetWindowIcon(SDL_Window *window, SDL_Surface *icon)
+    {
+        SDL_SetWindowIcon(window, icon);
+    }
+
     void SDL2::SDL2_SetRenderDrawColor(SDL_Renderer *renderer, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
     {
         SDL_SetRenderDrawColor(renderer, r, g, b, a);
@@ -110,6 +123,26 @@ extern "C" {
         if (!rawTexture)
             return nullptr;
         return std::shared_ptr<SDL_Texture>(rawTexture, SDL_DestroyTexture);
+    }
+
+    void SDL2::TTF2_Quit(void)
+    {
+        TTF_Quit();
+    }
+
+    int SDL2::TTF2_Init(void)
+    {
+        return TTF_Init();
+    }
+
+    void SDL2::Mix2_CloseAudio(void)
+    {
+        Mix_CloseAudio();
+    }
+
+    int SDL2::Mix2_OpenAudio(int frequency, Uint16 format, int channels, int chunksize)
+    {
+        return Mix_OpenAudio(frequency, format, channels, chunksize);
     }
 
     std::shared_ptr<Mix_Chunk> SDL2::Mix2_LoadWAV(const char *file)

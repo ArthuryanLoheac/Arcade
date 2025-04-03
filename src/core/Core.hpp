@@ -38,12 +38,15 @@ public:
 
     std::vector<std::string> getDisplayLibs() const { return _displayLibs; }
     std::vector<std::string> getGameLibs() const { return _gameLibs; }
+    std::string getGameLibPath() const { return _gameLibs[_gameIndex]; }
+    std::string getDisplayLibPath() const { return _displayLibs[_displayIndex]; }
 
     void closeDisplay();
     void openDisplay(const std::string &displayLibPath);
 private:
     void openGame(const std::string &gameLibPath);
     void closeGame();
+    void refreshLibs();
 
     std::unique_ptr<IDisplayModule> _display;
     std::unique_ptr<IGameModule> _game;
