@@ -144,10 +144,9 @@ Core::StateCore Core::Core::events()
             return StateCore::EXIT_TO_MENU;
         if (event.key == Key::KeyCode::FUNCTION_4)
             return StateCore::EXIT;
-        if (handleEventLibs(event)) {
-            if (_game->event(event))
-                return StateCore::EXIT_TO_MENU;
-        }
+        handleEventLibs(event);
+        if (_game->event(event))
+            return StateCore::EXIT_TO_MENU;
         event = _display->getEvent();
     }
     return StateCore::NONE;
