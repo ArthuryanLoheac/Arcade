@@ -57,7 +57,7 @@ bool MineSweepGame::update(float deltaTime)
             const Cell& cell = board[y][x];
             auto sprite = std::make_unique<Sprite>();
             sprite->setPosition({50 + x * cellSize, 100 + y * cellSize});
-            sprite->setScale({1.0f, 1.0f});
+            sprite->setScale({2.0f, 2.0f});
             sprite->setGUI_Color({255, 255, 255, 255});
             std::string texturePath;
             std::string cliTexture = "[]";
