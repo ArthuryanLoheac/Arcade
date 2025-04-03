@@ -46,6 +46,7 @@ public:
 private:
     void openGame(const std::string &gameLibPath);
     void closeGame();
+    void refreshLibs();
 
     std::unique_ptr<IDisplayModule> _display;
     std::unique_ptr<IGameModule> _game;

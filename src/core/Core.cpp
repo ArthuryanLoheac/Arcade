@@ -93,24 +93,29 @@ Core::StateCore Core::Core::update()
 
 bool Core::Core::handleEventLibs(const Event &event)
 {
-    switch (event.key)
-    {
+    try {
+        if (std::any_cast<Event::KeyStatus>(event.value) != Event::KeyStatus::KEY_RELEASED)
+            return false;
+    } catch (const std::bad_any_cast& e) {}
+    switch (event.key) {
         case Key::KeyCode::KEY_P:
             if (_gameLibs.size() == 0)
                 break;
-            _gameIndex = _gameIndex + 1 % _gameLibs.size();
-            if (_gameLibs[_gameIndex] == "Menu")
+            _gameIndex = (_gameIndex + 1) % _gameLibs.size();
+            if (_gameLibs[_gameIndex] == "Menu") {
                 _game = std::make_unique<CoreMenu>(*this);
-            else
+                refreshLibs();
+            } else
                 openGame(_gameLibs[_gameIndex]);
             break;
         case Key::KeyCode::KEY_O:
             if (_gameLibs.size() == 0)
                 break;
-            _gameIndex = _gameIndex - 1 % _gameLibs.size();
-            if (_gameLibs[_gameIndex] == "Menu")
+            _gameIndex =(_gameIndex - 1) % _gameLibs.size();
+            if (_gameLibs[_gameIndex] == "Menu") {
                 _game = std::make_unique<CoreMenu>(*this);
-            else
+                refreshLibs();
+            } else
                 openGame(_gameLibs[_gameIndex]);
             break;
         case Key::KeyCode::KEY_I:
@@ -141,10 +146,9 @@ Core::StateCore Core::Core::events()
             return StateCore::EXIT_TO_MENU;
         if (event.key == Key::KeyCode::FUNCTION_4)
             return StateCore::EXIT;
-        if (handleEventLibs(event)) {
-            if (_game->event(event))
-                return StateCore::EXIT_TO_MENU;
-        }
+        handleEventLibs(event);
+        if (_game->event(event))
+            return StateCore::EXIT_TO_MENU;
         event = _display->getEvent();
     }
     return StateCore::NONE;
@@ -177,6 +181,7 @@ void Core::Core::openGame(const std::string &gameLibPath)
     }
     auto module = createModule();
     _game = std::move(module);
+    refreshLibs();
 }
 
 void Core::Core::openDisplay(const std::string &displayLibPath)
@@ -196,7 +201,6 @@ void Core::Core::openDisplay(const std::string &displayLibPath)
     }
     auto module = createModule();
     _display = std::move(module);
-    _game->getWindow();
     _display->createWindow(_game->getWindow());
 }
 
@@ -209,6 +213,14 @@ void Core::Core::closeGame()
     if (_gameHandle) {
         dlclose(_gameHandle);
         _gameHandle = nullptr;
+    }
+}
+
+void Core::Core::refreshLibs()
+{
+    if (_display){
+        _display->createWindow(_game->getWindow());
+        openDisplay(_displayLibs[_displayIndex]);
     }
 }
 

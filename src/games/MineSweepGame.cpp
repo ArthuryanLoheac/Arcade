@@ -57,28 +57,28 @@ bool MineSweepGame::update(float deltaTime)
             const Cell& cell = board[y][x];
             auto sprite = std::make_unique<Sprite>();
             sprite->setPosition({50 + x * cellSize, 100 + y * cellSize});
-            sprite->setScale({1.0f, 1.0f});
+            sprite->setScale({2.0f, 2.0f});
             sprite->setGUI_Color({255, 255, 255, 255});
             std::string texturePath;
             std::string cliTexture = "[]";
             if (cell.state == CellState::HIDDEN) {
-                texturePath = "asset/MineSweeper/caché.png";
+                texturePath = "assets/MineSweeper/caché.png";
                 cliTexture = "##";
             } else if (cell.state == CellState::FLAGGED) {
-                texturePath = "asset/MineSweeper/drapeau.png";
+                texturePath = "assets/MineSweeper/drapeau.png";
                 cliTexture = "!F";
             } else if (cell.hasMine) {
                 if (cell.exploded) {
-                    texturePath = "asset/MineSweeper/bombe_rouge.png";
+                    texturePath = "assets/MineSweeper/bombe_rouge.png";
                 } else {
-                    texturePath = "asset/MineSweeper/bombe.png";
+                    texturePath = "assets/MineSweeper/bombe.png";
                 }
                 cliTexture = "**";
             } else {
                 if (cell.adjacentMines >= 1 && cell.adjacentMines <= 8) {
-                    texturePath = "asset/MineSweeper/" + std::to_string(cell.adjacentMines) + ".png";
+                    texturePath = "assets/MineSweeper/" + std::to_string(cell.adjacentMines) + ".png";
                 } else {
-                    texturePath = "asset/MineSweeper/découvert.png";
+                    texturePath = "assets/MineSweeper/découvert.png";
                 }
                 cliTexture = (cell.adjacentMines == 0) ? "  " : std::to_string(cell.adjacentMines) + " ";
             }
@@ -91,7 +91,7 @@ bool MineSweepGame::update(float deltaTime)
     statusText->setPosition({50, 50});
     statusText->setScale({15, 15});
     statusText->setGUI_Color({255, 255, 255, 255});
-    statusText->setFontPath("/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf");
+    statusText->setFontPath("assets/fonts/NotoSans.ttf");
     std::stringstream ss;
     if (gameOver) {
         if (playerWon) {
@@ -110,7 +110,7 @@ bool MineSweepGame::update(float deltaTime)
     helpText->setPosition({50, 450});
     helpText->setScale({12, 12});
     helpText->setGUI_Color({200, 200, 200, 255});
-    helpText->setFontPath("/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf");
+    helpText->setFontPath("assets/fonts/NotoSans.ttf");
     helpText->setStr("Left click: Reveal | Right click: Flag | R: Restart");
     drawables.push_back(std::move(helpText));
     if (gameTime >= timeLimit && !gameOver) {
