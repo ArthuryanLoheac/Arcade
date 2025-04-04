@@ -44,6 +44,8 @@ public:
     void closeDisplay();
     void openDisplay(const std::string &displayLibPath);
     void setIdisplay(const std::string &displayLibPath);
+    void nextDisplay(int i);
+    void nextGame(int i);
 private:
     void openGame(const std::string &gameLibPath);
     void closeGame();
@@ -61,8 +63,9 @@ private:
     std::chrono::steady_clock::time_point lastFrameTime;
     int _displayIndex = 0;
     int _gameIndex = 0;
+    bool skipNext = false;
 
-    bool handleEventLibs(const Event &event);
+    bool handleEventLibs(Event &event);
 };
 
 class Error : public std::exception {
