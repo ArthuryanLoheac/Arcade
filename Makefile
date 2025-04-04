@@ -109,11 +109,13 @@ core: $(OBJ_SRC) $(OBJ_MAIN)
 	$(COMPILER) -o $(NAME) $(OBJ_SRC) $(OBJ_MAIN) $(FLAGS)
 
 graphicals:
+	@mkdir -p lib
 	$(COMPILER) -o $(NAME_SDL) -shared -fPIC $(SRC_SDL) $(FLAGS_SDL)
 	$(COMPILER) -o $(NAME_NCURSE) -shared -fPIC $(SRC_NCURSE) $(FLAGS_NCURSE)
 	$(COMPILER) -o $(NAME_SFML) -shared -fPIC $(SRC_SFML) $(FLAGS_SFML)
 
 games:
+	@mkdir -p lib
 	$(COMPILER) -o $(NAME_MINESWEEP) $(SRC_MINESWEEP) $(FLAGS_GAMES)
 
 # ============= CLEANS ============= #

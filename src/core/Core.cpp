@@ -204,6 +204,18 @@ void Core::Core::openDisplay(const std::string &displayLibPath)
     _display->createWindow(_game->getWindow());
 }
 
+void Core::Core::setIdisplay(const std::string &displayLibPath)
+{
+    for (size_t i = 0; i < _displayLibs.size(); ++i) {
+        if (_displayLibs[i] == displayLibPath) {
+            _displayIndex = i;
+            return;
+        }
+    }
+    _displayLibs.push_back(displayLibPath);
+    _displayIndex = _displayLibs.size() - 1;
+}
+
 void Core::Core::closeGame()
 {
     if (_game) {

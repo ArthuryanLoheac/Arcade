@@ -43,6 +43,7 @@ public:
 
     void closeDisplay();
     void openDisplay(const std::string &displayLibPath);
+    void setIdisplay(const std::string &displayLibPath);
 private:
     void openGame(const std::string &gameLibPath);
     void closeGame();
