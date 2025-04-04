@@ -108,7 +108,10 @@ void Core::Core::nextDisplay(int i)
 {
     if (_displayLibs.size() == 0)
         return;
-    _displayIndex = (_displayIndex + i) % _displayLibs.size();
+    if (_displayIndex == 0 && i == -1)
+        _displayIndex = _displayLibs.size() - 1;
+    else
+        _displayIndex = (_displayIndex + i) % _displayLibs.size();
     openDisplay(_displayLibs[_displayIndex]);
     skipNext = true;
 }
