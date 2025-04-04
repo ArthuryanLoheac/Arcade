@@ -119,7 +119,6 @@ void Core::Core::nextDisplay(int i)
 bool Core::Core::handleEventLibs(Event &event)
 {
     try {
-        printf("Key: %d\n", std::any_cast<Event::KeyStatus>(event.value));
         if (std::any_cast<Event::KeyStatus>(event.value) != Event::KeyStatus::KEY_RELEASED)
             return false;
     } catch (const std::bad_any_cast& e) {}
@@ -193,7 +192,6 @@ void Core::Core::openGame(const std::string &gameLibPath)
     auto module = createModule();
     _game = std::move(module);
     refreshLibs();
-    printf("Game loaded: %s\n", gameLibPath.c_str());
 }
 
 void Core::Core::openDisplay(const std::string &displayLibPath)
@@ -214,7 +212,6 @@ void Core::Core::openDisplay(const std::string &displayLibPath)
     auto module = createModule();
     _display = std::move(module);
     _display->createWindow(_game->getWindow());
-    printf("Game loaded: %s\n", displayLibPath.c_str());
 }
 
 void Core::Core::setIdisplay(const std::string &displayLibPath)
