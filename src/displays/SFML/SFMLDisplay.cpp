@@ -167,7 +167,7 @@ Event SFMLDisplay::getEventKeyBoard(sf::Event &e, Event::KeyStatus isDown)
 {
     auto it = keyboardMap.find(e.key.code);
     if (it != keyboardMap.end()) {
-        return Event(it->second, isDown);
+        return Event(it->second, std::any(isDown));
     }
     return getEvent();
 }
@@ -176,7 +176,7 @@ Event SFMLDisplay::getEventMouse(sf::Event &e, Event::KeyStatus isDown)
 {
     auto it = mouseMap.find(e.mouseButton.button);
     if (it != mouseMap.end()) {
-        return Event(it->second, Event::MouseStatusClick{Event::MousePos{e.mouseButton.x, e.mouseButton.y}, isDown});
+        return Event(it->second, std::any(Event::MouseStatusClick{Event::MousePos{e.mouseButton.x, e.mouseButton.y}, isDown}));
     }
     return getEvent();
 }

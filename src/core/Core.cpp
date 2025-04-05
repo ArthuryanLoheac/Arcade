@@ -91,45 +91,50 @@ Core::StateCore Core::Core::update()
     return StateCore::NONE;
 }
 
-bool Core::Core::handleEventLibs(const Event &event)
+void Core::Core::nextGame(int i)
+{
+    if (_gameLibs.size() == 0)
+        return;
+    _gameIndex = (_gameIndex + i) % _gameLibs.size();
+    if (_gameLibs[_gameIndex] == "Menu") {
+        _game = std::make_unique<CoreMenu>(*this);
+        refreshLibs();
+    } else
+        openGame(_gameLibs[_gameIndex]);
+    skipNext = true;
+}
+
+void Core::Core::nextDisplay(int i)
+{
+    if (_displayLibs.size() == 0)
+        return;
+    if (_displayIndex == 0 && i == -1)
+        _displayIndex = _displayLibs.size() - 1;
+    else
+        _displayIndex = (_displayIndex + i) % _displayLibs.size();
+    openDisplay(_displayLibs[_displayIndex]);
+    skipNext = true;
+}
+
+bool Core::Core::handleEventLibs(Event &event)
 {
     try {
         if (std::any_cast<Event::KeyStatus>(event.value) != Event::KeyStatus::KEY_RELEASED)
             return false;
     } catch (const std::bad_any_cast& e) {}
+
     switch (event.key) {
         case Key::KeyCode::KEY_P:
-            if (_gameLibs.size() == 0)
-                break;
-            _gameIndex = (_gameIndex + 1) % _gameLibs.size();
-            if (_gameLibs[_gameIndex] == "Menu") {
-                _game = std::make_unique<CoreMenu>(*this);
-                refreshLibs();
-            } else
-                openGame(_gameLibs[_gameIndex]);
+            nextGame(1);
             break;
         case Key::KeyCode::KEY_O:
-            if (_gameLibs.size() == 0)
-                break;
-            _gameIndex =(_gameIndex - 1) % _gameLibs.size();
-            if (_gameLibs[_gameIndex] == "Menu") {
-                _game = std::make_unique<CoreMenu>(*this);
-                refreshLibs();
-            } else
-                openGame(_gameLibs[_gameIndex]);
+            nextGame(-1);
             break;
         case Key::KeyCode::KEY_I:
-            if (_displayLibs.size() == 0)
-                break;
-            openDisplay(_displayLibs[++_displayIndex % _displayLibs.size()]);
+            nextDisplay(1);
             break;
         case Key::KeyCode::KEY_U:
-            if (_displayLibs.size() == 0)
-                break;
-            if (_displayIndex == 0)
-                openDisplay(_displayLibs[_displayLibs.size() - 1]);
-            else
-                openDisplay(_displayLibs[--_displayIndex % _displayLibs.size()]);
+            nextDisplay(-1);
             break;
         default:
             return false;
@@ -146,6 +151,11 @@ Core::StateCore Core::Core::events()
             return StateCore::EXIT_TO_MENU;
         if (event.key == Key::KeyCode::FUNCTION_4)
             return StateCore::EXIT;
+        if (skipNext) {
+            skipNext = false;
+            event = _display->getEvent();
+            continue;
+        }
         handleEventLibs(event);
         if (_game->event(event))
             return StateCore::EXIT_TO_MENU;
