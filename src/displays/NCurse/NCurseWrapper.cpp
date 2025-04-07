@@ -29,12 +29,12 @@ NCurseWrapper::~NCurseWrapper()
 
 void NCurseWrapper::clear()
 {
-    ::clear();
+    erase();
 }
 
 void NCurseWrapper::refresh()
 {
-    ::refresh();
+    wrefresh(window);
 }
 
 void NCurseWrapper::print(int x, int y, const std::string &str)
