@@ -25,3 +25,5 @@ class IDisplayModule
         virtual Event getEvent(void) = 0;
         virtual void handleSound(const Sound &sound) = 0;
 };
+
+// extern "C" std::unique_ptr<IDisplayModule> getDisplayModule();

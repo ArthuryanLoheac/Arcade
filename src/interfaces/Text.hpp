@@ -14,22 +14,22 @@
 class Text : public IDrawable
 {
 public:
-    Text() = default;
-    std::string getFontPath(void) const { return fontPath; };
-    std::string getStr(void) const { return str; };
-    void setFontPath(std::string fontPath) { this->fontPath = fontPath; };
-    void setStr(std::string str) { this->str = str; };
+    Text(void);
+    std::string getFontPath(void) const;
+    std::string getStr(void) const ;
+    void setFontPath(std::string fontPath) ;
+    void setStr(std::string str);
     
-    std::pair<float, float> getScale(void) const override { return scale; };
-    float getRotation(void) const override { return rotation; };
-    std::pair<CLI_Color, CLI_Color> getCLI_Color(void) const override { return CLI_color; };
-    std::tuple<int, int, int, int> getGUI_Color(void) const override { return GUI_color; };
-    std::pair<int, int> getPosition(void) const override { return position; };
-    void setScale(std::pair<float, float> scale) override { this->scale = scale; };
-    void setRotation(float rotation) override { this->rotation = rotation; };
-    void setCLI_Color(std::pair<CLI_Color, CLI_Color> CLI_Color) override { this->CLI_color = CLI_Color; };
-    void setGUI_Color(std::tuple<int, int, int, int> GUI_Color) override { this->GUI_color = GUI_Color; };
-    void setPosition(std::pair<int, int> position) override { this->position = position; };
+    std::pair<float, float> getScale(void) const override;
+    float getRotation(void) const override;
+    std::pair<CLI_Color, CLI_Color> getCLI_Color(void) const override;
+    std::tuple<int, int, int, int> getGUI_Color(void) const override;
+    std::pair<int, int> getPosition(void) const override;
+    void setScale(std::pair<float, float> scale) override;
+    void setRotation(float rotation) override;
+    void setCLI_Color(std::pair<CLI_Color, CLI_Color> CLI_Color) override;
+    void setGUI_Color(std::tuple<int, int, int, int> GUI_Color) override;
+    void setPosition(std::pair<int, int> position) override;
 private:
     std::string fontPath;
 	std::string str;

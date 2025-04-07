@@ -82,16 +82,25 @@ SRC_MAIN	=	main.cpp \
 
 SRC	= 	src/core/Core.cpp \
 		src/core/CoreMenu.cpp \
+		src/interfaces/Text.cpp \
 
 SRC_SDL = src/displays/SDL/SDLDisplay.cpp \
 		 src/displays/SDL/SDL2.cpp \
+		src/interfaces/Text.cpp \
+		src/interfaces/Sprite.cpp \
 
 SRC_NCURSE	=	src/displays/NCurse/NCurseDisplay.cpp \
-				src/displays/NCurse/NCurseWrapper.cpp
+				src/displays/NCurse/NCurseWrapper.cpp\
+				src/interfaces/Text.cpp \
+				src/interfaces/Sprite.cpp \
 
 SRC_SFML	=	src/displays/SFML/SFMLDisplay.cpp \
+				src/interfaces/Text.cpp \
+				src/interfaces/Sprite.cpp \
 
-SRC_MINESWEEP	=	src/games/MineSweepGame.cpp
+SRC_MINESWEEP	=	src/games/MineSweepGame.cpp\
+					src/interfaces/Text.cpp \
+					src/interfaces/Sprite.cpp \
 
 SRC_TESTS	= 	tests/test_1.cpp \
 
