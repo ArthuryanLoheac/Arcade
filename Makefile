@@ -68,7 +68,7 @@ NAME	=	arcade
 
 NAME_SDL = lib/arcade_sdl2.so
 
-NAME_NCURSE = lib/arcade_ncurse.so
+NAME_NCURSES = lib/arcade_ncurses.so
 
 NAME_SFML = lib/arcade_sfml.so
 
@@ -111,7 +111,7 @@ core: $(OBJ_SRC) $(OBJ_MAIN)
 graphicals:
 	@mkdir -p lib
 	$(COMPILER) -o $(NAME_SDL) -shared -fPIC $(SRC_SDL) $(FLAGS_SDL)
-	$(COMPILER) -o $(NAME_NCURSE) -shared -fPIC $(SRC_NCURSE) $(FLAGS_NCURSE)
+	$(COMPILER) -o $(NAME_NCURSES) -shared -fPIC $(SRC_NCURSE) $(FLAGS_NCURSE)
 	$(COMPILER) -o $(NAME_SFML) -shared -fPIC $(SRC_SFML) $(FLAGS_SFML)
 
 games:
@@ -129,7 +129,7 @@ fclean: clean
 	rm -f $(NAME)
 	rm -f $(NAME_LIB)
 	rm -f $(NAME_SDL)
-	rm -f $(NAME_NCURSE)
+	rm -f $(NAME_NCURSES)
 	rm -f $(NAME_MINESWEEP)
 	rm -f unit_tests
 	rm -f lib/*.so lib/*.d
