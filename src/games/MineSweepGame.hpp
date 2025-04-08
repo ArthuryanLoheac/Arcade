@@ -77,7 +77,7 @@ private:
 
     Window window;
 
-    static const int CELL_UNIT_SIZE = 1;
-    static const int BOARD_MARGIN_X = 1;
-    static const int BOARD_MARGIN_Y = 2;
+    const int CELL_UNIT_SIZE = 1;
+    const int BOARD_MARGIN_X = 1;
+    const int BOARD_MARGIN_Y = 2;
 };

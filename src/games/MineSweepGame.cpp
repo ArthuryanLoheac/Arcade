@@ -24,7 +24,7 @@ MineSweepGame::MineSweepGame()
       timeLimit(300.0f), gameOver(false), playerWon(false), revealedCount(0),
       flaggedCount(0), gameTime(0.0f), score(0), firstMove(true),
       window({BOARD_MARGIN_X * 2 + 10 * CELL_UNIT_SIZE,
-              BOARD_MARGIN_Y * 2 + 10 * CELL_UNIT_SIZE + 3},
+              BOARD_MARGIN_Y * 2 + 10 * CELL_UNIT_SIZE + 5},
              "Minesweeper", "")
 {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
@@ -62,7 +62,7 @@ bool MineSweepGame::update(float deltaTime)
                 BOARD_MARGIN_X + x * CELL_UNIT_SIZE,
                 BOARD_MARGIN_Y + y * CELL_UNIT_SIZE
             });
-            sprite->setScale({1.0f, 1.0f});
+            sprite->setScale({4.9f, 4.9f});
             sprite->setGUI_Color({255, 255, 255, 255});
             std::string texturePath;
             std::string cliTexture = "[]";
@@ -94,7 +94,7 @@ bool MineSweepGame::update(float deltaTime)
     }
     auto statusText = std::make_unique<Text>();
     statusText->setPosition({BOARD_MARGIN_X, 0});
-    statusText->setScale({15, 15});
+    statusText->setScale({30, 30});
     statusText->setGUI_Color({255, 255, 255, 255});
     statusText->setFontPath("assets/fonts/NotoSans.ttf");
     std::stringstream ss;
@@ -112,8 +112,8 @@ bool MineSweepGame::update(float deltaTime)
     statusText->setStr(ss.str());
     drawables.push_back(std::move(statusText));
     auto helpText = std::make_unique<Text>();
-    helpText->setPosition({BOARD_MARGIN_X, BOARD_MARGIN_Y + boardHeight + 1});
-    helpText->setScale({12, 12});
+    helpText->setPosition({BOARD_MARGIN_X, BOARD_MARGIN_Y + boardHeight * CELL_UNIT_SIZE + 50});
+    helpText->setScale({24, 24});
     helpText->setGUI_Color({200, 200, 200, 255});
     helpText->setFontPath("assets/fonts/NotoSans.ttf");
     helpText->setStr("Left click: Reveal | Right click: Flag | R: Restart");
