@@ -336,7 +336,6 @@ void MineSweepGame::ensureFirstCellIsSafe(int x, int y)
 {
     if (board[y][x].hasMine) {
         board[y][x].hasMine = false;
-
         bool minePlaced = false;
         while (!minePlaced) {
             int nx = std::rand() % boardWidth;
@@ -346,8 +345,29 @@ void MineSweepGame::ensureFirstCellIsSafe(int x, int y)
                 minePlaced = true;
             }
         }
-        calculateAdjacentMines();
     }
+    for (int dy = -1; dy <= 1; ++dy) {
+        for (int dx = -1; dx <= 1; ++dx) {
+            int nx = x + dx;
+            int ny = y + dy;
+            if (nx >= 0 && nx < boardWidth && ny >= 0 && ny < boardHeight) {
+                if (board[ny][nx].hasMine) {
+                    board[ny][nx].hasMine = false;
+                    bool minePlaced = false;
+                    while (!minePlaced) {
+                        int newX = std::rand() % boardWidth;
+                        int newY = std::rand() % boardHeight;
+                        bool isSafeArea = (std::abs(newX - x) > 1 || std::abs(newY - y) > 1);
+                        if (isSafeArea && !board[newY][newX].hasMine) {
+                            board[newY][newX].hasMine = true;
+                            minePlaced = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    calculateAdjacentMines();
 }
 
 void MineSweepGame::updateTimer(float deltaTime)
