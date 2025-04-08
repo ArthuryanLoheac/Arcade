@@ -23,7 +23,9 @@ MineSweepGame::MineSweepGame()
     : boardWidth(10), boardHeight(10), numMines(15), cellSize(32),
       timeLimit(300.0f), gameOver(false), playerWon(false), revealedCount(0),
       flaggedCount(0), gameTime(0.0f), score(0), firstMove(true),
-      window({600, 500}, "Minesweeper", "")
+      window({BOARD_MARGIN_X * 2 + 10 * CELL_UNIT_SIZE,
+              BOARD_MARGIN_Y * 2 + 10 * CELL_UNIT_SIZE + 3},
+             "Minesweeper", "")
 {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
@@ -56,8 +58,11 @@ bool MineSweepGame::update(float deltaTime)
         for (int x = 0; x < boardWidth; ++x) {
             const Cell& cell = board[y][x];
             auto sprite = std::make_unique<Sprite>();
-            sprite->setPosition({50 + x * cellSize, 100 + y * cellSize});
-            sprite->setScale({2.0f, 2.0f});
+            sprite->setPosition({
+                BOARD_MARGIN_X + x * CELL_UNIT_SIZE,
+                BOARD_MARGIN_Y + y * CELL_UNIT_SIZE
+            });
+            sprite->setScale({1.0f, 1.0f});
             sprite->setGUI_Color({255, 255, 255, 255});
             std::string texturePath;
             std::string cliTexture = "[]";
@@ -88,7 +93,7 @@ bool MineSweepGame::update(float deltaTime)
         }
     }
     auto statusText = std::make_unique<Text>();
-    statusText->setPosition({50, 50});
+    statusText->setPosition({BOARD_MARGIN_X, 0});
     statusText->setScale({15, 15});
     statusText->setGUI_Color({255, 255, 255, 255});
     statusText->setFontPath("assets/fonts/NotoSans.ttf");
@@ -107,7 +112,7 @@ bool MineSweepGame::update(float deltaTime)
     statusText->setStr(ss.str());
     drawables.push_back(std::move(statusText));
     auto helpText = std::make_unique<Text>();
-    helpText->setPosition({50, 450});
+    helpText->setPosition({BOARD_MARGIN_X, BOARD_MARGIN_Y + boardHeight + 1});
     helpText->setScale({12, 12});
     helpText->setGUI_Color({200, 200, 200, 255});
     helpText->setFontPath("assets/fonts/NotoSans.ttf");
@@ -162,8 +167,8 @@ bool MineSweepGame::event(const Event &evt)
     if (evt.key == Key::KeyCode::MOUSE_LEFT || evt.key == Key::KeyCode::MOUSE_RIGHT) {
         try {
             auto mouseClick = std::any_cast<Event::MouseStatusClick>(evt.value);
-            int boardX = (mouseClick.pos.x - 50) / cellSize;
-            int boardY = (mouseClick.pos.y - 100) / cellSize;
+            int boardX = (mouseClick.pos.x - BOARD_MARGIN_X) / CELL_UNIT_SIZE;
+            int boardY = (mouseClick.pos.y - BOARD_MARGIN_Y) / CELL_UNIT_SIZE;
             if (boardX >= 0 && boardX < boardWidth && boardY >= 0 && boardY < boardHeight) {
                 if (mouseClick.status == Event::KeyStatus::KEY_PRESSED) {
                     if (evt.key == Key::KeyCode::MOUSE_LEFT) {

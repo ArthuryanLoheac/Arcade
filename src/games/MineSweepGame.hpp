@@ -76,4 +76,8 @@ private:
     std::vector<std::pair<std::string, int>> scoreHistory;
 
     Window window;
+
+    static const int CELL_UNIT_SIZE = 1;
+    static const int BOARD_MARGIN_X = 1;
+    static const int BOARD_MARGIN_Y = 2;
 };
