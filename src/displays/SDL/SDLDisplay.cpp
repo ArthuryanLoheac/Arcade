@@ -41,9 +41,14 @@ void SDLDisplay::createWindow(const Window &window)
         exitError("Error initializing SDL_ttf / Text will be disabled", false);
     if (SDL2::Mix2_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
         exitError("Error initializing SDL_mixer / Sound will be disabled", false);
+
+    const int UNIT_TO_PIXEL = 80;
+    int windowWidth = window.size.first * UNIT_TO_PIXEL;
+    int windowHeight = window.size.second * UNIT_TO_PIXEL;
+
     app.window = SDL2::SDL2_CreateWindow(window.title.c_str(),
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        window.size.first, window.size.second, windowFlags);
+        windowWidth, windowHeight, windowFlags);
     if (!app.window)
         exitError("Error creating SDL window");
     SDL2::SDL2_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
@@ -175,9 +180,9 @@ void SDLDisplay::drawSprite(const Sprite &sprite)
 {
     SDL_Rect dest;
     std::shared_ptr<SDL_Texture> texture = SDL2::IMG2_LoadTexture(app.renderer.get(), sprite.getGUI_Textures()[0].c_str());
-
-    dest.x = sprite.getPosition().first;
-    dest.y = sprite.getPosition().second;
+    const int UNIT_TO_PIXEL = 80;
+    dest.x = sprite.getPosition().first * UNIT_TO_PIXEL;
+    dest.y = sprite.getPosition().second * UNIT_TO_PIXEL;
     SDL2::SDL2_QueryTexture(texture.get(), NULL, NULL, &dest.w, &dest.h);
 
     dest.w = dest.w * sprite.getScale().first;
