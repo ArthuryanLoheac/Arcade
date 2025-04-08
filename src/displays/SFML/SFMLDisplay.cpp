@@ -15,6 +15,10 @@
 #include "Sprite.hpp"
 #include <iostream>
 
+namespace {
+    constexpr int UNIT_TO_PIXEL = 80;
+}
+
 const std::unordered_map<sf::Keyboard::Key, Key::KeyCode> SFMLDisplay::keyboardMap = {
     {sf::Keyboard::A, Key::KeyCode::KEY_A},
     {sf::Keyboard::B, Key::KeyCode::KEY_B},
@@ -96,7 +100,6 @@ extern "C" std::unique_ptr<IDisplayModule> getDisplayModule()
 
 void SFMLDisplay::createWindow(const Window &window)
 {
-    const int UNIT_TO_PIXEL = 80;
     int windowWidth = window.size.first * UNIT_TO_PIXEL;
     int windowHeight = window.size.second * UNIT_TO_PIXEL;
 
@@ -178,7 +181,6 @@ Event SFMLDisplay::getEventKeyBoard(sf::Event &e, Event::KeyStatus isDown)
 
 Event SFMLDisplay::getEventMouse(sf::Event &e, Event::KeyStatus isDown)
 {
-    const int UNIT_TO_PIXEL = 80;
     int unitX = e.mouseButton.x / UNIT_TO_PIXEL;
     int unitY = e.mouseButton.y / UNIT_TO_PIXEL;
 
@@ -254,7 +256,6 @@ void SFMLDisplay::drawSprite(const Sprite &sprite)
     } else {
         texture = _textures[texturePath];
     }
-    const int UNIT_TO_PIXEL = 80;
     sf::Sprite sfSprite;
     sfSprite.setTexture(*texture);
     sfSprite.setPosition(

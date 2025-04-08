@@ -13,6 +13,10 @@
 #include "SDL2.hpp"
 #include <iostream>
 
+namespace {
+    constexpr int UNIT_TO_PIXEL = 80;
+}
+
 extern "C" std::unique_ptr<IDisplayModule> getDisplayModule(void)
 {
     return std::make_unique<SDLDisplay>();
@@ -42,7 +46,6 @@ void SDLDisplay::createWindow(const Window &window)
     if (SDL2::Mix2_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
         exitError("Error initializing SDL_mixer / Sound will be disabled", false);
 
-    const int UNIT_TO_PIXEL = 80;
     int windowWidth = window.size.first * UNIT_TO_PIXEL;
     int windowHeight = window.size.second * UNIT_TO_PIXEL;
 
@@ -180,7 +183,6 @@ void SDLDisplay::drawSprite(const Sprite &sprite)
 {
     SDL_Rect dest;
     std::shared_ptr<SDL_Texture> texture = SDL2::IMG2_LoadTexture(app.renderer.get(), sprite.getGUI_Textures()[0].c_str());
-    const int UNIT_TO_PIXEL = 80;
     dest.x = sprite.getPosition().first * UNIT_TO_PIXEL;
     dest.y = sprite.getPosition().second * UNIT_TO_PIXEL;
     SDL2::SDL2_QueryTexture(texture.get(), NULL, NULL, &dest.w, &dest.h);
