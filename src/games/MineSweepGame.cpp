@@ -166,7 +166,6 @@ bool MineSweepGame::event(const Event &evt)
     if (evt.key == Key::KeyCode::MOUSE_LEFT || evt.key == Key::KeyCode::MOUSE_RIGHT) {
         try {
             auto mouseClick = std::any_cast<Event::MouseStatusClick>(evt.value);
-            printf("Mouse click at (%d, %d)\n", mouseClick.pos.x, mouseClick.pos.y);
             int boardX = (mouseClick.pos.x - BOARD_MARGIN_X) / CELL_UNIT_SIZE;
             int boardY = (mouseClick.pos.y - BOARD_MARGIN_Y) / CELL_UNIT_SIZE;
             if (boardX >= 0 && boardX < boardWidth && boardY >= 0 && boardY < boardHeight) {
