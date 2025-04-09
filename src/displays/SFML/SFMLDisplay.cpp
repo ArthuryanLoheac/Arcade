@@ -151,6 +151,8 @@ Event SFMLDisplay::getEvent(void)
 
     switch (event.type)
     {
+        case sf::Event::Closed:
+            return Event(Key::KeyCode::FUNCTION_4, Event::KeyStatus::KEY_PRESSED);
         case sf::Event::KeyPressed:
             return getEventKeyBoard(event, Event::KeyStatus::KEY_PRESSED);
         case sf::Event::KeyReleased:
