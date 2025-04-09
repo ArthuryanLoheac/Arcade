@@ -15,10 +15,6 @@
 #include "Sprite.hpp"
 #include <iostream>
 
-namespace {
-    constexpr int UNIT_TO_PIXEL = 80;
-}
-
 const std::unordered_map<sf::Keyboard::Key, Key::KeyCode> SFMLDisplay::keyboardMap = {
     {sf::Keyboard::A, Key::KeyCode::KEY_A},
     {sf::Keyboard::B, Key::KeyCode::KEY_B},

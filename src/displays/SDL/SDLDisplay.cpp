@@ -12,10 +12,7 @@
 #include <Sprite.hpp>
 #include "SDL2.hpp"
 #include <iostream>
-
-namespace {
-    constexpr int UNIT_TO_PIXEL = 80;
-}
+#include <fstream>
 
 extern "C" std::unique_ptr<IDisplayModule> getDisplayModule(void)
 {
