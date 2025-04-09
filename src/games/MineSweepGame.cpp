@@ -23,8 +23,7 @@ MineSweepGame::MineSweepGame()
     : boardWidth(10), boardHeight(10), numMines(15), cellSize(32),
       timeLimit(300.0f), gameOver(false), playerWon(false), revealedCount(0),
       flaggedCount(0), gameTime(0.0f), score(0), firstMove(true),
-      window({BOARD_MARGIN_X * 2 + 10 * CELL_UNIT_SIZE,
-              BOARD_MARGIN_Y * 2 + 10 * CELL_UNIT_SIZE + 5},
+      window({15, 15},
              "Minesweeper", "")
 {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
