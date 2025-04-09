@@ -154,9 +154,9 @@ Event SFMLDisplay::getEvent(void)
         case sf::Event::KeyReleased:
             return getEventKeyBoard(event, Event::KeyStatus::KEY_RELEASED);
         case sf::Event::MouseMoved:
-            _lastMouseX = event.mouseMove.x;
-            _lastMouseY = event.mouseMove.y;
-            return Event(Key::KeyCode::MOUSE_MOVE, Event::MousePos{event.mouseMove.x, event.mouseMove.y});
+            _lastMouseX = event.mouseMove.x / UNIT_TO_PIXEL;
+            _lastMouseY = event.mouseMove.y / UNIT_TO_PIXEL;
+            return Event(Key::KeyCode::MOUSE_MOVE, Event::MousePos{event.mouseMove.x  / UNIT_TO_PIXEL, event.mouseMove.y / UNIT_TO_PIXEL});
         case sf::Event::MouseButtonPressed:
             return getEventMouse(event, Event::KeyStatus::KEY_PRESSED);
         case sf::Event::MouseButtonReleased:

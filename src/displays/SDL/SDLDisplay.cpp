@@ -101,9 +101,9 @@ Event SDLDisplay::getEvent(void)
         case SDL_KEYUP:
             return getEventKeyBoard(event, Event::KeyStatus::KEY_RELEASED);
         case SDL_MOUSEMOTION:
-            LastMouseX = event.motion.x;
-            LastMouseY = event.motion.y;
-            return Event(Key::KeyCode::MOUSE_MOVE, Event::MousePos{event.motion.x, event.motion.y});
+            LastMouseX = event.motion.x / UNIT_TO_PIXEL;
+            LastMouseY = event.motion.y / UNIT_TO_PIXEL;
+            return Event(Key::KeyCode::MOUSE_MOVE, Event::MousePos{event.motion.x / UNIT_TO_PIXEL, event.motion.y / UNIT_TO_PIXEL});
         case SDL_MOUSEBUTTONDOWN:
             return getEventMouse(event, Event::KeyStatus::KEY_PRESSED);
         case SDL_MOUSEBUTTONUP:
@@ -336,15 +336,15 @@ Event SDLDisplay::getEventMouse(SDL_Event &e, Event::KeyStatus isDown)
     switch (e.button.button)
     {
         case SDL_BUTTON_LEFT:
-            return Event(Key::KeyCode::MOUSE_LEFT, Event::MouseStatusClick{Event::MousePos{e.button.x, e.button.y}, isDown});
+            return Event(Key::KeyCode::MOUSE_LEFT, Event::MouseStatusClick{Event::MousePos{e.button.x / UNIT_TO_PIXEL, e.button.y / UNIT_TO_PIXEL}, isDown});
         case SDL_BUTTON_MIDDLE:
-            return Event(Key::KeyCode::MOUSE_MIDDLE, Event::MouseStatusClick{Event::MousePos{e.button.x, e.button.y}, isDown});
+            return Event(Key::KeyCode::MOUSE_MIDDLE, Event::MouseStatusClick{Event::MousePos{e.button.x / UNIT_TO_PIXEL, e.button.y / UNIT_TO_PIXEL}, isDown});
         case SDL_BUTTON_RIGHT:
-            return Event(Key::KeyCode::MOUSE_RIGHT, Event::MouseStatusClick{Event::MousePos{e.button.x, e.button.y}, isDown});
+            return Event(Key::KeyCode::MOUSE_RIGHT, Event::MouseStatusClick{Event::MousePos{e.button.x / UNIT_TO_PIXEL, e.button.y / UNIT_TO_PIXEL}, isDown});
         case SDL_BUTTON_X1:
-            return Event(Key::KeyCode::MOUSE_BUTTON_4, Event::MouseStatusClick{Event::MousePos{e.button.x, e.button.y}, isDown});
+            return Event(Key::KeyCode::MOUSE_BUTTON_4, Event::MouseStatusClick{Event::MousePos{e.button.x / UNIT_TO_PIXEL, e.button.y / UNIT_TO_PIXEL}, isDown});
         case SDL_BUTTON_X2:
-            return Event(Key::KeyCode::MOUSE_BUTTON_5, Event::MouseStatusClick{Event::MousePos{e.button.x, e.button.y}, isDown});
+            return Event(Key::KeyCode::MOUSE_BUTTON_5, Event::MouseStatusClick{Event::MousePos{e.button.x / UNIT_TO_PIXEL, e.button.y / UNIT_TO_PIXEL}, isDown});
         default:
             return getEvent();
             break;
