@@ -15,6 +15,10 @@
 #include "Sprite.hpp"
 #include <iostream>
 
+namespace {
+    constexpr int UNIT_TO_PIXEL = 80;
+}
+
 const std::unordered_map<sf::Keyboard::Key, Key::KeyCode> SFMLDisplay::keyboardMap = {
     {sf::Keyboard::A, Key::KeyCode::KEY_A},
     {sf::Keyboard::B, Key::KeyCode::KEY_B},
@@ -96,8 +100,11 @@ extern "C" std::unique_ptr<IDisplayModule> getDisplayModule()
 
 void SFMLDisplay::createWindow(const Window &window)
 {
+    int windowWidth = window.size.first * UNIT_TO_PIXEL;
+    int windowHeight = window.size.second * UNIT_TO_PIXEL;
+
     _window = std::make_shared<sf::RenderWindow>(
-        sf::VideoMode(window.size.first, window.size.second),
+        sf::VideoMode(windowWidth, windowHeight),
         window.title);
 
     if (!_window)
@@ -174,9 +181,12 @@ Event SFMLDisplay::getEventKeyBoard(sf::Event &e, Event::KeyStatus isDown)
 
 Event SFMLDisplay::getEventMouse(sf::Event &e, Event::KeyStatus isDown)
 {
+    int unitX = e.mouseButton.x / UNIT_TO_PIXEL;
+    int unitY = e.mouseButton.y / UNIT_TO_PIXEL;
+
     auto it = mouseMap.find(e.mouseButton.button);
     if (it != mouseMap.end()) {
-        return Event(it->second, std::any(Event::MouseStatusClick{Event::MousePos{e.mouseButton.x, e.mouseButton.y}, isDown}));
+        return Event(it->second, std::any(Event::MouseStatusClick{Event::MousePos{unitX, unitY}, isDown}));
     }
     return getEvent();
 }
@@ -248,7 +258,10 @@ void SFMLDisplay::drawSprite(const Sprite &sprite)
     }
     sf::Sprite sfSprite;
     sfSprite.setTexture(*texture);
-    sfSprite.setPosition(sprite.getPosition().first, sprite.getPosition().second);
+    sfSprite.setPosition(
+        sprite.getPosition().first * UNIT_TO_PIXEL,
+        sprite.getPosition().second * UNIT_TO_PIXEL
+    );
     sfSprite.setScale(sprite.getScale().first, sprite.getScale().second);
     sfSprite.setRotation(sprite.getRotation());
     sfSprite.setColor(sf::Color(
