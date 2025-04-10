@@ -21,7 +21,7 @@ extern "C" std::unique_ptr<IGameModule> getGameModule()
 
 PacManGame::PacManGame()
     : window({15, 15}, "PacMan", "assets/PacMan/Pacman.png"),
-        player(0, 0)
+        player(1, 1)
 {
     InitScore();
     player.timeLeftToMove = timeToMove;
@@ -53,9 +53,17 @@ bool PacManGame::update(float deltaTime)
 {
     sounds.clear();
     drawables.clear();
+    for (int i = 0; i < map.size(); i++) {
+        for (int j = 0; j < map[i].size(); j++) {
+            if (map[i][j] == 1)
+                AddDrawable(j, i, "assets/PacMan/Wall.jpg", "##", .16f, 0.f);
+        }
+    }
     player.timeLeftToMove -= deltaTime;
     if (player.timeLeftToMove <= 0.f) {
         player.timeLeftToMove = timeToMove;
+        int PrevX = player.x;
+        int PrevY = player.y;
         if (player.dir == PacMan::RIGHT) {
             player.x += 1;
         } else if (player.dir == PacMan::LEFT) {
@@ -74,6 +82,11 @@ bool PacManGame::update(float deltaTime)
             player.y = 0;
         else if (player.y >= window.size.second)
             player.y = window.size.second - 1;
+        // Check if the player is on a wall
+        if (map[player.y][player.x] == 1) {
+            player.x = PrevX;
+            player.y = PrevY;
+        }
     }
     AddDrawable(player.x, player.y, "assets/PacMan/Pacman.png", "C ", .25f, player.dir * 90.f);
     return false;
@@ -96,8 +109,6 @@ const std::vector<Sound> &PacManGame::getSound(void)
 
 bool PacManGame::event(const Event &evt)
 {
-    if (gameOver)
-        return false;
     if (evt.key == Key::KeyCode::RIGHT || evt.key == Key::KeyCode::KEY_D) {
         player.dir = PacMan::RIGHT;
     } else if (evt.key == Key::KeyCode::LEFT || evt.key == Key::KeyCode::KEY_Q) {
