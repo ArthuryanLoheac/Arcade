@@ -43,7 +43,8 @@ public:
     const std::vector<Sound> &getSound(void) override;
     bool event(const Event &evt) override;
     std::vector<std::pair<std::string, int>> getScores(void) override;
-
+    void updateWalls(void);
+    void updatePosPlayer(float deltaTime);
     void AddDrawable(int x, int y, std::string texturePath,
         std::string cliTexture, float scale=1.f, float rotation=0, std::tuple<int, int, int, int>
         GUI_Color={255, 255, 255, 255});
@@ -51,19 +52,17 @@ public:
 private:
     std::vector<std::vector<int>> map = {
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,1,0,1},
+        {1,2,0,0,0,0,0,0,0,0,0,0,1,0,1},
         {1,0,1,1,1,1,1,1,0,1,1,0,1,0,1},
         {1,0,1,0,0,0,0,0,0,0,1,0,1,0,1},
         {1,0,1,0,1,1,1,1,1,0,1,0,0,0,1},
-        {1,0,1,0,1,0,0,0,1,0,0,0,1,0,1},
+        {1,0,1,0,1,0,0,0,1,0,1,0,1,0,1},
         {1,0,0,0,0,0,1,0,0,0,0,0,1,1,1},
         {1,0,1,1,1,1,1,1,1,1,1,0,0,0,1},
         {1,0,1,0,0,0,0,0,0,0,1,0,1,0,1},
         {1,0,1,0,1,1,1,1,1,0,1,0,1,0,1},
         {1,0,1,0,1,0,0,0,1,0,0,0,1,0,1},
-        {1,0,0,0,0,0,1,0,1,0,0,0,0,0,1},
-        {1,1,1,1,1,1,1,1,1,1,1,0,1,0,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+        {1,0,0,0,0,0,1,0,1,0,1,0,0,0,1},
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
     };
 
@@ -71,7 +70,7 @@ private:
     float gameTime;
     int score;
     PacMan player;
-    float timeToMove = 0.5f;
+    float timeToMove = 0.25f;
 
     std::vector<std::unique_ptr<IDrawable>> drawables;
     std::vector<Sound> sounds;

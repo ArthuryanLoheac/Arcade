@@ -53,43 +53,60 @@ bool PacManGame::update(float deltaTime)
 {
     sounds.clear();
     drawables.clear();
+    updateWalls();
+    updatePosPlayer(deltaTime);
+    AddDrawable(player.x, player.y, "assets/PacMan/Pacman.png", "C ", .25f, player.dir * 90.f);
+    return false;
+}
+
+void PacManGame::updateWalls(void)
+{
     for (int i = 0; i < map.size(); i++) {
         for (int j = 0; j < map[i].size(); j++) {
             if (map[i][j] == 1)
                 AddDrawable(j, i, "assets/PacMan/Wall.jpg", "##", .16f, 0.f);
+            else if (map[i][j] == 0)
+                AddDrawable(j, i, "assets/PacMan/LittlePacGome.png", ".", .25f, 0.f);
         }
     }
+}
+
+void PacManGame::updatePosPlayer(float deltaTime)
+{
     player.timeLeftToMove -= deltaTime;
     if (player.timeLeftToMove <= 0.f) {
         player.timeLeftToMove = timeToMove;
         int PrevX = player.x;
         int PrevY = player.y;
-        if (player.dir == PacMan::RIGHT) {
+        if (player.dir == PacMan::RIGHT)
             player.x += 1;
-        } else if (player.dir == PacMan::LEFT) {
+        else if (player.dir == PacMan::LEFT)
             player.x -= 1;
-        } else if (player.dir == PacMan::UP) {
+        else if (player.dir == PacMan::UP)
             player.y -= 1;
-        } else if (player.dir == PacMan::DOWN) {
+        else if (player.dir == PacMan::DOWN)
             player.y += 1;
-        }
+
         // Min Max
         if (player.x < 0)
             player.x = 0;
-        else if (player.x >= window.size.first)
-            player.x = window.size.first - 1;
         if (player.y < 0)
             player.y = 0;
-        else if (player.y >= window.size.second)
+        if (player.x >= window.size.first)
+            player.x = window.size.first - 1;
+        if (player.y >= window.size.second)
             player.y = window.size.second - 1;
+        
         // Check if the player is on a wall
         if (map[player.y][player.x] == 1) {
             player.x = PrevX;
             player.y = PrevY;
         }
+        if (map[player.y][player.x] == 0) {
+            map[player.y][player.x] = 2;
+            score += 10;
+        }
     }
-    AddDrawable(player.x, player.y, "assets/PacMan/Pacman.png", "C ", .25f, player.dir * 90.f);
-    return false;
 }
 
 const Window &PacManGame::getWindow(void)
@@ -126,12 +143,13 @@ std::vector<std::pair<std::string, int>> PacManGame::getScores(void)
     return scoreHistory;
 }
 
+
 void PacManGame::AddDrawable(int x, int y, std::string texturePath,
     std::string cliTexture, float scale, float rotation, std::tuple<int, int, int, int> GUI_Color)
 {
     auto sprite = std::make_unique<Sprite>();
-    sprite->setPosition({x, y});
-    sprite->setScale({scale, scale});
+    sprite->setPosition({x, y + 2});
+    sprite->setScale({scale, scale });
     sprite->setGUI_Color({255, 255, 255, 255});
     sprite->setGUI_Textures({texturePath});
     sprite->setCLI_Textures({cliTexture});
