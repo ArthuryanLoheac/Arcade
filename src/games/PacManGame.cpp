@@ -24,6 +24,10 @@ PacManGame::PacManGame()
         player(1, 1)
 {
     InitScore();
+    ghosts.push_back(Fantome(5, 5)); // Orange
+    ghosts.push_back(Fantome(10, 10)); // Pink
+    ghosts.push_back(Fantome(1, 5)); // Yellow
+    ghosts.push_back(Fantome(6, 5)); // Blue
     player.timeLeftToMove = timeToMove;
 }
 
@@ -55,60 +59,65 @@ bool PacManGame::update(float deltaTime)
     drawables.clear();
     updateWalls();
     if (!gameOver) {
-        updateGhost(deltaTime);
+        for (int i = 0; i < ghosts.size(); i++)
+            updateGhost(deltaTime, i);
         updatePosPlayer(deltaTime);
         updateCollisions();
     }
     updateText();
     AddDrawable(player.x, player.y, "assets/PacMan/Pacman.png", "C ", .25f, player.dir * 90.f);
-    AddDrawable(f1.x, f1.y, "assets/PacMan/Orange.png", "F ", .25f, 0.f);
+    for (int i = 0; i < ghosts.size(); i++)
+        AddDrawable(ghosts[i].x, ghosts[i].y, ghostTexture[i], "G ", .25f, 0.f);
     return false;
 }
 
 void PacManGame::updateCollisions(void)
 {
-    if (player.x == f1.x && player.y == f1.y) {
-        gameOver = true;
-        playerWon = false;
+    for (auto& ghost : ghosts) {
+        if (player.x == ghost.x && player.y == ghost.y) {
+            gameOver = true;
+            playerWon = false;
+        }
     }
 }
 
-void PacManGame::updateGhost(float deltaTime)
+void PacManGame::updateGhost(float deltaTime, int i)
 {
-    f1.timeLeftToMove -= deltaTime;
-    if (f1.timeLeftToMove <= 0.f) {
-        f1.timeLeftToMove = timeToMove;
-        int PrevX = f1.x;
-        int PrevY = f1.y;
-        moveGhost(PrevX, PrevY);
+    ghosts[i].timeLeftToMove -= deltaTime;
+    printf("Ghost %d: \n", i);
+    if (ghosts[i].timeLeftToMove <= 0.f) {
+        ghosts[i].timeLeftToMove = timeToMove;
+        int PrevX = ghosts[i].x;
+        int PrevY = ghosts[i].y;
+        moveGhost(PrevX, PrevY, i);
     }
 }
 
-void PacManGame::moveGhost(int PrevX, int PrevY)
+void PacManGame::moveGhost(int PrevX, int PrevY, int i)
 {
     int direction = std::rand() % 4;
     if (direction == 0)
-        f1.x += 1;
+        ghosts[i].x += 1;
     else if (direction == 1)
-        f1.x -= 1;
+        ghosts[i].x -= 1;
     else if (direction == 2)
-        f1.y -= 1;
+        ghosts[i].y -= 1;
     else if (direction == 3)
-        f1.y += 1;
+        ghosts[i].y += 1;
     // Min Max
-    if (f1.x < 0)
-        f1.x = 0;
-    if (f1.y < 0)
-        f1.y = 0;
-    if (f1.x >= window.size.first)
-        f1.x = window.size.first - 1;
-    if (f1.y >= window.size.second)
-        f1.y = window.size.second - 1;
+    if (ghosts[i].x < 0)
+        ghosts[i].x = 0;
+    if (ghosts[i].y < 0)
+        ghosts[i].y = 0;
+    if (ghosts[i].x >= window.size.first)
+        ghosts[i].x = window.size.first - 1;
+    if (ghosts[i].y >= window.size.second)
+        ghosts[i].y = window.size.second - 1;
     // Check if the player is on a wall
-    if (map[f1.y][f1.x] == 1) {
-        f1.x = PrevX;
-        f1.y = PrevY;
-        moveGhost(PrevX, PrevY);
+    if (map[ghosts[i].y][ghosts[i].x] == 1) {
+        ghosts[i].x = PrevX;
+        ghosts[i].y = PrevY;
+        moveGhost(PrevX, PrevY, i);
     }
 }
 
@@ -206,6 +215,8 @@ const std::vector<Sound> &PacManGame::getSound(void)
 
 bool PacManGame::event(const Event &evt)
 {
+    if (gameOver)
+        return false;
     if (evt.key == Key::KeyCode::RIGHT || evt.key == Key::KeyCode::KEY_D) {
         player.dir = PacMan::RIGHT;
     } else if (evt.key == Key::KeyCode::LEFT || evt.key == Key::KeyCode::KEY_Q) {

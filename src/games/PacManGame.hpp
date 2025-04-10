@@ -37,7 +37,7 @@ public:
     class Fantome {
         public:
             int x, y;
-            float timeLeftToMove;
+            float timeLeftToMove = 0.25f;
             Fantome(int x, int y) : x(x), y(y) {}
     };
 
@@ -53,9 +53,9 @@ public:
     void updateWalls(void);
     void updateText(void);
     void updatePosPlayer(float deltaTime);
-    void updateGhost(float deltaTime);
+    void updateGhost(float deltaTime, int i);
     void updateCollisions(void);
-    void moveGhost(int PrevX, int PrevY);
+    void moveGhost(int PrevX, int PrevY, int i);
     void AddDrawable(int x, int y, std::string texturePath,
         std::string cliTexture, float scale=1.f, float rotation=0, std::tuple<int, int, int, int>
         GUI_Color={255, 255, 255, 255});
@@ -77,12 +77,19 @@ private:
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
     };
 
+    std::vector<std::string> ghostTexture = {
+        "assets/PacMan/Orange.png",
+        "assets/PacMan/Pink.png",
+        "assets/PacMan/Yellow.png",
+        "assets/PacMan/Blue.png"
+    };
+
     bool gameOver = false;
     bool playerWon;
     float gameTime;
     int score = 0;
     PacMan player;
-    Fantome f1 = Fantome(13, 11);
+    std::vector<Fantome> ghosts;
     float timeToMove = 0.25f;
 
     std::vector<std::unique_ptr<IDrawable>> drawables;
