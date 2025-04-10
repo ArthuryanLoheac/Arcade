@@ -54,11 +54,53 @@ bool PacManGame::update(float deltaTime)
     sounds.clear();
     drawables.clear();
     updateWalls();
-    if (!gameOver)
+    if (!gameOver) {
         updatePosPlayer(deltaTime);
+        updateGhost(deltaTime);
+    }
     updateText();
     AddDrawable(player.x, player.y, "assets/PacMan/Pacman.png", "C ", .25f, player.dir * 90.f);
+    AddDrawable(f1.x, f1.y, "assets/PacMan/Orange.png", "F ", .25f, 0.f);
     return false;
+}
+
+void PacManGame::updateGhost(float deltaTime)
+{
+    f1.timeLeftToMove -= deltaTime;
+    if (f1.timeLeftToMove <= 0.f) {
+        f1.timeLeftToMove = timeToMove;
+        int PrevX = f1.x;
+        int PrevY = f1.y;
+        moveGhost(PrevX, PrevY);
+    }
+}
+
+void PacManGame::moveGhost(int PrevX, int PrevY)
+{
+    int direction = std::rand() % 4;
+    if (direction == 0)
+        f1.x += 1;
+    else if (direction == 1)
+        f1.x -= 1;
+    else if (direction == 2)
+        f1.y -= 1;
+    else if (direction == 3)
+        f1.y += 1;
+    // Min Max
+    if (f1.x < 0)
+        f1.x = 0;
+    if (f1.y < 0)
+        f1.y = 0;
+    if (f1.x >= window.size.first)
+        f1.x = window.size.first - 1;
+    if (f1.y >= window.size.second)
+        f1.y = window.size.second - 1;
+    // Check if the player is on a wall
+    if (map[f1.y][f1.x] == 1) {
+        f1.x = PrevX;
+        f1.y = PrevY;
+        moveGhost(PrevX, PrevY);
+    }
 }
 
 void PacManGame::updateText(void)

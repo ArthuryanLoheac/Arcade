@@ -34,6 +34,13 @@ public:
             PacMan(int x, int y) : x(x), y(y) { dir = RIGHT;}
     };
 
+    class Fantome {
+        public:
+            int x, y;
+            float timeLeftToMove;
+            Fantome(int x, int y) : x(x), y(y) {}
+    };
+
     PacManGame();
     void InitScore();
 
@@ -46,6 +53,8 @@ public:
     void updateWalls(void);
     void updateText(void);
     void updatePosPlayer(float deltaTime);
+    void updateGhost(float deltaTime);
+    void moveGhost(int PrevX, int PrevY);
     void AddDrawable(int x, int y, std::string texturePath,
         std::string cliTexture, float scale=1.f, float rotation=0, std::tuple<int, int, int, int>
         GUI_Color={255, 255, 255, 255});
@@ -72,6 +81,7 @@ private:
     float gameTime;
     int score;
     PacMan player;
+    Fantome f1 = Fantome(13, 11);
     float timeToMove = 0.25f;
 
     std::vector<std::unique_ptr<IDrawable>> drawables;
