@@ -20,15 +20,16 @@ extern "C" std::unique_ptr<IGameModule> getGameModule()
 }
 
 PacManGame::PacManGame()
-    : window({15, 15}, "PacMan", "assets/PacMan/Pacman.png"),
-        player(1, 1)
+    : window({30, 15}, "PacMan", "assets/PacMan/Pacman.png"),
+        player(14, 8)
 {
     InitScore();
-    ghosts.push_back(Fantome(5, 5)); // Orange
-    ghosts.push_back(Fantome(10, 10)); // Pink
-    ghosts.push_back(Fantome(1, 5)); // Yellow
-    ghosts.push_back(Fantome(6, 5)); // Blue
+    ghosts.push_back(Fantome(5, 5));
+    ghosts.push_back(Fantome(24, 5));
+    ghosts.push_back(Fantome(5, 10));
+    ghosts.push_back(Fantome(24, 10));
     player.timeLeftToMove = timeToMove;
+    map[player.y][player.x] = 2;
 }
 
 void PacManGame::InitScore()
@@ -84,7 +85,6 @@ void PacManGame::updateCollisions(void)
 void PacManGame::updateGhost(float deltaTime, int i)
 {
     ghosts[i].timeLeftToMove -= deltaTime;
-    printf("Ghost %d: \n", i);
     if (ghosts[i].timeLeftToMove <= 0.f) {
         ghosts[i].timeLeftToMove = timeToMove;
         int PrevX = ghosts[i].x;
