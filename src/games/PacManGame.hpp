@@ -44,6 +44,7 @@ public:
     bool event(const Event &evt) override;
     std::vector<std::pair<std::string, int>> getScores(void) override;
     void updateWalls(void);
+    void updateText(void);
     void updatePosPlayer(float deltaTime);
     void AddDrawable(int x, int y, std::string texturePath,
         std::string cliTexture, float scale=1.f, float rotation=0, std::tuple<int, int, int, int>
@@ -66,7 +67,8 @@ private:
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
     };
 
-    bool gameOver;
+    bool gameOver = false;
+    bool playerWon;
     float gameTime;
     int score;
     PacMan player;

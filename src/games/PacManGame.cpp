@@ -54,22 +54,51 @@ bool PacManGame::update(float deltaTime)
     sounds.clear();
     drawables.clear();
     updateWalls();
-    updatePosPlayer(deltaTime);
+    if (!gameOver)
+        updatePosPlayer(deltaTime);
+    updateText();
     AddDrawable(player.x, player.y, "assets/PacMan/Pacman.png", "C ", .25f, player.dir * 90.f);
     return false;
 }
 
+void PacManGame::updateText(void)
+{
+    auto statusText = std::make_unique<Text>();
+    statusText->setPosition({0, 0});
+    statusText->setScale({30, 30});
+    statusText->setGUI_Color({255, 255, 255, 255});
+    statusText->setFontPath("assets/fonts/NotoSans.ttf");
+    std::stringstream ss;
+    ss << "Score: " << score;
+    if (gameOver) {
+        if (playerWon)
+            ss << " You win!";
+        else
+            ss << " You lose!";
+    }
+    statusText->setStr(ss.str());
+    drawables.push_back(std::move(statusText));
+}
+
 void PacManGame::updateWalls(void)
 {
+    bool isEndPacGome = true;
     for (int i = 0; i < map.size(); i++) {
         for (int j = 0; j < map[i].size(); j++) {
             if (map[i][j] == 1)
-                AddDrawable(j, i, "assets/PacMan/Wall.jpg", "##", .16f, 0.f);
-            else if (map[i][j] == 0)
+                AddDrawable(j, i, "assets/PacMan/Wall.jpg", "##", .165f, 0.f);
+            else if (map[i][j] == 0){
                 AddDrawable(j, i, "assets/PacMan/LittlePacGome.png", ".", .25f, 0.f);
+                isEndPacGome = false;
+            }
         }
     }
+    if (isEndPacGome) {
+        gameOver = true;
+        playerWon = true;
+    }
 }
+
 
 void PacManGame::updatePosPlayer(float deltaTime)
 {
