@@ -257,10 +257,11 @@ void SFMLDisplay::drawSprite(const Sprite &sprite)
     sf::Sprite sfSprite;
     sfSprite.setTexture(*texture);
     sfSprite.setPosition(
-        sprite.getPosition().first * UNIT_TO_PIXEL,
-        sprite.getPosition().second * UNIT_TO_PIXEL
+        (sprite.getPosition().first + 0.5f)  * UNIT_TO_PIXEL,
+        (sprite.getPosition().second + 0.5f)  * UNIT_TO_PIXEL
     );
     sfSprite.setScale(sprite.getScale().first, sprite.getScale().second);
+    sfSprite.setOrigin(texture->getSize().x / 2.0f, texture->getSize().y / 2.0f);
     sfSprite.setRotation(sprite.getRotation());
     sfSprite.setColor(sf::Color(
         std::get<0>(sprite.getGUI_Color()),
