@@ -54,6 +54,7 @@ public:
     void updateText(void);
     void updatePosPlayer(float deltaTime);
     void updateGhost(float deltaTime);
+    void updateCollisions(void);
     void moveGhost(int PrevX, int PrevY);
     void AddDrawable(int x, int y, std::string texturePath,
         std::string cliTexture, float scale=1.f, float rotation=0, std::tuple<int, int, int, int>
@@ -79,7 +80,7 @@ private:
     bool gameOver = false;
     bool playerWon;
     float gameTime;
-    int score;
+    int score = 0;
     PacMan player;
     Fantome f1 = Fantome(13, 11);
     float timeToMove = 0.25f;

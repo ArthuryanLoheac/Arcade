@@ -55,13 +55,22 @@ bool PacManGame::update(float deltaTime)
     drawables.clear();
     updateWalls();
     if (!gameOver) {
-        updatePosPlayer(deltaTime);
         updateGhost(deltaTime);
+        updatePosPlayer(deltaTime);
+        updateCollisions();
     }
     updateText();
     AddDrawable(player.x, player.y, "assets/PacMan/Pacman.png", "C ", .25f, player.dir * 90.f);
     AddDrawable(f1.x, f1.y, "assets/PacMan/Orange.png", "F ", .25f, 0.f);
     return false;
+}
+
+void PacManGame::updateCollisions(void)
+{
+    if (player.x == f1.x && player.y == f1.y) {
+        gameOver = true;
+        playerWon = false;
+    }
 }
 
 void PacManGame::updateGhost(float deltaTime)
