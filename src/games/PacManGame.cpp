@@ -60,15 +60,33 @@ bool PacManGame::update(float deltaTime)
     drawables.clear();
     updateWalls();
     if (!gameOver) {
-        for (int i = 0; i < ghosts.size(); i++)
+        for (int i = 0; i < ghosts.size(); i++) {
+            if (ghosts[i].isDead)
+                continue;
             updateGhost(deltaTime, i);
-        updatePosPlayer(deltaTime);
+        }
+        updateCollisions();
+        if (!gameOver)
+            updatePosPlayer(deltaTime);
+        if (invisbleTime > 0) {
+            invisbleTime -= deltaTime;
+            if (invisbleTime <= 0){
+                invisbleTime = 0;
+                respawnDeadGhost();
+            }
+        }
         updateCollisions();
     }
     updateText();
     AddDrawable(player.x, player.y, "assets/PacMan/Pacman.png", "C ", .25f, player.dir * 90.f);
-    for (int i = 0; i < ghosts.size(); i++)
-        AddDrawable(ghosts[i].x, ghosts[i].y, ghostTexture[i], "G ", .25f, 0.f);
+    for (int i = 0; i < ghosts.size(); i++){
+        if (ghosts[i].isDead)
+            continue;
+        if (invisbleTime > 0)
+            AddDrawable(ghosts[i].x, ghosts[i].y, "assets/PacMan/Eatable.png", "E ", .25f, 0.f);
+        else
+            AddDrawable(ghosts[i].x, ghosts[i].y, ghostTexture[i], "G ", .25f, 0.f);
+    }
     return false;
 }
 
@@ -76,8 +94,16 @@ void PacManGame::updateCollisions(void)
 {
     for (auto& ghost : ghosts) {
         if (player.x == ghost.x && player.y == ghost.y) {
-            gameOver = true;
-            playerWon = false;
+            if (invisbleTime > 0) {
+                ghost.isDead = true;
+                ghost.x = -1;
+                ghost.y = -1;
+                score += scoreCombo;
+                scoreCombo *= 2;
+            } else {
+                gameOver = true;
+                playerWon = false;
+            }
         }
     }
 }
@@ -86,7 +112,10 @@ void PacManGame::updateGhost(float deltaTime, int i)
 {
     ghosts[i].timeLeftToMove -= deltaTime;
     if (ghosts[i].timeLeftToMove <= 0.f) {
-        ghosts[i].timeLeftToMove = timeToMove;
+        if (invisbleTime > 0)
+            ghosts[i].timeLeftToMove = timeToMoveEatable;
+        else
+            ghosts[i].timeLeftToMove = timeToMoveGhost;
         int PrevX = ghosts[i].x;
         int PrevY = ghosts[i].y;
         moveGhost(PrevX, PrevY, i);
@@ -150,6 +179,9 @@ void PacManGame::updateWalls(void)
             else if (map[i][j] == 0){
                 AddDrawable(j, i, "assets/PacMan/LittlePacGome.png", ".", .25f, 0.f);
                 isEndPacGome = false;
+            } else if (map[i][j] == 3){
+                AddDrawable(j, i, "assets/PacMan/PacGome.png", ".", .25f, 0.f);
+                isEndPacGome = false;
             }
         }
     }
@@ -194,6 +226,12 @@ void PacManGame::updatePosPlayer(float deltaTime)
         if (map[player.y][player.x] == 0) {
             map[player.y][player.x] = 2;
             score += 10;
+        }
+        if (map[player.y][player.x] == 3) {
+            map[player.y][player.x] = 2;
+            score += 100;
+            invisbleTime = 5;
+            scoreCombo = 200;
         }
     }
 }
@@ -246,4 +284,19 @@ void PacManGame::AddDrawable(int x, int y, std::string texturePath,
     sprite->setCLI_Textures({cliTexture});
     sprite->setRotation(rotation);
     drawables.push_back(std::move(sprite));
+}
+
+void PacManGame::respawnDeadGhost()
+{
+    for (auto& ghost : ghosts) {
+        if (!ghost.isDead)
+            continue;
+        ghost.x = std::rand() % 30;
+        ghost.y = std::rand() % 13;
+        while (map[ghost.y][ghost.x] == 1 || (ghost.y == player.y && ghost.x == player.x)) {
+            ghost.x = std::rand() % 30;
+            ghost.y = std::rand() % 13;
+            ghost.isDead = false;
+        }
+    }
 }

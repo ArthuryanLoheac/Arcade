@@ -38,6 +38,7 @@ public:
         public:
             int x, y;
             float timeLeftToMove = 0.25f;
+            bool isDead = false;
             Fantome(int x, int y) : x(x), y(y) {}
     };
 
@@ -59,11 +60,12 @@ public:
     void AddDrawable(int x, int y, std::string texturePath,
         std::string cliTexture, float scale=1.f, float rotation=0, std::tuple<int, int, int, int>
         GUI_Color={255, 255, 255, 255});
+    void respawnDeadGhost();
 
 private:
     std::vector<std::vector<int>> map = {
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+        {1,3,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,3,1},
         {1,0,1,1,1,0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,1,1,1,1,0,1},
         {1,0,1,1,1,0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,1,1,1,1,0,1},
         {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -73,7 +75,7 @@ private:
         {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
         {1,0,1,1,1,0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,1,1,1,1,0,1},
         {1,0,1,1,1,0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,1,1,1,1,0,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+        {1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,1},
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
     };
 
@@ -91,6 +93,10 @@ private:
     PacMan player;
     std::vector<Fantome> ghosts;
     float timeToMove = 0.25f;
+    float timeToMoveGhost = 0.23f;
+    float timeToMoveEatable = 0.30f;
+    float invisbleTime;
+    int scoreCombo = 200;
 
     std::vector<std::unique_ptr<IDrawable>> drawables;
     std::vector<Sound> sounds;
