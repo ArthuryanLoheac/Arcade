@@ -44,6 +44,7 @@ public:
 
     PacManGame();
     void InitScore();
+    void Init();
 
     bool update(float deltaTime) override;
     const Window &getWindow(void) override;
@@ -61,9 +62,11 @@ public:
         std::string cliTexture, float scale=1.f, float rotation=0, std::tuple<int, int, int, int>
         GUI_Color={255, 255, 255, 255});
     void respawnDeadGhost();
+    void initAll();
 
 private:
-    std::vector<std::vector<int>> map = {
+    std::vector<std::vector<int>> map;
+    std::vector<std::vector<int>> Savemap = {
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
         {1,3,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,3,1},
         {1,0,1,1,1,0,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,1,1,1,1,0,1},

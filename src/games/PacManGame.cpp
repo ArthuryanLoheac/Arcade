@@ -23,11 +23,26 @@ PacManGame::PacManGame()
     : window({30, 15}, "PacMan", "assets/PacMan/Pacman.png"),
         player(14, 8)
 {
+    Init();
     InitScore();
+}
+
+void PacManGame::Init()
+{
+    map.clear();
+    player.x = 14;
+    player.y = 8;
+    map = Savemap;
+    gameOver = false;
+    playerWon = false;
+    score = 0;
+    invisbleTime = 0;
+    scoreCombo = 200;
+    ghosts.clear();
     ghosts.push_back(Fantome(5, 5));
-    ghosts.push_back(Fantome(24, 5));
+    ghosts.push_back(Fantome(24, 4));
     ghosts.push_back(Fantome(5, 10));
-    ghosts.push_back(Fantome(24, 10));
+    ghosts.push_back(Fantome(24, 11));
     player.timeLeftToMove = timeToMove;
     map[player.y][player.x] = 2;
 }
@@ -253,6 +268,10 @@ const std::vector<Sound> &PacManGame::getSound(void)
 
 bool PacManGame::event(const Event &evt)
 {
+    if (evt.key == Key::KeyCode::KEY_R) {
+        Init();
+        return false;
+    }
     if (gameOver)
         return false;
     if (evt.key == Key::KeyCode::RIGHT || evt.key == Key::KeyCode::KEY_D) {
@@ -263,7 +282,7 @@ bool PacManGame::event(const Event &evt)
         player.dir = PacMan::UP;
     } else if (evt.key == Key::KeyCode::DOWN || evt.key == Key::KeyCode::KEY_S) {
         player.dir = PacMan::DOWN;
-    }
+    } 
     return false;
 }
 
