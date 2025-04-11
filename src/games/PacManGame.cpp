@@ -251,7 +251,7 @@ void PacManGame::updatePosPlayer(float deltaTime)
         if (map[player.y][player.x] == 3) {
             map[player.y][player.x] = 2;
             score += 100;
-            invisbleTime = 5;
+            invisbleTime = 10;
             scoreCombo = 200;
         }
     }
