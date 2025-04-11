@@ -32,6 +32,7 @@ private:
 
     void drawText(const Text &txt);
     void drawSprite(const Sprite &sprite);
+    void drawSquare(const Sprite &sprite);
     
     typedef struct {
         std::shared_ptr<SDL_Renderer> renderer;
@@ -44,5 +45,5 @@ private:
 
     int LastMouseX, LastMouseY;
     App app;
-    int UNIT_TO_PIXEL = 80;
+    int UNIT_TO_PIXEL = 20;
 };

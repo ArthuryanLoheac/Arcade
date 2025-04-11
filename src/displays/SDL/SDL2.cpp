@@ -109,6 +109,11 @@ extern "C" {
         return std::shared_ptr<TTF_Font>(rawFont, TTF_CloseFont);
     }
 
+    void SDL2::SDL2_RenderFillRect(SDL_Renderer *renderer, const SDL_Rect *rect)
+    {
+        SDL_RenderFillRect(renderer, rect);
+    }
+
     std::shared_ptr<SDL_Surface> SDL2::TTF2_RenderText_Blended(TTF_Font *font, const char *text, SDL_Color fg)
     {
         SDL_Surface *rawSurface = TTF_RenderText_Blended(font, text, fg);

@@ -238,10 +238,29 @@ void SFMLDisplay::drawText(const Text &txt)
     _window->draw(text);
 }
 
+void SFMLDisplay::drawSquare(const Sprite &sprite)
+{
+    sf::RectangleShape square(sf::Vector2f(sprite.getScale().first * UNIT_TO_PIXEL, sprite.getScale().second * UNIT_TO_PIXEL));
+    square.setPosition(
+        (sprite.getPosition().first + 0.5f)  * UNIT_TO_PIXEL,
+        (sprite.getPosition().second + 0.5f)  * UNIT_TO_PIXEL
+    );
+    square.setRotation(sprite.getRotation());
+    square.setFillColor(sf::Color(
+        std::get<0>(sprite.getGUI_Color()),
+        std::get<1>(sprite.getGUI_Color()),
+        std::get<2>(sprite.getGUI_Color()),
+        std::get<3>(sprite.getGUI_Color())
+    ));
+    _window->draw(square);
+}
+
 void SFMLDisplay::drawSprite(const Sprite &sprite)
 {
-    if (sprite.getGUI_Textures().empty())
+    if (sprite.getGUI_Textures().empty()){
+        drawSquare(sprite);
         return;
+    }
 
     std::string texturePath = sprite.getGUI_Textures()[0];
     std::shared_ptr<sf::Texture> texture;
