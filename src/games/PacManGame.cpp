@@ -39,10 +39,10 @@ void PacManGame::Init()
     invisbleTime = 0;
     scoreCombo = 200;
     ghosts.clear();
-    ghosts.push_back(Fantome(5, 5));
-    ghosts.push_back(Fantome(24, 4));
-    ghosts.push_back(Fantome(5, 10));
-    ghosts.push_back(Fantome(24, 11));
+    ghosts.push_back(Fantome(14, 5));
+    ghosts.push_back(Fantome(13, 5));
+    ghosts.push_back(Fantome(15, 5));
+    ghosts.push_back(Fantome(15, 6));
     player.timeLeftToMove = timeToMove;
     player.timeAnimLeft = timeAnim;
     player.isClose = false;
@@ -75,6 +75,12 @@ bool PacManGame::update(float deltaTime)
 {
     sounds.clear();
     drawables.clear();
+    timeUntilOpen -= deltaTime;
+    if (timeUntilOpen <= 0.f) {
+        map[4][13] = 2;
+        map[4][14] = 2;
+        map[4][15] = 2;
+    }
     updateWalls();
     if (!gameOver) {
         for (int i = 0; i < ghosts.size(); i++) {
@@ -318,13 +324,9 @@ void PacManGame::AddDrawable(int x, int y, std::string texturePath,
 void PacManGame::respawnDeadGhost()
 {
     for (auto& ghost : ghosts) {
-        if (!ghost.isDead)
-            continue;
-        ghost.x = std::rand() % 30;
-        ghost.y = std::rand() % 13;
-        while (map[ghost.y][ghost.x] == 1 || (ghost.y == player.y && ghost.x == player.x)) {
-            ghost.x = std::rand() % 30;
-            ghost.y = std::rand() % 13;
+        if (ghost.x == -1){
+            ghost.x = 14;   
+            ghost.y = 5;
             ghost.isDead = false;
         }
     }
