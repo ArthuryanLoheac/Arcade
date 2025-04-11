@@ -228,15 +228,16 @@ void PacManGame::updatePosPlayer(float deltaTime)
         else if (player.dir == PacMan::DOWN)
             player.y += 1;
 
+
         // Min Max
         if (player.x < 0)
-            player.x = 0;
+            player.x = 29;
         if (player.y < 0)
-            player.y = 0;
+            player.y = 14;
         if (player.x >= window.size.first)
-            player.x = window.size.first - 1;
+            player.x = 0;
         if (player.y >= window.size.second)
-            player.y = window.size.second - 1;
+            player.y = 0;
         
         // Check if the player is on a wall
         if (map[player.y][player.x] == 1) {
