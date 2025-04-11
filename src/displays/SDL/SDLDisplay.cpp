@@ -195,8 +195,7 @@ void SDLDisplay::drawSquare(const Sprite &sprite)
 void SDLDisplay::drawSprite(const Sprite &sprite)
 {
     if (sprite.getGUI_Textures().empty()){
-
-        return;
+        drawSquare(sprite);
     }
 
     SDL_Rect dest;
