@@ -261,7 +261,7 @@ bool PacManGame::event(const Event &evt)
         player.dir = PacMan::LEFT;
     } else if (evt.key == Key::KeyCode::UP || evt.key == Key::KeyCode::KEY_Z) {
         player.dir = PacMan::UP;
-    } else if (evt.key == Key::KeyCode::DOWN || evt.key == Key::KeyCode::KEY_D) {
+    } else if (evt.key == Key::KeyCode::DOWN || evt.key == Key::KeyCode::KEY_S) {
         player.dir = PacMan::DOWN;
     }
     return false;
