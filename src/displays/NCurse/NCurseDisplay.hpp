@@ -33,24 +33,24 @@ private:
 
     std::unique_ptr<NCurseWrapper> _window;
     const std::map<int, Key::KeyCode> _keyMap {
-        {'a', Key::KEY_A}, {'b', Key::KEY_B}, {'c', Key::KEY_C},
-        {'d', Key::KEY_D}, {'e', Key::KEY_E}, {'f', Key::KEY_F},
-        {'g', Key::KEY_G}, {'h', Key::KEY_H}, {'i', Key::KEY_I},
-        {'j', Key::KEY_J}, {'k', Key::KEY_K}, {'l', Key::KEY_L},
-        {'m', Key::KEY_M}, {'n', Key::KEY_N}, {'o', Key::KEY_O},
-        {'p', Key::KEY_P}, {'q', Key::KEY_Q}, {'r', Key::KEY_R},
-        {'s', Key::KEY_S}, {'t', Key::KEY_T}, {'u', Key::KEY_U},
-        {'v', Key::KEY_V}, {'w', Key::KEY_W}, {'x', Key::KEY_X},
-        {'y', Key::KEY_Y}, {'z', Key::KEY_Z},
+        {'a', Key::KeyCode::KEY_A}, {'b', Key::KeyCode::KEY_B}, {'c', Key::KeyCode::KEY_C},
+        {'d', Key::KeyCode::KEY_D}, {'e', Key::KeyCode::KEY_E}, {'f', Key::KeyCode::KEY_F},
+        {'g', Key::KeyCode::KEY_G}, {'h', Key::KeyCode::KEY_H}, {'i', Key::KeyCode::KEY_I},
+        {'j', Key::KeyCode::KEY_J}, {'k', Key::KeyCode::KEY_K}, {'l', Key::KeyCode::KEY_L},
+        {'m', Key::KeyCode::KEY_M}, {'n', Key::KeyCode::KEY_N}, {'o', Key::KeyCode::KEY_O},
+        {'p', Key::KeyCode::KEY_P}, {'q', Key::KeyCode::KEY_Q}, {'r', Key::KeyCode::KEY_R},
+        {'s', Key::KeyCode::KEY_S}, {'t', Key::KeyCode::KEY_T}, {'u', Key::KeyCode::KEY_U},
+        {'v', Key::KeyCode::KEY_V}, {'w', Key::KeyCode::KEY_W}, {'x', Key::KeyCode::KEY_X},
+        {'y', Key::KeyCode::KEY_Y}, {'z', Key::KeyCode::KEY_Z},
 
-        {KEY_F(1), Key::FUNCTION_1}, {KEY_F(2), Key::FUNCTION_2}, {KEY_F(3), Key::FUNCTION_3},
-        {KEY_F(4), Key::FUNCTION_4}, {KEY_F(5), Key::FUNCTION_5}, {KEY_F(6), Key::FUNCTION_6},
-        {KEY_F(7), Key::FUNCTION_7}, {KEY_F(8), Key::FUNCTION_8}, {KEY_F(9), Key::FUNCTION_9},
-        {KEY_F(10), Key::FUNCTION_10}, {KEY_F(11), Key::FUNCTION_11}, {KEY_F(12), Key::FUNCTION_12},
+        {KEY_F(1), Key::KeyCode::FUNCTION_1}, {KEY_F(2), Key::KeyCode::FUNCTION_2}, {KEY_F(3), Key::KeyCode::FUNCTION_3},
+        {KEY_F(4), Key::KeyCode::FUNCTION_4}, {KEY_F(5), Key::KeyCode::FUNCTION_5}, {KEY_F(6), Key::KeyCode::FUNCTION_6},
+        {KEY_F(7), Key::KeyCode::FUNCTION_7}, {KEY_F(8), Key::KeyCode::FUNCTION_8}, {KEY_F(9), Key::KeyCode::FUNCTION_9},
+        {KEY_F(10), Key::KeyCode::FUNCTION_10}, {KEY_F(11), Key::KeyCode::FUNCTION_11}, {KEY_F(12), Key::KeyCode::FUNCTION_12},
 
-        {KEY_LEFT, Key::LEFT}, {KEY_UP, Key::UP}, {KEY_RIGHT, Key::RIGHT}, {KEY_DOWN, Key::DOWN},
+        {KEY_LEFT, Key::KeyCode::LEFT}, {KEY_UP, Key::KeyCode::UP}, {KEY_RIGHT, Key::KeyCode::RIGHT}, {KEY_DOWN, Key::KeyCode::DOWN},
 
-        {' ', Key::SPACE}, {'\n', Key::ENTER}, {'\t', Key::TAB},
-        {27, Key::ECHAP}, {KEY_DC, Key::SUPPR},
+        {' ', Key::KeyCode::SPACE}, {'\n', Key::KeyCode::ENTER}, {'\t', Key::KeyCode::TAB},
+        {27, Key::KeyCode::ECHAP}, {KEY_DC, Key::KeyCode::SUPPR},
     };
 };
