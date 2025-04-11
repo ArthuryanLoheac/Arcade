@@ -176,8 +176,29 @@ void SDLDisplay::drawText(const Text &txt)
     SDL2::SDL2_RenderCopy(app.renderer.get(), textTextures[textKey].get(), nullptr, &dstRect);
 }
 
+void SDLDisplay::drawSquare(const Sprite &sprite)
+{
+    SDL_Rect square;
+    square.x = sprite.getPosition().first * UNIT_TO_PIXEL;
+    square.y = sprite.getPosition().second * UNIT_TO_PIXEL;
+    square.w = sprite.getScale().first * UNIT_TO_PIXEL;
+    square.h = sprite.getScale().second * UNIT_TO_PIXEL;
+
+    SDL2::SDL2_SetRenderDrawColor(app.renderer.get(),
+        std::get<0>(sprite.getGUI_Color()),
+        std::get<1>(sprite.getGUI_Color()),
+        std::get<2>(sprite.getGUI_Color()),
+        std::get<3>(sprite.getGUI_Color()));
+    SDL2::SDL2_RenderFillRect(app.renderer.get(), &square);
+}
+
 void SDLDisplay::drawSprite(const Sprite &sprite)
 {
+    if (sprite.getGUI_Textures().empty()){
+
+        return;
+    }
+
     SDL_Rect dest;
     std::shared_ptr<SDL_Texture> texture = SDL2::IMG2_LoadTexture(app.renderer.get(), sprite.getGUI_Textures()[0].c_str());
     dest.x = sprite.getPosition().first * UNIT_TO_PIXEL;

@@ -33,6 +33,7 @@ private:
 
     void drawText(const Text &txt);
     void drawSprite(const Sprite &sprite);
+    void drawSquare(const Sprite &sprite);
 
     std::shared_ptr<sf::RenderWindow> _window;
     std::map<std::string, std::pair<std::shared_ptr<sf::Sound>, std::shared_ptr<sf::SoundBuffer>>> _musics;
@@ -41,7 +42,7 @@ private:
 
     int _lastMouseX = 0;
     int _lastMouseY = 0;
-    int UNIT_TO_PIXEL = 80;
+    int UNIT_TO_PIXEL = 20;
 
     static const std::unordered_map<sf::Keyboard::Key, Key::KeyCode> keyboardMap;
     static const std::unordered_map<sf::Mouse::Button, Key::KeyCode> mouseMap;

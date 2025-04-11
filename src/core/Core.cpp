@@ -15,7 +15,6 @@ static bool verifyDisplayLib(const std::string &path)
         return false;
     void* symbolPtr = dlsym(handle, "getDisplayModule");
     if (!symbolPtr) {
-        std::cerr << path << ": Couldn't load entrypoint." << std::endl;
         dlclose(handle);
         return false;
     }
@@ -37,7 +36,6 @@ static bool verifyGameLib(const std::string &path)
         return false;
     void* symbolPtr = dlsym(handle, "getGameModule");
     if (!symbolPtr) {
-        std::cerr << path << ": Couldn't load entrypoint." << std::endl;
         dlclose(handle);
         return false;
     }

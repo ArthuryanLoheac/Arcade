@@ -97,14 +97,14 @@ bool PacManGame::update(float deltaTime)
     updateText();
     AddDrawable(player.x, player.y,
         player.isClose ? "assets/PacMan/Pacman.png" : "assets/PacMan/PacManClose.png",
-        "C ", .25f, player.dir * 90.f);
+        "C ", .25f/4, player.dir * 90.f);
     for (int i = 0; i < ghosts.size(); i++){
         if (ghosts[i].isDead)
             continue;
         if (invisbleTime > 0)
-            AddDrawable(ghosts[i].x, ghosts[i].y, "assets/PacMan/Eatable.png", "E ", .25f, 0.f);
+            AddDrawable(ghosts[i].x, ghosts[i].y, "assets/PacMan/Eatable.png", "E ", .25f/4, 0.f);
         else
-            AddDrawable(ghosts[i].x, ghosts[i].y, ghostTexture[i], "G ", .25f, 0.f);
+            AddDrawable(ghosts[i].x, ghosts[i].y, ghostTexture[i], "G ", .25f/4, 0.f);
     }
     return false;
 }
@@ -173,7 +173,7 @@ void PacManGame::updateText(void)
 {
     auto statusText = std::make_unique<Text>();
     statusText->setPosition({0, 0});
-    statusText->setScale({30, 30});
+    statusText->setScale({10, 10});
     statusText->setGUI_Color({255, 255, 255, 255});
     statusText->setFontPath("assets/PacMan/NotoSans.ttf");
     std::stringstream ss;
@@ -194,12 +194,12 @@ void PacManGame::updateWalls(void)
     for (int i = 0; i < map.size(); i++) {
         for (int j = 0; j < map[i].size(); j++) {
             if (map[i][j] == 1)
-                AddDrawable(j, i, "assets/PacMan/Wall.jpg", "##", .165f, 0.f);
+                AddDrawable(j, i, "assets/PacMan/Wall.jpg", "##", .165f/4, 0.f);
             else if (map[i][j] == 0){
-                AddDrawable(j, i, "assets/PacMan/LittlePacGome.png", ".", .25f, 0.f);
+                AddDrawable(j, i, "assets/PacMan/LittlePacGome.png", ".", .25f/4, 0.f);
                 isEndPacGome = false;
             } else if (map[i][j] == 3){
-                AddDrawable(j, i, "assets/PacMan/PacGome.png", ".", .25f, 0.f);
+                AddDrawable(j, i, "assets/PacMan/PacGome.png", ".", .25f/4, 0.f);
                 isEndPacGome = false;
             }
         }
