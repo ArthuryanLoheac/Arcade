@@ -324,7 +324,7 @@ void PacManGame::AddDrawable(int x, int y, std::string texturePath,
 void PacManGame::respawnDeadGhost()
 {
     for (auto& ghost : ghosts) {
-        if (ghost.x == -1){
+        if (ghost.isDead){
             ghost.x = 14;   
             ghost.y = 5;
             ghost.isDead = false;
