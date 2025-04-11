@@ -156,7 +156,7 @@ void PacManGame::updateText(void)
     statusText->setPosition({0, 0});
     statusText->setScale({30, 30});
     statusText->setGUI_Color({255, 255, 255, 255});
-    statusText->setFontPath("assets/fonts/NotoSans.ttf");
+    statusText->setFontPath("assets/PacMan/NotoSans.ttf");
     std::stringstream ss;
     ss << "Score: " << score;
     if (gameOver) {
