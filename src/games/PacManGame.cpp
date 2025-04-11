@@ -44,6 +44,8 @@ void PacManGame::Init()
     ghosts.push_back(Fantome(5, 10));
     ghosts.push_back(Fantome(24, 11));
     player.timeLeftToMove = timeToMove;
+    player.timeAnimLeft = timeAnim;
+    player.isClose = false;
     map[player.y][player.x] = 2;
 }
 
@@ -93,7 +95,9 @@ bool PacManGame::update(float deltaTime)
         updateCollisions();
     }
     updateText();
-    AddDrawable(player.x, player.y, "assets/PacMan/Pacman.png", "C ", .25f, player.dir * 90.f);
+    AddDrawable(player.x, player.y,
+        player.isClose ? "assets/PacMan/Pacman.png" : "assets/PacMan/PacManClose.png",
+        "C ", .25f, player.dir * 90.f);
     for (int i = 0; i < ghosts.size(); i++){
         if (ghosts[i].isDead)
             continue;
@@ -209,6 +213,7 @@ void PacManGame::updateWalls(void)
 
 void PacManGame::updatePosPlayer(float deltaTime)
 {
+    player.timeAnimLeft -= deltaTime;
     player.timeLeftToMove -= deltaTime;
     if (player.timeLeftToMove <= 0.f) {
         player.timeLeftToMove = timeToMove;
@@ -248,6 +253,10 @@ void PacManGame::updatePosPlayer(float deltaTime)
             invisbleTime = 5;
             scoreCombo = 200;
         }
+    }
+    if (player.timeAnimLeft <= 0.f) {
+        player.timeAnimLeft = timeAnim;
+        player.isClose = !player.isClose;
     }
 }
 

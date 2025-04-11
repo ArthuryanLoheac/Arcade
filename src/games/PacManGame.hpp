@@ -31,6 +31,8 @@ public:
             int x, y;
             Direction dir;
             float timeLeftToMove;
+            float timeAnimLeft = 0.14f;
+            bool isClose = false;
             PacMan(int x, int y) : x(x), y(y) { dir = RIGHT;}
     };
 
@@ -97,6 +99,7 @@ private:
     std::vector<Fantome> ghosts;
     float timeToMove = 0.25f;
     float timeToMoveGhost = 0.23f;
+    float timeAnim = 0.2f;
     float timeToMoveEatable = 0.30f;
     float invisbleTime;
     int scoreCombo = 200;
