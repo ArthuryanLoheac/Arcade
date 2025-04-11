@@ -54,7 +54,7 @@ void PacManGame::InitScore()
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     try {
-        std::ifstream scoreFile("minesweeper_scores.txt");
+        std::ifstream scoreFile("pacman_scores.txt");
         if (scoreFile.is_open()) {
             std::string name;
             int playerScore;
