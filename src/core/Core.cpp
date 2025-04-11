@@ -82,10 +82,10 @@ Core::Core::Core()
 
 Core::StateCore Core::Core::update()
 {
-    float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::steady_clock::now() - lastFrameTime).count();
+    std::chrono::duration<float> elapsedTime = std::chrono::steady_clock::now()
+        - lastFrameTime;
 
-    if (_game->update(deltaTime))
+    if (_game->update(elapsedTime.count()))
         return StateCore::EXIT_TO_MENU;
     lastFrameTime = std::chrono::steady_clock::now();
     return StateCore::NONE;

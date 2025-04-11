@@ -74,6 +74,8 @@ NAME_SFML = lib/arcade_sfml.so
 
 NAME_MINESWEEP = lib/arcade_minesweeper.so
 
+NAME_PACMAN = lib/arcade_pacman.so
+
 # ============= SOURCES ============= #
 
 SRC_LIB	=	\
@@ -102,6 +104,10 @@ SRC_MINESWEEP	=	src/games/MineSweepGame.cpp\
 					src/interfaces/Text.cpp \
 					src/interfaces/Sprite.cpp \
 
+SRC_PACMAN	=	src/games/PacManGame.cpp\
+					src/interfaces/Text.cpp \
+					src/interfaces/Sprite.cpp \
+
 SRC_TESTS	= 	tests/test_1.cpp \
 
 # ============= RULES ============= #
@@ -126,6 +132,7 @@ graphicals:
 games:
 	@mkdir -p lib
 	$(COMPILER) -o $(NAME_MINESWEEP) $(SRC_MINESWEEP) $(FLAGS_GAMES)
+	$(COMPILER) -o $(NAME_PACMAN) $(SRC_PACMAN) $(FLAGS_GAMES)
 
 # ============= CLEANS ============= #
 
