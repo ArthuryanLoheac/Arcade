@@ -56,17 +56,17 @@ Event NCurseDisplay::getEvent(void)
 {
     int ch = -1;
     int x = 0, y = 0;
-    Key::KeyCode key = Key::NONE;
+    Key::KeyCode key = Key::KeyCode::NONE;
 
     ch = getch();
 
     key = getKeyBoardCode(ch);
-    if (key != Key::NONE)
+    if (key != Key::KeyCode::NONE)
         return Event(key, Key::KeyStatus::KEY_PRESSED);
     key = getMouseCode(x, y);
-    if (key != Key::NONE)
-        return Event(key, Event::MousePos{x, y});
-    return Event(Key::NONE, std::any());
+    if (key != Key::KeyCode::NONE)
+        return Event(key, Event::MouseStatusClick{Event::MousePos{x, y}, Event::KeyStatus::KEY_PRESSED});
+    return Event(Key::KeyCode::NONE, std::any());
 }
 
 Key::KeyCode NCurseDisplay::getMouseCode(int &x, int &y)
@@ -76,20 +76,20 @@ Key::KeyCode NCurseDisplay::getMouseCode(int &x, int &y)
     if (getmouse(&event) == OK) {
         x = event.x;
         y = event.y;
-        if (event.bstate & BUTTON1_PRESSED) return Key::MOUSE_LEFT;
-        if (event.bstate & BUTTON2_PRESSED) return Key::MOUSE_MIDDLE;
-        if (event.bstate & BUTTON3_PRESSED) return Key::MOUSE_RIGHT;
-        if (event.bstate & BUTTON4_PRESSED) return Key::MOUSE_BUTTON_4;
-        if (event.bstate & BUTTON5_PRESSED) return Key::MOUSE_BUTTON_5;
+        if (event.bstate & BUTTON1_CLICKED) return Key::MOUSE_LEFT;
+        if (event.bstate & BUTTON2_CLICKED) return Key::MOUSE_MIDDLE;
+        if (event.bstate & BUTTON3_CLICKED) return Key::MOUSE_RIGHT;
+        if (event.bstate & BUTTON4_CLICKED) return Key::MOUSE_BUTTON_4;
+        if (event.bstate & BUTTON5_CLICKED) return Key::MOUSE_BUTTON_5;
         if (event.bstate & REPORT_MOUSE_POSITION) return Key::MOUSE_MOVE;
     }
-    return Key::NONE;
+    return Key::KeyCode::NONE;
 }
 
 Key::KeyCode NCurseDisplay::getKeyBoardCode(int ch)
 {
     auto it = _keyMap.find(ch);
-    return (it != _keyMap.end()) ? it->second : Key::NONE;
+    return (it != _keyMap.end()) ? it->second : Key::KeyCode::NONE;
 }
 
 void NCurseDisplay::handleSound(const Sound &sound)
