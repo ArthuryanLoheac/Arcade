@@ -160,13 +160,13 @@ void PacManGame::moveGhost(int PrevX, int PrevY, int i)
         ghosts[i].y += 1;
     // Min Max
     if (ghosts[i].x < 0)
-        ghosts[i].x = 0;
+        ghosts[i].x = 29;
     if (ghosts[i].y < 0)
-        ghosts[i].y = 0;
+        ghosts[i].y = 14;
     if (ghosts[i].x >= window.size.first)
-        ghosts[i].x = window.size.first - 1;
+        ghosts[i].x = 0;
     if (ghosts[i].y >= window.size.second)
-        ghosts[i].y = window.size.second - 1;
+        ghosts[i].y = 0;
     // Check if the player is on a wall
     if (map[ghosts[i].y][ghosts[i].x] == 1) {
         ghosts[i].x = PrevX;
