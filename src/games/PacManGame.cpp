@@ -37,6 +37,7 @@ void PacManGame::Init()
     playerWon = false;
     score = 0;
     invisbleTime = 0;
+    timeUntilOpen = 10.f;
     scoreCombo = 200;
     ghosts.clear();
     ghosts.push_back(Fantome(14, 5));
@@ -47,9 +48,6 @@ void PacManGame::Init()
     player.timeAnimLeft = timeAnim;
     player.isClose = false;
     map[player.y][player.x] = 2;
-    map[4][13] = 1;
-    map[4][14] = 1;
-    map[4][15] = 1;
 }
 
 void PacManGame::InitScore()
