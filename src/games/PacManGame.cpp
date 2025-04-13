@@ -237,7 +237,8 @@ void PacManGame::updateWalls(void) {
                 scoreFile.close();
                 scoreHistory.push_back({playerName, score});
                 std::sort(scoreHistory.begin(), scoreHistory.end(),
-                    [](const auto& a, const auto& b) { return a.second > b.second; });
+                    [](const auto& a, const auto& b)
+                        { return a.second > b.second; });
             }
         } catch (const std::exception& e) {
             std::cerr << "Error saving score: " << e.what() << std::endl;
