@@ -171,7 +171,7 @@ void SDLDisplay::drawText(const Text &txt)
         }
     }
 
-    dstRect = {txt.getPosition().first, txt.getPosition().second, 0, 0};
+    dstRect = {txt.getPosition().first * UNIT_TO_PIXEL, txt.getPosition().second * UNIT_TO_PIXEL, 0, 0};
     SDL2::SDL2_QueryTexture(textTextures[textKey].get(), nullptr, nullptr, &dstRect.w, &dstRect.h);
     SDL2::SDL2_RenderCopy(app.renderer.get(), textTextures[textKey].get(), nullptr, &dstRect);
 }

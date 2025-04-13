@@ -233,7 +233,7 @@ void SFMLDisplay::drawText(const Text &txt)
         std::get<2>(txt.getGUI_Color()),
         std::get<3>(txt.getGUI_Color())
     ));
-    text.setPosition(txt.getPosition().first, txt.getPosition().second);
+    text.setPosition(txt.getPosition().first * UNIT_TO_PIXEL, txt.getPosition().second * UNIT_TO_PIXEL);
     text.setRotation(txt.getRotation());
     _window->draw(text);
 }
@@ -242,8 +242,8 @@ void SFMLDisplay::drawSquare(const Sprite &sprite)
 {
     sf::RectangleShape square(sf::Vector2f(sprite.getScale().first * UNIT_TO_PIXEL, sprite.getScale().second * UNIT_TO_PIXEL));
     square.setPosition(
-        (sprite.getPosition().first + 0.5f)  * UNIT_TO_PIXEL,
-        (sprite.getPosition().second + 0.5f)  * UNIT_TO_PIXEL
+        (sprite.getPosition().first)  * UNIT_TO_PIXEL,
+        (sprite.getPosition().second)  * UNIT_TO_PIXEL
     );
     square.setRotation(sprite.getRotation());
     square.setFillColor(sf::Color(
