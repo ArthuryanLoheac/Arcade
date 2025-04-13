@@ -11,7 +11,7 @@
 #include <string>
 
 class NCurseWrapper {
-public:
+ public:
     NCurseWrapper(int height, int width);
     ~NCurseWrapper();
 
@@ -20,6 +20,6 @@ public:
     void print(int x, int y, const std::string &str);
     void color(std::pair<int, int> color);
 
-private:
+ private:
     WINDOW *window;
 };

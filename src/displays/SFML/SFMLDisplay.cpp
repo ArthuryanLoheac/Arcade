@@ -1,21 +1,20 @@
-/*
-** EPITECH PROJECT, 2025
-** Arcade
-** File description:
-** SFMLDisplay
-*/
-
-#include "SFMLDisplay.hpp"
-#include "Window.hpp"
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
 #include <map>
 #include <unordered_map>
-#include "Text.hpp"
-#include "Sprite.hpp"
 #include <iostream>
+#include <string>
+#include <utility>
+#include <memory>
 
-const std::unordered_map<sf::Keyboard::Key, Key::KeyCode> SFMLDisplay::keyboardMap = {
+#include "displays/SFML/SFMLDisplay.hpp"
+#include "core/Window.hpp"
+#include "interfaces/Text.hpp"
+#include "interfaces/Sprite.hpp"
+
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+
+const std::unordered_map<sf::Keyboard::Key,
+    Key::KeyCode> SFMLDisplay::keyboardMap = {
     {sf::Keyboard::A, Key::KeyCode::KEY_A},
     {sf::Keyboard::B, Key::KeyCode::KEY_B},
     {sf::Keyboard::C, Key::KeyCode::KEY_C},
@@ -81,7 +80,8 @@ const std::unordered_map<sf::Keyboard::Key, Key::KeyCode> SFMLDisplay::keyboardM
     {sf::Keyboard::RAlt, Key::KeyCode::ALTGR}
 };
 
-const std::unordered_map<sf::Mouse::Button, Key::KeyCode> SFMLDisplay::mouseMap = {
+const std::unordered_map<sf::Mouse::Button,
+    Key::KeyCode> SFMLDisplay::mouseMap = {
     {sf::Mouse::Left, Key::KeyCode::MOUSE_LEFT},
     {sf::Mouse::Middle, Key::KeyCode::MOUSE_MIDDLE},
     {sf::Mouse::Right, Key::KeyCode::MOUSE_RIGHT},
@@ -89,13 +89,11 @@ const std::unordered_map<sf::Mouse::Button, Key::KeyCode> SFMLDisplay::mouseMap 
     {sf::Mouse::XButton2, Key::KeyCode::MOUSE_BUTTON_5}
 };
 
-extern "C" std::unique_ptr<IDisplayModule> getDisplayModule()
-{
+extern "C" std::unique_ptr<IDisplayModule> getDisplayModule() {
     return std::make_unique<SFMLDisplay>();
 }
 
-void SFMLDisplay::createWindow(const Window &window)
-{
+void SFMLDisplay::createWindow(const Window &window) {
     int windowWidth = window.size.first * UNIT_TO_PIXEL;
     int windowHeight = window.size.second * UNIT_TO_PIXEL;
 
@@ -110,12 +108,12 @@ void SFMLDisplay::createWindow(const Window &window)
     if (!window.iconPath.empty()) {
         auto icon = std::make_shared<sf::Image>();
         if (icon->loadFromFile(window.iconPath))
-            _window->setIcon(icon->getSize().x, icon->getSize().y, icon->getPixelsPtr());
+            _window->setIcon(icon->getSize().x,
+            icon->getSize().y, icon->getPixelsPtr());
     }
 }
 
-void SFMLDisplay::draw(const IDrawable &drawable)
-{
+void SFMLDisplay::draw(const IDrawable &drawable) {
     Sprite sprite;
     Text text;
 
@@ -128,27 +126,23 @@ void SFMLDisplay::draw(const IDrawable &drawable)
     }
 }
 
-void SFMLDisplay::display(void)
-{
+void SFMLDisplay::display(void) {
     _window->display();
 }
 
-void SFMLDisplay::clear(void)
-{
+void SFMLDisplay::clear(void) {
     _window->clear(sf::Color::Black);
 }
 
-Event SFMLDisplay::getEvent(void)
-{
+Event SFMLDisplay::getEvent(void) {
     sf::Event event;
 
     if (!_window->pollEvent(event))
         return Event(Key::KeyCode::NONE, std::any());
-
-    switch (event.type)
-    {
+    switch (event.type) {
         case sf::Event::Closed:
-            return Event(Key::KeyCode::FUNCTION_4, Event::KeyStatus::KEY_PRESSED);
+            return Event(Key::KeyCode::FUNCTION_4,
+                Event::KeyStatus::KEY_PRESSED);
         case sf::Event::KeyPressed:
             return getEventKeyBoard(event, Event::KeyStatus::KEY_PRESSED);
         case sf::Event::KeyReleased:
@@ -156,20 +150,23 @@ Event SFMLDisplay::getEvent(void)
         case sf::Event::MouseMoved:
             _lastMouseX = event.mouseMove.x / UNIT_TO_PIXEL;
             _lastMouseY = event.mouseMove.y / UNIT_TO_PIXEL;
-            return Event(Key::KeyCode::MOUSE_MOVE, Event::MousePos{event.mouseMove.x  / UNIT_TO_PIXEL, event.mouseMove.y / UNIT_TO_PIXEL});
+            return Event(Key::KeyCode::MOUSE_MOVE, Event::MousePos
+                {event.mouseMove.x  / UNIT_TO_PIXEL,
+                event.mouseMove.y / UNIT_TO_PIXEL});
         case sf::Event::MouseButtonPressed:
             return getEventMouse(event, Event::KeyStatus::KEY_PRESSED);
         case sf::Event::MouseButtonReleased:
             return getEventMouse(event, Event::KeyStatus::KEY_RELEASED);
         case sf::Event::MouseWheelScrolled:
-            return Event(Key::KeyCode::MOUSE_SCROLL, Event::MouseStatusScroll{Event::MousePos{_lastMouseX, _lastMouseY}, event.mouseWheelScroll.delta});
+            return Event(Key::KeyCode::MOUSE_SCROLL,
+                Event::MouseStatusScroll{Event::MousePos
+                {_lastMouseX, _lastMouseY}, event.mouseWheelScroll.delta});
         default:
             return getEvent();
     }
 }
 
-Event SFMLDisplay::getEventKeyBoard(sf::Event &e, Event::KeyStatus isDown)
-{
+Event SFMLDisplay::getEventKeyBoard(sf::Event &e, Event::KeyStatus isDown) {
     auto it = keyboardMap.find(e.key.code);
     if (it != keyboardMap.end()) {
         return Event(it->second, std::any(isDown));
@@ -177,20 +174,19 @@ Event SFMLDisplay::getEventKeyBoard(sf::Event &e, Event::KeyStatus isDown)
     return getEvent();
 }
 
-Event SFMLDisplay::getEventMouse(sf::Event &e, Event::KeyStatus isDown)
-{
+Event SFMLDisplay::getEventMouse(sf::Event &e, Event::KeyStatus isDown) {
     int unitX = e.mouseButton.x / UNIT_TO_PIXEL;
     int unitY = e.mouseButton.y / UNIT_TO_PIXEL;
 
     auto it = mouseMap.find(e.mouseButton.button);
     if (it != mouseMap.end()) {
-        return Event(it->second, std::any(Event::MouseStatusClick{Event::MousePos{unitX, unitY}, isDown}));
+        return Event(it->second, std::any(Event::MouseStatusClick
+        {Event::MousePos{unitX, unitY}, isDown}));
     }
     return getEvent();
 }
 
-void SFMLDisplay::handleSound(const Sound &sound)
-{
+void SFMLDisplay::handleSound(const Sound &sound) {
     if (sound.state == Sound::STOP) {
         try {
             _musics.at(sound.id).first->stop();
@@ -211,8 +207,7 @@ void SFMLDisplay::handleSound(const Sound &sound)
     _musics[sound.id] = std::make_pair(sfSound, buffer);
 }
 
-void SFMLDisplay::drawText(const Text &txt)
-{
+void SFMLDisplay::drawText(const Text &txt) {
     std::shared_ptr<sf::Font> font;
 
     if (_fonts.find(txt.getFontPath()) == _fonts.end()) {
@@ -231,33 +226,31 @@ void SFMLDisplay::drawText(const Text &txt)
         std::get<0>(txt.getGUI_Color()),
         std::get<1>(txt.getGUI_Color()),
         std::get<2>(txt.getGUI_Color()),
-        std::get<3>(txt.getGUI_Color())
-    ));
-    text.setPosition(txt.getPosition().first * UNIT_TO_PIXEL, txt.getPosition().second * UNIT_TO_PIXEL);
+        std::get<3>(txt.getGUI_Color())));
+    text.setPosition(txt.getPosition().first * UNIT_TO_PIXEL,
+        txt.getPosition().second * UNIT_TO_PIXEL);
     text.setRotation(txt.getRotation());
     _window->draw(text);
 }
 
-void SFMLDisplay::drawSquare(const Sprite &sprite)
-{
-    sf::RectangleShape square(sf::Vector2f(sprite.getScale().first * UNIT_TO_PIXEL, sprite.getScale().second * UNIT_TO_PIXEL));
+void SFMLDisplay::drawSquare(const Sprite &sprite) {
+    sf::RectangleShape square(sf::Vector2f(
+        sprite.getScale().first * UNIT_TO_PIXEL,
+        sprite.getScale().second * UNIT_TO_PIXEL));
     square.setPosition(
         (sprite.getPosition().first)  * UNIT_TO_PIXEL,
-        (sprite.getPosition().second)  * UNIT_TO_PIXEL
-    );
+        (sprite.getPosition().second)  * UNIT_TO_PIXEL);
     square.setRotation(sprite.getRotation());
     square.setFillColor(sf::Color(
         std::get<0>(sprite.getGUI_Color()),
         std::get<1>(sprite.getGUI_Color()),
         std::get<2>(sprite.getGUI_Color()),
-        std::get<3>(sprite.getGUI_Color())
-    ));
+        std::get<3>(sprite.getGUI_Color())));
     _window->draw(square);
 }
 
-void SFMLDisplay::drawSprite(const Sprite &sprite)
-{
-    if (sprite.getGUI_Textures().empty()){
+void SFMLDisplay::drawSprite(const Sprite &sprite) {
+    if (sprite.getGUI_Textures().empty()) {
         drawSquare(sprite);
         return;
     }
@@ -277,23 +270,21 @@ void SFMLDisplay::drawSprite(const Sprite &sprite)
     sfSprite.setTexture(*texture);
     sfSprite.setPosition(
         (sprite.getPosition().first + 0.5f)  * UNIT_TO_PIXEL,
-        (sprite.getPosition().second + 0.5f)  * UNIT_TO_PIXEL
-    );
+        (sprite.getPosition().second + 0.5f)  * UNIT_TO_PIXEL);
     sfSprite.setScale(sprite.getScale().first, sprite.getScale().second);
-    sfSprite.setOrigin(texture->getSize().x / 2.0f, texture->getSize().y / 2.0f);
+    sfSprite.setOrigin(texture->getSize().x / 2.0f,
+        texture->getSize().y / 2.0f);
     sfSprite.setRotation(sprite.getRotation());
     sfSprite.setColor(sf::Color(
         std::get<0>(sprite.getGUI_Color()),
         std::get<1>(sprite.getGUI_Color()),
         std::get<2>(sprite.getGUI_Color()),
-        std::get<3>(sprite.getGUI_Color())
-    ));
+        std::get<3>(sprite.getGUI_Color())));
 
     _window->draw(sfSprite);
 }
 
-SFMLDisplay::~SFMLDisplay()
-{
+SFMLDisplay::~SFMLDisplay() {
     _musics.clear();
     _textures.clear();
     _fonts.clear();

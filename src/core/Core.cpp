@@ -1,15 +1,12 @@
-/*
-** EPITECH PROJECT, 2025
-** Arcade
-** File description:
-** Core
-*/
+#include <iostream>
+#include <memory>
+#include <string>
+#include <utility>
 
-#include "Core.hpp"
-#include "CoreMenu.hpp"
+#include "core/Core.hpp"
+#include "core/CoreMenu.hpp"
 
-static bool verifyDisplayLib(const std::string &path)
-{
+static bool verifyDisplayLib(const std::string &path) {
     void *handle = dlopen(path.c_str(), RTLD_LAZY);
     if (!handle)
         return false;
@@ -29,8 +26,7 @@ static bool verifyDisplayLib(const std::string &path)
     return true;
 }
 
-static bool verifyGameLib(const std::string &path)
-{
+static bool verifyGameLib(const std::string &path) {
     void *handle = dlopen(path.c_str(), RTLD_LAZY);
     if (!handle)
         return false;
@@ -50,8 +46,7 @@ static bool verifyGameLib(const std::string &path)
     return true;
 }
 
-Core::Core::Core()
-{
+Core::Core::Core() {
     _display = nullptr;
     _game = nullptr;
     _displayHandle = nullptr;
@@ -70,7 +65,8 @@ Core::Core::Core()
                 else if (verifyGameLib("./lib/" + filename))
                     _gameLibs.push_back("./lib/" + filename);
                 else
-                    std::cerr << filename << ": Not a valid library." << std::endl;
+                    std::cerr << filename << ": Not a valid library."
+                        << std::endl;
             }
         }
         closedir(dir);
@@ -78,8 +74,7 @@ Core::Core::Core()
     _game = std::make_unique<CoreMenu>(*this);
 }
 
-Core::StateCore Core::Core::update()
-{
+Core::StateCore Core::Core::update() {
     std::chrono::duration<float> elapsedTime = std::chrono::steady_clock::now()
         - lastFrameTime;
 
@@ -89,21 +84,20 @@ Core::StateCore Core::Core::update()
     return StateCore::NONE;
 }
 
-void Core::Core::nextGame(int i)
-{
+void Core::Core::nextGame(int i) {
     if (_gameLibs.size() == 0)
         return;
     _gameIndex = (_gameIndex + i) % _gameLibs.size();
     if (_gameLibs[_gameIndex] == "Menu") {
         _game = std::make_unique<CoreMenu>(*this);
         refreshLibs();
-    } else
+    } else {
         openGame(_gameLibs[_gameIndex]);
+    }
     skipNext = true;
 }
 
-void Core::Core::nextDisplay(int i)
-{
+void Core::Core::nextDisplay(int i) {
     if (_displayLibs.size() == 0)
         return;
     if (_displayIndex == 0 && i == -1)
@@ -114,10 +108,10 @@ void Core::Core::nextDisplay(int i)
     skipNext = true;
 }
 
-bool Core::Core::handleEventLibs(Event &event)
-{
+bool Core::Core::handleEventLibs(Event &event) {
     try {
-        if (std::any_cast<Event::KeyStatus>(event.value) != Event::KeyStatus::KEY_RELEASED)
+        if (std::any_cast<Event::KeyStatus>(event.value) !=
+            Event::KeyStatus::KEY_RELEASED)
             return false;
     } catch (const std::bad_any_cast& e) {}
 
@@ -144,8 +138,7 @@ bool Core::Core::handleEventLibs(Event &event)
     return true;
 }
 
-Core::StateCore Core::Core::events()
-{
+Core::StateCore Core::Core::events() {
     Event event = _display->getEvent();
 
     while (event.key != Key::KeyCode::NONE) {
@@ -166,8 +159,7 @@ Core::StateCore Core::Core::events()
     return StateCore::NONE;
 }
 
-void Core::Core::draw()
-{
+void Core::Core::draw() {
     _display->clear();
     for (const std::unique_ptr<IDrawable>& drawable : _game->getDrawables())
         _display->draw(*drawable.get());
@@ -176,8 +168,7 @@ void Core::Core::draw()
     _display->display();
 }
 
-void Core::Core::openGame(const std::string &gameLibPath)
-{
+void Core::Core::openGame(const std::string &gameLibPath) {
     if (_gameHandle)
         closeGame();
     void *handle = dlopen(gameLibPath.c_str(), RTLD_LAZY);
@@ -185,7 +176,8 @@ void Core::Core::openGame(const std::string &gameLibPath)
         std::cerr << "Error loading library: " << dlerror() << std::endl;
         exit(84);
     }
-    auto createModule = reinterpret_cast<std::unique_ptr<IGameModule> (*)()>(dlsym(handle, "getGameModule"));
+    auto createModule = reinterpret_cast<std::unique_ptr<IGameModule> (*)()>
+        (dlsym(handle, "getGameModule"));
     if (!createModule) {
         std::cerr << "Error loading symbol: " << dlerror() << std::endl;
         dlclose(handle);
@@ -196,8 +188,7 @@ void Core::Core::openGame(const std::string &gameLibPath)
     refreshLibs();
 }
 
-void Core::Core::openDisplay(const std::string &displayLibPath)
-{
+void Core::Core::openDisplay(const std::string &displayLibPath) {
     if (_displayHandle)
         closeDisplay();
     void *handle = dlopen(displayLibPath.c_str(), RTLD_LAZY);
@@ -205,7 +196,8 @@ void Core::Core::openDisplay(const std::string &displayLibPath)
         std::cerr << "Error loading library: " << dlerror() << std::endl;
         exit(84);
     }
-    auto createModule = reinterpret_cast<std::unique_ptr<IDisplayModule> (*)()>(dlsym(handle, "getDisplayModule"));
+    auto createModule = reinterpret_cast<std::unique_ptr<IDisplayModule> (*)()>
+        (dlsym(handle, "getDisplayModule"));
     if (!createModule) {
         std::cerr << "Error loading symbol: " << dlerror() << std::endl;
         dlclose(handle);
@@ -216,8 +208,7 @@ void Core::Core::openDisplay(const std::string &displayLibPath)
     _display->createWindow(_game->getWindow());
 }
 
-void Core::Core::setIdisplay(const std::string &displayLibPath)
-{
+void Core::Core::setIdisplay(const std::string &displayLibPath) {
     for (size_t i = 0; i < _displayLibs.size(); ++i) {
         if (_displayLibs[i] == displayLibPath) {
             _displayIndex = i;
@@ -228,8 +219,7 @@ void Core::Core::setIdisplay(const std::string &displayLibPath)
     _displayIndex = _displayLibs.size() - 1;
 }
 
-void Core::Core::closeGame()
-{
+void Core::Core::closeGame() {
     if (_game) {
         _game->~IGameModule();
         _game = nullptr;
@@ -240,16 +230,14 @@ void Core::Core::closeGame()
     }
 }
 
-void Core::Core::refreshLibs()
-{
-    if (_display){
+void Core::Core::refreshLibs() {
+    if (_display) {
         _display->createWindow(_game->getWindow());
         openDisplay(_displayLibs[_displayIndex]);
     }
 }
 
-void Core::Core::closeDisplay()
-{
+void Core::Core::closeDisplay() {
     if (_display) {
         _display->~IDisplayModule();
         _display = nullptr;

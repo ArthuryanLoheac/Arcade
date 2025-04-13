@@ -5,30 +5,34 @@
 ** PacManGame
 */
 
-#include "PacManGame.hpp"
-#include "interfaces/Sprite.hpp"
-#include "interfaces/Text.hpp"
+
 #include <algorithm>
 #include <iostream>
 #include <ctime>
 #include <sstream>
 #include <fstream>
+#include <vector>
+#include <string>
+#include <utility>
+#include <tuple>
+#include <memory>
 
-extern "C" std::unique_ptr<IGameModule> getGameModule()
-{
+#include "games/PacManGame.hpp"
+#include "interfaces/Sprite.hpp"
+#include "interfaces/Text.hpp"
+
+extern "C" std::unique_ptr<IGameModule> getGameModule() {
     return std::make_unique<PacManGame>();
 }
 
 PacManGame::PacManGame()
     : window({30, 15}, "PacMan", "assets/PacMan/Pacman.png"),
-        player(14, 8)
-{
+        player(14, 8) {
     Init();
     InitScore();
 }
 
-void PacManGame::Init()
-{
+void PacManGame::Init() {
     map.clear();
     player.x = 14;
     player.y = 8;
@@ -50,8 +54,7 @@ void PacManGame::Init()
     map[player.y][player.x] = 2;
 }
 
-void PacManGame::InitScore()
-{
+void PacManGame::InitScore() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     try {
@@ -72,8 +75,7 @@ void PacManGame::InitScore()
     playerName = "Player";
 }
 
-bool PacManGame::update(float deltaTime)
-{
+bool PacManGame::update(float deltaTime) {
     sounds.clear();
     drawables.clear();
     timeUntilOpen -= deltaTime;
@@ -94,7 +96,7 @@ bool PacManGame::update(float deltaTime)
             updatePosPlayer(deltaTime);
         if (invisbleTime > 0) {
             invisbleTime -= deltaTime;
-            if (invisbleTime <= 0){
+            if (invisbleTime <= 0) {
                 invisbleTime = 0;
                 respawnDeadGhost();
             }
@@ -103,21 +105,23 @@ bool PacManGame::update(float deltaTime)
     }
     updateText();
     AddDrawable(player.x, player.y,
-        player.isClose ? "assets/PacMan/Pacman.png" : "assets/PacMan/PacManClose.png",
-        player.isClose ? "C " : "O ", .25f/4, player.dir * 90.f);
-    for (int i = 0; i < ghosts.size(); i++){
+        player.isClose ? "assets/PacMan/Pacman.png" :
+        "assets/PacMan/PacManClose.png", player.isClose ? "C " :
+        "O ", .25f/4, player.dir * 90.f);
+    for (int i = 0; i < ghosts.size(); i++) {
         if (ghosts[i].isDead)
             continue;
         if (invisbleTime > 0)
-            AddDrawable(ghosts[i].x, ghosts[i].y, "assets/PacMan/Eatable.png", "E ", .25f/4, 0.f);
+            AddDrawable(ghosts[i].x, ghosts[i].y,
+                "assets/PacMan/Eatable.png", "E ", .25f/4, 0.f);
         else
-            AddDrawable(ghosts[i].x, ghosts[i].y, ghostTexture[i], ghostTextureCLI[i], .25f/4, 0.f);
+            AddDrawable(ghosts[i].x, ghosts[i].y, ghostTexture[i],
+                ghostTextureCLI[i], .25f/4, 0.f);
     }
     return false;
 }
 
-void PacManGame::updateCollisions(void)
-{
+void PacManGame::updateCollisions(void) {
     for (auto& ghost : ghosts) {
         if (player.x == ghost.x && player.y == ghost.y) {
             if (invisbleTime > 0) {
@@ -134,8 +138,7 @@ void PacManGame::updateCollisions(void)
     }
 }
 
-void PacManGame::updateGhost(float deltaTime, int i)
-{
+void PacManGame::updateGhost(float deltaTime, int i) {
     ghosts[i].timeLeftToMove -= deltaTime;
     if (ghosts[i].timeLeftToMove <= 0.f) {
         if (invisbleTime > 0)
@@ -148,8 +151,7 @@ void PacManGame::updateGhost(float deltaTime, int i)
     }
 }
 
-void PacManGame::moveGhost(int PrevX, int PrevY, int i)
-{
+void PacManGame::moveGhost(int PrevX, int PrevY, int i) {
     int direction = std::rand() % 4;
     if (direction == 0)
         ghosts[i].x += 1;
@@ -176,8 +178,7 @@ void PacManGame::moveGhost(int PrevX, int PrevY, int i)
     }
 }
 
-void PacManGame::updateText(void)
-{
+void PacManGame::updateText(void) {
     auto statusText = std::make_unique<Text>();
     statusText->setPosition({0, 0});
     statusText->setScale({10, 10});
@@ -195,18 +196,18 @@ void PacManGame::updateText(void)
     drawables.push_back(std::move(statusText));
 }
 
-void PacManGame::updateWalls(void)
-{
+void PacManGame::updateWalls(void) {
     bool isEndPacGome = true;
     for (int i = 0; i < map.size(); i++) {
         for (int j = 0; j < map[i].size(); j++) {
-            if (map[i][j] == 1)
-                AddDrawable(j, i, "assets/PacMan/Wall.jpg", "##", .165f/4, 0.f);
-            else if (map[i][j] == 0){
-                AddDrawable(j, i, "assets/PacMan/LittlePacGome.png", ". ", .25f/4, 0.f);
+            if (map[i][j] == 1) {
+                AddDrawable(j, i, "assets/PacMan/Wall.jpg", "##", .165f/4, 0);
+            } else if (map[i][j] == 0) {
+                AddDrawable(j, i, "assets/PacMan/LittlePacGome.png",
+                    ".", .25f/4, 0);
                 isEndPacGome = false;
-            } else if (map[i][j] == 3){
-                AddDrawable(j, i, "assets/PacMan/PacGome.png", "o ", .25f/4, 0.f);
+            } else if (map[i][j] == 3) {
+                AddDrawable(j, i, "assets/PacMan/PacGome.png", "o", .25f/4, 0);
                 isEndPacGome = false;
             }
         }
@@ -218,8 +219,7 @@ void PacManGame::updateWalls(void)
 }
 
 
-void PacManGame::updatePosPlayer(float deltaTime)
-{
+void PacManGame::updatePosPlayer(float deltaTime) {
     player.timeAnimLeft -= deltaTime;
     player.timeLeftToMove -= deltaTime;
     if (player.timeLeftToMove <= 0.f) {
@@ -245,7 +245,7 @@ void PacManGame::updatePosPlayer(float deltaTime)
             player.x = 0;
         if (player.y >= window.size.second)
             player.y = 0;
-        
+
         // Check if the player is on a wall
         if (map[player.y][player.x] == 1) {
             player.x = PrevX;
@@ -268,50 +268,48 @@ void PacManGame::updatePosPlayer(float deltaTime)
     }
 }
 
-const Window &PacManGame::getWindow(void)
-{
+const Window &PacManGame::getWindow(void) {
     return window;
 }
 
-const std::vector<std::unique_ptr<IDrawable>> &PacManGame::getDrawables(void)
-{
+const std::vector<std::unique_ptr<IDrawable>> &PacManGame::getDrawables(void) {
     return drawables;
 }
 
-const std::vector<Sound> &PacManGame::getSound(void)
-{
+const std::vector<Sound> &PacManGame::getSound(void) {
     return sounds;
 }
 
-bool PacManGame::event(const Event &evt)
-{
+bool PacManGame::event(const Event &evt) {
     if (evt.key == Key::KeyCode::KEY_R) {
         Init();
         return false;
     }
     if (gameOver)
         return false;
-    if (evt.key == Key::KeyCode::RIGHT || evt.key == Key::KeyCode::KEY_D) {
+    if (evt.key == Key::KeyCode::RIGHT ||
+        evt.key == Key::KeyCode::KEY_D) {
         player.dir = PacMan::RIGHT;
-    } else if (evt.key == Key::KeyCode::LEFT || evt.key == Key::KeyCode::KEY_Q) {
+    } else if (evt.key == Key::KeyCode::LEFT ||
+        evt.key == Key::KeyCode::KEY_Q) {
         player.dir = PacMan::LEFT;
-    } else if (evt.key == Key::KeyCode::UP || evt.key == Key::KeyCode::KEY_Z) {
+    } else if (evt.key == Key::KeyCode::UP ||
+        evt.key == Key::KeyCode::KEY_Z) {
         player.dir = PacMan::UP;
-    } else if (evt.key == Key::KeyCode::DOWN || evt.key == Key::KeyCode::KEY_S) {
+    } else if (evt.key == Key::KeyCode::DOWN ||
+        evt.key == Key::KeyCode::KEY_S) {
         player.dir = PacMan::DOWN;
-    } 
+    }
     return false;
 }
 
-std::vector<std::pair<std::string, int>> PacManGame::getScores(void)
-{
+std::vector<std::pair<std::string, int>> PacManGame::getScores(void) {
     return scoreHistory;
 }
 
-
 void PacManGame::AddDrawable(int x, int y, std::string texturePath,
-    std::string cliTexture, float scale, float rotation, std::tuple<int, int, int, int> GUI_Color)
-{
+    std::string cliTexture, float scale, float rotation,
+    std::tuple<int, int, int, int> GUI_Color) {
     auto sprite = std::make_unique<Sprite>();
     sprite->setPosition({x, y + 2});
     sprite->setScale({scale, scale });
@@ -322,11 +320,10 @@ void PacManGame::AddDrawable(int x, int y, std::string texturePath,
     drawables.push_back(std::move(sprite));
 }
 
-void PacManGame::respawnDeadGhost()
-{
+void PacManGame::respawnDeadGhost() {
     for (auto& ghost : ghosts) {
-        if (ghost.isDead){
-            ghost.x = 14;   
+        if (ghost.isDead) {
+            ghost.x = 14;
             ghost.y = 5;
             ghost.isDead = false;
         }

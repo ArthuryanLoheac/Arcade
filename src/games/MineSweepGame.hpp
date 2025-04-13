@@ -1,23 +1,18 @@
-/*
-** EPITECH PROJECT, 2025
-** Arcade
-** File description:
-** MineSweepGame
-*/
-
 #pragma once
 
-#include "interfaces/IGameModule.hpp"
 #include <vector>
 #include <random>
+#include <string>
 #include <memory>
+
+#include "interfaces/IGameModule.hpp"
 #include "core/Window.hpp"
 #include "interfaces/IDrawable.hpp"
 #include "core/Sound.hpp"
 #include "core/Event.hpp"
 
 class MineSweepGame : public IGameModule {
-public:
+ public:
     MineSweepGame();
 
     bool update(float deltaTime) override;
@@ -27,7 +22,7 @@ public:
     bool event(const Event &evt) override;
     std::vector<std::pair<std::string, int>> getScores(void) override;
 
-private:
+ private:
     enum class CellState {
         HIDDEN,
         REVEALED,

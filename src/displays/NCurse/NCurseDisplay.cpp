@@ -1,63 +1,57 @@
-/*
-** EPITECH PROJECT, 2025
-** Arcade
-** File description:
-** NCurseDisplay
-*/
+#include <map>
+#include <memory>
+#include <string>
+#include <utility>
 
-#include "NCurseDisplay.hpp"
+#include "displays/NCurse/NCurseDisplay.hpp"
 
-extern "C" std::unique_ptr<IDisplayModule> getDisplayModule(void)
-{
+extern "C" std::unique_ptr<IDisplayModule> getDisplayModule(void) {
     return std::make_unique<NCurseDisplay>();
 }
 
-NCurseDisplay::NCurseDisplay()
-{
+NCurseDisplay::NCurseDisplay() {
     _window = nullptr;
 }
 
-NCurseDisplay::~NCurseDisplay()
-{
+NCurseDisplay::~NCurseDisplay() {
     if (_window)
         _window->~NCurseWrapper();
 }
 
-void NCurseDisplay::createWindow(const Window &window)
-{
-    _window = std::make_unique<NCurseWrapper>(window.size.second, window.size.first);
+void NCurseDisplay::createWindow(const Window &window) {
+    _window = std::make_unique<NCurseWrapper>(
+        window.size.second, window.size.first);
 }
 
-void NCurseDisplay::draw(const IDrawable &to_draw)
-{
+void NCurseDisplay::draw(const IDrawable &to_draw) {
     Sprite sprite;
     Text text;
 
     try {
         sprite = dynamic_cast<const Sprite &>(to_draw);
         if (sprite.getGUI_Textures().empty()) {
-            _window->print(sprite.getPosition().first*2, sprite.getPosition().second, "XX");
+            _window->print(sprite.getPosition().first*2,
+                sprite.getPosition().second, "XX");
             return;
         }
-        _window->print(sprite.getPosition().first*2, sprite.getPosition().second, sprite.getCLI_Textures()[0]);
+        _window->print(sprite.getPosition().first*2,
+            sprite.getPosition().second, sprite.getCLI_Textures()[0]);
     } catch (std::bad_cast &e) {
         text = dynamic_cast<const Text &>(to_draw);
-        _window->print(text.getPosition().first, text.getPosition().second, text.getStr());
+        _window->print(text.getPosition().first, text.getPosition().second,
+            text.getStr());
     }
 }
 
-void NCurseDisplay::display(void)
-{
+void NCurseDisplay::display(void) {
     _window->refresh();
 }
 
-void NCurseDisplay::clear(void)
-{
+void NCurseDisplay::clear(void) {
     _window->clear();
 }
 
-Event NCurseDisplay::getEvent(void)
-{
+Event NCurseDisplay::getEvent(void) {
     int ch = -1;
     int x = 0, y = 0;
     Key::KeyCode key = Key::KeyCode::NONE;
@@ -69,12 +63,12 @@ Event NCurseDisplay::getEvent(void)
         return Event(key, Key::KeyStatus::KEY_PRESSED);
     key = getMouseCode(x, y);
     if (key != Key::KeyCode::NONE)
-        return Event(key, Event::MouseStatusClick{Event::MousePos{x, y}, Event::KeyStatus::KEY_PRESSED});
+        return Event(key, Event::MouseStatusClick{Event::MousePos{x, y},
+            Event::KeyStatus::KEY_PRESSED});
     return Event(Key::KeyCode::NONE, std::any());
 }
 
-Key::KeyCode NCurseDisplay::getMouseCode(int &x, int &y)
-{
+Key::KeyCode NCurseDisplay::getMouseCode(int &x, int &y) {
     MEVENT event;
 
     if (getmouse(&event) == OK) {
@@ -90,13 +84,11 @@ Key::KeyCode NCurseDisplay::getMouseCode(int &x, int &y)
     return Key::KeyCode::NONE;
 }
 
-Key::KeyCode NCurseDisplay::getKeyBoardCode(int ch)
-{
+Key::KeyCode NCurseDisplay::getKeyBoardCode(int ch) {
     auto it = _keyMap.find(ch);
     return (it != _keyMap.end()) ? it->second : Key::KeyCode::NONE;
 }
 
-void NCurseDisplay::handleSound(const Sound &sound)
-{
+void NCurseDisplay::handleSound(const Sound &sound) {
     (void)sound;
 }

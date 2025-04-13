@@ -1,75 +1,64 @@
-#include "Text.hpp"
+#include <tuple>
+#include <utility>
+#include <string>
 
-Text::Text(void)
-{
+#include "interfaces/Text.hpp"
+
+Text::Text(void) {
 }
 
-std::string Text::getFontPath(void) const
-{
+std::string Text::getFontPath(void) const {
     return fontPath;
 }
 
-std::string Text::getStr(void) const
-{
+std::string Text::getStr(void) const {
     return str;
 }
 
-void Text::setFontPath(std::string fontPath)
-{
+void Text::setFontPath(std::string fontPath) {
     this->fontPath = fontPath;
 }
 
-void Text::setStr(std::string str)
-{
+void Text::setStr(std::string str) {
     this->str = str;
 }
 
-std::pair<float, float> Text::getScale(void) const
-{
+std::pair<float, float> Text::getScale(void) const {
     return scale;
 }
 
-float Text::getRotation(void) const
-{
+float Text::getRotation(void) const {
     return rotation;
 }
 
-std::pair<CLI_Color, CLI_Color> Text::getCLI_Color(void) const
-{
+std::pair<CLI_Color, CLI_Color> Text::getCLI_Color(void) const {
     return CLI_color;
 }
 
-std::tuple<int, int, int, int> Text::getGUI_Color(void) const
-{
+std::tuple<int, int, int, int> Text::getGUI_Color(void) const {
     return GUI_color;
 }
 
-std::pair<int, int> Text::getPosition(void) const
-{
+std::pair<int, int> Text::getPosition(void) const {
     return position;
 }
 
-void Text::setScale(std::pair<float, float> scale)
-{
+void Text::setScale(std::pair<float, float> scale) {
     this->scale = scale;
 }
 
-void Text::setRotation(float rotation)
-{
+void Text::setRotation(float rotation) {
     this->rotation = rotation;
 }
 
-void Text::setCLI_Color(std::pair<CLI_Color, CLI_Color> CLI_Color)
-{
+void Text::setCLI_Color(std::pair<CLI_Color, CLI_Color> CLI_Color) {
     this->CLI_color = CLI_Color;
 }
 
-void Text::setGUI_Color(std::tuple<int, int, int, int> GUI_Color)
-{
+void Text::setGUI_Color(std::tuple<int, int, int, int> GUI_Color) {
     this->GUI_color = GUI_Color;
 }
 
-void Text::setPosition(std::pair<int, int> position)
-{
+void Text::setPosition(std::pair<int, int> position) {
     this->position = position;
 }

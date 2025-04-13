@@ -1,18 +1,12 @@
-/*
-** EPITECH PROJECT, 2025
-** Arcade-Headers
-** File description:
-** Event
-*/
-
 #pragma once
 #include <any>
+#include <string>
 
-#include "Keys.hpp"
+#include "arcadeCore/Keys.hpp"
 
 
 class Event {
-public:
+ public:
     enum KeyStatus {
         KEY_PRESSED,
         KEY_RELEASED
@@ -35,8 +29,7 @@ public:
 
     Event(
         enum Key::KeyCode key,
-        std::any value
-    ): key(key), value(value) {};
+        std::any value): key(key), value(value) {}
 
     enum Key::KeyCode key;
     std::any value;

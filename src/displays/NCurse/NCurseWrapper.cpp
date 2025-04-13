@@ -1,14 +1,8 @@
-/*
-** EPITECH PROJECT, 2025
-** Arcade
-** File description:
-** NCurseWrapper
-*/
+#include <string>
 
-#include "NCurseWrapper.hpp"
+#include "displays/NCurse/NCurseWrapper.hpp"
 
-NCurseWrapper::NCurseWrapper(int height, int width)
-{
+NCurseWrapper::NCurseWrapper(int height, int width) {
     initscr();
     raw();
     keypad(stdscr, TRUE);
@@ -22,29 +16,24 @@ NCurseWrapper::NCurseWrapper(int height, int width)
     refresh();
 }
 
-NCurseWrapper::~NCurseWrapper()
-{
+NCurseWrapper::~NCurseWrapper() {
     endwin();
 }
 
-void NCurseWrapper::clear()
-{
+void NCurseWrapper::clear() {
     erase();
 }
 
-void NCurseWrapper::refresh()
-{
+void NCurseWrapper::refresh() {
     wrefresh(window);
 }
 
-void NCurseWrapper::print(int x, int y, const std::string &str)
-{
+void NCurseWrapper::print(int x, int y, const std::string &str) {
     mvprintw(y, x, "%s", str.c_str());
     attroff(COLOR_PAIR(1));
 }
 
-void NCurseWrapper::color(std::pair<int, int> color)
-{
+void NCurseWrapper::color(std::pair<int, int> color) {
     init_pair(1, color.first, color.second);
     attron(COLOR_PAIR(1));
 }

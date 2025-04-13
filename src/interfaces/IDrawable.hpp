@@ -7,11 +7,12 @@
 
 #pragma once
 #include <tuple>
+#include <utility>
 
-#include "CLI_Colors.hpp"
+#include "arcadeCore/CLI_Colors.hpp"
 
 class IDrawable {
-public:
+ public:
     virtual std::pair<float, float> getScale(void) const = 0;
     virtual float getRotation(void) const = 0;
     virtual std::pair<CLI_Color, CLI_Color> getCLI_Color(void) const = 0;

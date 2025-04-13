@@ -1,20 +1,16 @@
-/*
-** EPITECH PROJECT, 2025
-** Arcade
-** File description:
-** Core
-*/
-
 #pragma once
-#include <memory>
-#include <vector>
-#include "dlfcn.h"
-#include <chrono>
-#include <iostream>
+#include <dlfcn.h>
 #include <dirent.h>
 
-#include "IDisplayModule.hpp"
-#include "IGameModule.hpp"
+#include <memory>
+#include <vector>
+#include <chrono>
+#include <iostream>
+#include <string>
+
+
+#include "interfaces/IDisplayModule.hpp"
+#include "interfaces/IGameModule.hpp"
 
 typedef std::unique_ptr<IDisplayModule> (*getDisplay)();
 typedef std::unique_ptr<IGameModule> (*getGame)();
@@ -28,7 +24,7 @@ enum StateCore {
 };
 
 class Core {
-public:
+ public:
     Core();
     ~Core() = default;
 
@@ -39,14 +35,16 @@ public:
     std::vector<std::string> getDisplayLibs() const { return _displayLibs; }
     std::vector<std::string> getGameLibs() const { return _gameLibs; }
     std::string getGameLibPath() const { return _gameLibs[_gameIndex]; }
-    std::string getDisplayLibPath() const { return _displayLibs[_displayIndex]; }
+    std::string getDisplayLibPath() const
+        { return _displayLibs[_displayIndex]; }
 
     void closeDisplay();
     void openDisplay(const std::string &displayLibPath);
     void setIdisplay(const std::string &displayLibPath);
     void nextDisplay(int i);
     void nextGame(int i);
-private:
+
+ private:
     void openGame(const std::string &gameLibPath);
     void closeGame();
     void refreshLibs();
@@ -69,14 +67,15 @@ private:
 };
 
 class Error : public std::exception {
-    public:
-    Error(const std::string &what, const std::string &where) : _what(what), _where(where) {}
+ public:
+    Error(const std::string &what, const std::string &where)
+    : _what(what), _where(where) {}
     ~Error() = default;
 
     const char *what() const noexcept override { return _what.c_str(); }
     const char *where() const noexcept { return _where.c_str(); }
-private:
+ private:
     std::string _what;
     std::string _where;
 };
-}
+}  // namespace Core

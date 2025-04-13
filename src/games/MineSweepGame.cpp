@@ -1,21 +1,18 @@
-/*
-** EPITECH PROJECT, 2025
-** Arcade
-** File description:
-** MineSweepGame
-*/
-
-#include "MineSweepGame.hpp"
-#include "interfaces/Sprite.hpp"
-#include "interfaces/Text.hpp"
 #include <algorithm>
 #include <iostream>
 #include <ctime>
 #include <sstream>
 #include <fstream>
+#include <vector>
+#include <string>
+#include <memory>
+#include <utility>
 
-extern "C" std::unique_ptr<IGameModule> getGameModule()
-{
+#include "games/MineSweepGame.hpp"
+#include "interfaces/Sprite.hpp"
+#include "interfaces/Text.hpp"
+
+extern "C" std::unique_ptr<IGameModule> getGameModule() {
     return std::make_unique<MineSweepGame>();
 }
 
@@ -24,8 +21,7 @@ MineSweepGame::MineSweepGame()
       timeLimit(300.0f), gameOver(false), playerWon(false), revealedCount(0),
       flaggedCount(0), gameTime(0.0f), score(0), firstMove(true),
       window({15, 15},
-             "Minesweeper", "")
-{
+             "Minesweeper", "") {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     initializeBoard();
@@ -47,8 +43,7 @@ MineSweepGame::MineSweepGame()
     playerName = "Player";
 }
 
-bool MineSweepGame::update(float deltaTime)
-{
+bool MineSweepGame::update(float deltaTime) {
     if (!gameOver)
         updateTimer(deltaTime);
     drawables.clear();
@@ -80,11 +75,13 @@ bool MineSweepGame::update(float deltaTime)
                 cliTexture = "**";
             } else {
                 if (cell.adjacentMines >= 1 && cell.adjacentMines <= 8) {
-                    texturePath = "assets/MineSweeper/" + std::to_string(cell.adjacentMines) + ".png";
+                    texturePath = "assets/MineSweeper/" +
+                        std::to_string(cell.adjacentMines) + ".png";
                 } else {
                     texturePath = "assets/MineSweeper/découvert.png";
                 }
-                cliTexture = (cell.adjacentMines == 0) ? "  " : std::to_string(cell.adjacentMines) + " ";
+                cliTexture = (cell.adjacentMines == 0) ? "  " :
+                    std::to_string(cell.adjacentMines) + " ";
             }
             sprite->setGUI_Textures({texturePath});
             sprite->setCLI_Textures({cliTexture});
@@ -106,7 +103,8 @@ bool MineSweepGame::update(float deltaTime)
     } else {
         int remainingMines = numMines - flaggedCount;
         int remainingTime = static_cast<int>(timeLimit - gameTime);
-        ss << "Mines: " << remainingMines << " | Time: " << remainingTime << " | Score: " << score;
+        ss << "Mines: " << remainingMines << " | Time: "
+            << remainingTime << " | Score: " << score;
     }
     statusText->setStr(ss.str());
     drawables.push_back(std::move(statusText));
@@ -125,23 +123,20 @@ bool MineSweepGame::update(float deltaTime)
     return false;
 }
 
-const Window &MineSweepGame::getWindow(void)
-{
+const Window &MineSweepGame::getWindow(void) {
     return window;
 }
 
-const std::vector<std::unique_ptr<IDrawable>> &MineSweepGame::getDrawables(void)
-{
+const std::vector<std::unique_ptr<IDrawable>>
+    &MineSweepGame::getDrawables(void) {
     return drawables;
 }
 
-const std::vector<Sound> &MineSweepGame::getSound(void)
-{
+const std::vector<Sound> &MineSweepGame::getSound(void) {
     return sounds;
 }
 
-bool MineSweepGame::event(const Event &evt)
-{
+bool MineSweepGame::event(const Event &evt) {
     if (evt.key == Key::KeyCode::KEY_R) {
         try {
             auto status = std::any_cast<Event::KeyStatus>(evt.value);
@@ -163,12 +158,14 @@ bool MineSweepGame::event(const Event &evt)
 
     if (gameOver)
         return false;
-    if (evt.key == Key::KeyCode::MOUSE_LEFT || evt.key == Key::KeyCode::MOUSE_RIGHT) {
+    if (evt.key == Key::KeyCode::MOUSE_LEFT ||
+        evt.key == Key::KeyCode::MOUSE_RIGHT) {
         try {
             auto mouseClick = std::any_cast<Event::MouseStatusClick>(evt.value);
             int boardX = (mouseClick.pos.x - BOARD_MARGIN_X) / CELL_UNIT_SIZE;
             int boardY = (mouseClick.pos.y - BOARD_MARGIN_Y) / CELL_UNIT_SIZE;
-            if (boardX >= 0 && boardX < boardWidth && boardY >= 0 && boardY < boardHeight) {
+            if (boardX >= 0 && boardX < boardWidth
+                && boardY >= 0 && boardY < boardHeight) {
                 if (mouseClick.status == Event::KeyStatus::KEY_PRESSED) {
                     if (evt.key == Key::KeyCode::MOUSE_LEFT) {
                         revealCell(boardX, boardY);
@@ -184,13 +181,11 @@ bool MineSweepGame::event(const Event &evt)
     return false;
 }
 
-std::vector<std::pair<std::string, int>> MineSweepGame::getScores(void)
-{
+std::vector<std::pair<std::string, int>> MineSweepGame::getScores(void) {
     return scoreHistory;
 }
 
-void MineSweepGame::initializeBoard()
-{
+void MineSweepGame::initializeBoard() {
     board.resize(boardHeight);
     for (int y = 0; y < boardHeight; ++y) {
         board[y].resize(boardWidth);
@@ -202,8 +197,7 @@ void MineSweepGame::initializeBoard()
     calculateAdjacentMines();
 }
 
-void MineSweepGame::placeMines()
-{
+void MineSweepGame::placeMines() {
     int minesPlaced = 0;
 
     while (minesPlaced < numMines) {
@@ -216,8 +210,7 @@ void MineSweepGame::placeMines()
     }
 }
 
-void MineSweepGame::calculateAdjacentMines()
-{
+void MineSweepGame::calculateAdjacentMines() {
     for (int y = 0; y < boardHeight; ++y) {
         for (int x = 0; x < boardWidth; ++x) {
             if (board[y][x].hasMine) {
@@ -229,10 +222,10 @@ void MineSweepGame::calculateAdjacentMines()
                     if (dx == 0 && dy == 0) continue;
                     int nx = x + dx;
                     int ny = y + dy;
-                    if (nx >= 0 && nx < boardWidth && ny >= 0 && ny < boardHeight) {
-                        if (board[ny][nx].hasMine) {
+                    if (nx >= 0 && nx < boardWidth && ny >= 0
+                        && ny < boardHeight) {
+                        if (board[ny][nx].hasMine)
                             mineCount++;
-                        }
                     }
                 }
             }
@@ -241,8 +234,7 @@ void MineSweepGame::calculateAdjacentMines()
     }
 }
 
-void MineSweepGame::revealCell(int x, int y)
-{
+void MineSweepGame::revealCell(int x, int y) {
     if (x < 0 || x >= boardWidth || y < 0 || y >= boardHeight ||
         board[y][x].state == CellState::REVEALED ||
         board[y][x].state == CellState::FLAGGED) {
@@ -296,8 +288,7 @@ void MineSweepGame::revealCell(int x, int y)
     }
 }
 
-void MineSweepGame::toggleFlag(int x, int y)
-{
+void MineSweepGame::toggleFlag(int x, int y) {
     if (x < 0 || x >= boardWidth || y < 0 || y >= boardHeight ||
         board[y][x].state == CellState::REVEALED) {
         return;
@@ -311,13 +302,11 @@ void MineSweepGame::toggleFlag(int x, int y)
     }
 }
 
-bool MineSweepGame::checkWin()
-{
+bool MineSweepGame::checkWin() {
     return revealedCount == (boardWidth * boardHeight - numMines);
 }
 
-void MineSweepGame::revealAllMines()
-{
+void MineSweepGame::revealAllMines() {
     for (int y = 0; y < boardHeight; ++y) {
         for (int x = 0; x < boardWidth; ++x) {
             if (board[y][x].hasMine) {
@@ -331,8 +320,7 @@ void MineSweepGame::revealAllMines()
     }
 }
 
-void MineSweepGame::ensureFirstCellIsSafe(int x, int y)
-{
+void MineSweepGame::ensureFirstCellIsSafe(int x, int y) {
     if (board[y][x].hasMine) {
         board[y][x].hasMine = false;
         bool minePlaced = false;
@@ -356,7 +344,8 @@ void MineSweepGame::ensureFirstCellIsSafe(int x, int y)
                     while (!minePlaced) {
                         int newX = std::rand() % boardWidth;
                         int newY = std::rand() % boardHeight;
-                        bool isSafeArea = (std::abs(newX - x) > 1 || std::abs(newY - y) > 1);
+                        bool isSafeArea = (std::abs(newX - x) > 1
+                            || std::abs(newY - y) > 1);
                         if (isSafeArea && !board[newY][newX].hasMine) {
                             board[newY][newX].hasMine = true;
                             minePlaced = true;
@@ -369,13 +358,11 @@ void MineSweepGame::ensureFirstCellIsSafe(int x, int y)
     calculateAdjacentMines();
 }
 
-void MineSweepGame::updateTimer(float deltaTime)
-{
+void MineSweepGame::updateTimer(float deltaTime) {
     gameTime += deltaTime / 1000.0f;
 }
 
-void MineSweepGame::updateScore(int newlyRevealedCells)
-{
+void MineSweepGame::updateScore(int newlyRevealedCells) {
     score += newlyRevealedCells * 10;
     if (gameTime > 0) {
         float timeBonus = 1.0f + (timeLimit / gameTime) * 0.1f;

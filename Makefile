@@ -108,7 +108,7 @@ SRC_PACMAN	=	src/games/PacManGame.cpp\
 					src/interfaces/Text.cpp \
 					src/interfaces/Sprite.cpp \
 
-SRC_TESTS	= 	tests/test_1.cpp \
+SRC_TESTS	= 	\
 
 # ============= RULES ============= #
 
@@ -182,3 +182,14 @@ tests_clean_run: fclean tests_run
 
 tests_clean_run_coverage: tests_clean_run
 	gcovr -r . -e tests/
+
+FLAGS_LINTER =	\
+	--repository=. \
+	--quiet \
+	--output=vs7	\
+	--filter=-legal/copyright,-build/c++17,+build/c++20,-runtime/references	\
+	--recursive
+
+style_check:
+	@cpplint $(FLAGS_LINTER) \
+		$(shell find . -type f \( -name '*.cpp' -o -name '*.hpp' \))

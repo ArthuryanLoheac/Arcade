@@ -12,9 +12,18 @@ env:
   MIRROR_URL: 'git@github.com:EpitechPromo2028/B-OOP-400-NAN-4-1-arcade-arthuryan.loheac-de-sainte-marie'
   EXECUTABLES: 'arcade'
   FUNCTIONS_BANNED: ''
-
 jobs:
   check_coding_style:
+    if: github.repository != 'EpitechPromo2028/B-OOP-400-NAN-4-1-arcade-arthuryan.loheac-de-sainte-marie'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: 3.x
+    - run: pip install cpplint
+    - run: make style_check
+  check_epitech_coding_style:
     if: github.repository != 'EpitechPromo2028/B-OOP-400-NAN-4-1-arcade-arthuryan.loheac-de-sainte-marie'
     runs-on: ubuntu-latest
     container:
@@ -45,7 +54,7 @@ jobs:
           fi
           rm "$tmpfile"
   check_program_compilation:
-    needs: check_coding_style
+    needs: [check_coding_style, check_epitech_coding_style]
     runs-on: ubuntu-latest
     container:
       image: epitechcontent/epitest-docker:latest
@@ -54,9 +63,7 @@ jobs:
         uses: actions/checkout@v4
       - name: "Make"
         timeout-minutes: 2
-        run: |
-          mkdir -p lib
-          make
+        run: make
       - name: "Check existing executables"
         run: |
           LIST=$(echo $EXECUTABLES | tr ',' ' ')
