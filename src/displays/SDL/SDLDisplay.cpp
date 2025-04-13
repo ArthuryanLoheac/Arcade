@@ -199,8 +199,19 @@ void SDLDisplay::drawSprite(const Sprite &sprite)
         return;
     }
 
+    std::string textKey = sprite.getGUI_Textures()[0];
+    std::shared_ptr<SDL_Texture> texture;
+
+    if (textures.find(textKey) == textures.end()) {
+        std::shared_ptr<SDL_Texture> textSurface = SDL2::IMG2_LoadTexture(app.renderer.get(), textKey.c_str());
+        textures[textKey] = SDL2::IMG2_LoadTexture(app.renderer.get(), textKey.c_str());
+        if (!textures[textKey]){
+            std::cerr << "Error: " << std::endl;
+            return;
+        }
+    }
+    texture = textures[textKey];
     SDL_Rect dest;
-    std::shared_ptr<SDL_Texture> texture = SDL2::IMG2_LoadTexture(app.renderer.get(), sprite.getGUI_Textures()[0].c_str());
     dest.x = sprite.getPosition().first * UNIT_TO_PIXEL;
     dest.y = sprite.getPosition().second * UNIT_TO_PIXEL;
     SDL2::SDL2_QueryTexture(texture.get(), NULL, NULL, &dest.w, &dest.h);

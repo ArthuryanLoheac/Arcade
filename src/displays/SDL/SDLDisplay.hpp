@@ -42,6 +42,7 @@ private:
     std::map<std::string, std::pair<std::shared_ptr<Mix_Chunk>, int>> musics;
     std::map<std::string, std::shared_ptr<TTF_Font>> fonts;
     std::map<std::string, std::shared_ptr<SDL_Texture>> textTextures;
+    std::map<std::string, std::shared_ptr<SDL_Texture>> textures;
 
     int LastMouseX, LastMouseY;
     App app;

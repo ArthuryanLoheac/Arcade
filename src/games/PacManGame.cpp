@@ -47,6 +47,9 @@ void PacManGame::Init()
     player.timeAnimLeft = timeAnim;
     player.isClose = false;
     map[player.y][player.x] = 2;
+    map[4][13] = 1;
+    map[4][14] = 1;
+    map[4][15] = 1;
 }
 
 void PacManGame::InitScore()
