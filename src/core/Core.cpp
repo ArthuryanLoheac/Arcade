@@ -122,17 +122,21 @@ bool Core::Core::handleEventLibs(Event &event)
     } catch (const std::bad_any_cast& e) {}
 
     switch (event.key) {
-        case Key::KeyCode::KEY_P:
-            nextGame(1);
-            break;
-        case Key::KeyCode::KEY_O:
+        case Key::KeyCode::UP:
             nextGame(-1);
             break;
-        case Key::KeyCode::KEY_I:
+        case Key::KeyCode::DOWN:
+            nextGame(1);
+            break;
+        case Key::KeyCode::LEFT:
+            nextDisplay(-1);
+            break;
+        case Key::KeyCode::RIGHT:
             nextDisplay(1);
             break;
-        case Key::KeyCode::KEY_U:
-            nextDisplay(-1);
+        case Key::KeyCode::TAB:
+            _gameIndex = 0;
+            nextGame(0);
             break;
         default:
             return false;
