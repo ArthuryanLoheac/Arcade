@@ -31,6 +31,7 @@ class SDL2
         static void SDL2_RenderClear(SDL_Renderer *renderer);
         static std::shared_ptr<SDL_Surface> IMG2_Load(const char *file);
         static void SDL2_SetWindowIcon(SDL_Window *window, SDL_Surface *icon);
+        static void SDL2_RenderFillRect(SDL_Renderer *renderer, const SDL_Rect *rect);
 
         static std::shared_ptr<TTF_Font> TTF2_OpenFont(const char *file, int ptsize);
         static std::shared_ptr<SDL_Surface> TTF2_RenderText_Blended(TTF_Font *font, const char *text, SDL_Color fg);

@@ -32,6 +32,7 @@ private:
 
     void drawText(const Text &txt);
     void drawSprite(const Sprite &sprite);
+    void drawSquare(const Sprite &sprite);
     
     typedef struct {
         std::shared_ptr<SDL_Renderer> renderer;

@@ -96,6 +96,11 @@ extern "C" {
         SDL_SetWindowIcon(window, icon);
     }
 
+    void SDL2::SDL2_RenderFillRect(SDL_Renderer *renderer, const SDL_Rect *rect)
+    {
+        SDL_RenderFillRect(renderer, rect);
+    }
+
     void SDL2::SDL2_SetRenderDrawColor(SDL_Renderer *renderer, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
     {
         SDL_SetRenderDrawColor(renderer, r, g, b, a);
