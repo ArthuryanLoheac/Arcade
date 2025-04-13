@@ -35,7 +35,11 @@ void NCurseDisplay::draw(const IDrawable &to_draw)
 
     try {
         sprite = dynamic_cast<const Sprite &>(to_draw);
-        _window->print(sprite.getPosition().first, sprite.getPosition().second, sprite.getCLI_Textures()[0]);
+        if (sprite.getGUI_Textures().empty()) {
+            _window->print(sprite.getPosition().first*2, sprite.getPosition().second, "XX");
+            return;
+        }
+        _window->print(sprite.getPosition().first*2, sprite.getPosition().second, sprite.getCLI_Textures()[0]);
     } catch (std::bad_cast &e) {
         text = dynamic_cast<const Text &>(to_draw);
         _window->print(text.getPosition().first, text.getPosition().second, text.getStr());

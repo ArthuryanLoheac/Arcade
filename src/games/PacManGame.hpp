@@ -90,6 +90,12 @@ private:
         "assets/PacMan/Yellow.png",
         "assets/PacMan/Blue.png"
     };
+    std::vector<std::string> ghostTextureCLI = {
+        "O ",
+        "P ",
+        "Y ",
+        "B "
+    };
 
     bool gameOver = false;
     bool playerWon;

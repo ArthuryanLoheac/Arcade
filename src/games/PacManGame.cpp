@@ -103,14 +103,14 @@ bool PacManGame::update(float deltaTime)
     updateText();
     AddDrawable(player.x, player.y,
         player.isClose ? "assets/PacMan/Pacman.png" : "assets/PacMan/PacManClose.png",
-        "C ", .25f/4, player.dir * 90.f);
+        player.isClose ? "C " : "O ", .25f/4, player.dir * 90.f);
     for (int i = 0; i < ghosts.size(); i++){
         if (ghosts[i].isDead)
             continue;
         if (invisbleTime > 0)
             AddDrawable(ghosts[i].x, ghosts[i].y, "assets/PacMan/Eatable.png", "E ", .25f/4, 0.f);
         else
-            AddDrawable(ghosts[i].x, ghosts[i].y, ghostTexture[i], "G ", .25f/4, 0.f);
+            AddDrawable(ghosts[i].x, ghosts[i].y, ghostTexture[i], ghostTextureCLI[i], .25f/4, 0.f);
     }
     return false;
 }
@@ -202,10 +202,10 @@ void PacManGame::updateWalls(void)
             if (map[i][j] == 1)
                 AddDrawable(j, i, "assets/PacMan/Wall.jpg", "##", .165f/4, 0.f);
             else if (map[i][j] == 0){
-                AddDrawable(j, i, "assets/PacMan/LittlePacGome.png", ".", .25f/4, 0.f);
+                AddDrawable(j, i, "assets/PacMan/LittlePacGome.png", ". ", .25f/4, 0.f);
                 isEndPacGome = false;
             } else if (map[i][j] == 3){
-                AddDrawable(j, i, "assets/PacMan/PacGome.png", ".", .25f/4, 0.f);
+                AddDrawable(j, i, "assets/PacMan/PacGome.png", "o ", .25f/4, 0.f);
                 isEndPacGome = false;
             }
         }

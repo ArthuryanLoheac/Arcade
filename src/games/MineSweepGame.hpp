@@ -66,7 +66,7 @@ private:
     int revealedCount;
     int flaggedCount;
     float gameTime;
-    int score;
+    int score = 0;
     bool firstMove;
 
     std::vector<std::unique_ptr<IDrawable>> drawables;
