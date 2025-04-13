@@ -86,7 +86,7 @@ Event SDLDisplay::getEvent(void) {
         return Event(Key::KeyCode::NONE, std::any());
     switch (event.type) {
         case SDL_QUIT:
-            return Event(Key::KeyCode::FUNCTION_4,
+            return Event(Key::KeyCode::ECHAP,
                 Event::KeyStatus::KEY_PRESSED);
         case SDL_KEYDOWN:
             return getEventKeyBoard(event, Event::KeyStatus::KEY_PRESSED);

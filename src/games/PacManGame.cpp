@@ -58,7 +58,7 @@ void PacManGame::InitScore() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     try {
-        std::ifstream scoreFile("pacman_scores.txt");
+        std::ifstream scoreFile("scores/arcade_pacman.txt");
         if (scoreFile.is_open()) {
             std::string name;
             int playerScore;
@@ -133,6 +133,21 @@ void PacManGame::updateCollisions(void) {
             } else {
                 gameOver = true;
                 playerWon = false;
+                try {
+                    std::ofstream scoreFile("scores/arcade_pacman.txt",
+                        std::ios::app);
+                    if (scoreFile.is_open()) {
+                        scoreFile << playerName << " " << score << std::endl;
+                        scoreFile.close();
+                        scoreHistory.push_back({playerName, score});
+                        std::sort(scoreHistory.begin(), scoreHistory.end(),
+                            [](const auto& a, const auto& b)
+                                { return a.second < b.second; });
+                    }
+                } catch (const std::exception& e) {
+                    std::cerr << "Error saving score: " << e.what()
+                        << std::endl;
+                }
             }
         }
     }
@@ -215,6 +230,18 @@ void PacManGame::updateWalls(void) {
     if (isEndPacGome) {
         gameOver = true;
         playerWon = true;
+        try {
+            std::ofstream scoreFile("scores/arcade_pacman.txt", std::ios::app);
+            if (scoreFile.is_open()) {
+                scoreFile << playerName << " " << score << std::endl;
+                scoreFile.close();
+                scoreHistory.push_back({playerName, score});
+                std::sort(scoreHistory.begin(), scoreHistory.end(),
+                    [](const auto& a, const auto& b) { return a.second > b.second; });
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Error saving score: " << e.what() << std::endl;
+        }
     }
 }
 

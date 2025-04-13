@@ -2,6 +2,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <fstream>
 
 #include "core/CoreMenu.hpp"
 #include "interfaces/Text.hpp"
@@ -24,6 +25,35 @@ Core::CoreMenu::CoreMenu(Core &core)
     i++;
     for (auto c : core.getGameLibs()) {
         AddText(c, 4, 4 + i, 20);
+        i++;
+        if (c == "Menu")
+            continue;
+        try {
+            std::ifstream scoreFile("./scores/" + c.substr(c.find_last_of('/')
+                + 1, c.find_last_of('.') - c.find_last_of('/') - 1) + ".txt");
+            if (!scoreFile.is_open()) {
+                AddText("Best: NONE", 5, 4 + i, 20);
+                continue;
+            }
+            std::string line;
+            int bestScore = 0;
+            std::string bestPlayer;
+            while (std::getline(scoreFile, line)) {
+                size_t spacePos = line.find(' ');
+                if (spacePos != std::string::npos) {
+                    int score = std::stoi(line.substr(spacePos + 1));
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestPlayer = line.substr(0, spacePos);
+                    }
+                }
+            }
+            if (bestScore > 0)
+                AddText("Best: " + std::to_string(bestScore), 5, 4 + i, 20);
+            scoreFile.close();
+        } catch (const std::exception &e) {
+            AddText("Best: NONE", 5, 4 + i, 20);
+        }
         i++;
     }
 }
@@ -57,16 +87,14 @@ bool Core::CoreMenu::update(float deltaTime) {
                 txt.setCLI_Color(std::make_pair(CLI_Color::CLI_RED,
                     CLI_Color::CLI_BLACK));
                 txt.setGUI_Color(std::make_tuple(255, 0, 0, 255));
-                if (txt.getStr()[0] != '>') {
+                if (txt.getStr()[0] != '>')
                     txt.setStr(">" + txt.getStr());
-                }
             } else {
                 txt.setCLI_Color(std::make_pair(CLI_Color::CLI_WHITE,
                     CLI_Color::CLI_BLACK));
                 txt.setGUI_Color(std::tuple(255, 255, 255, 255));
-                if (txt.getStr()[0] == '>') {
+                if (txt.getStr()[0] == '>')
                     txt.setStr(txt.getStr().substr(1));
-                }
             }
         }
     }

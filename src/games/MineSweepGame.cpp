@@ -26,7 +26,7 @@ MineSweepGame::MineSweepGame()
 
     initializeBoard();
     try {
-        std::ifstream scoreFile("minesweeper_scores.txt");
+        std::ifstream scoreFile("scores/arcade_minesweeper.txt");
         if (scoreFile.is_open()) {
             std::string name;
             int playerScore;
@@ -277,7 +277,7 @@ void MineSweepGame::revealCell(int x, int y) {
             scoreHistory.resize(10);
         }
         try {
-            std::ofstream scoreFile("minesweeper_scores.txt");
+            std::ofstream scoreFile("scores/arcade_minesweeper.txt");
             for (const auto& [name, playerScore] : scoreHistory) {
                 scoreFile << name << " " << playerScore << std::endl;
             }
@@ -317,6 +317,18 @@ void MineSweepGame::revealAllMines() {
             } else if (board[y][x].state == CellState::FLAGGED) {
             }
         }
+    }
+    try {
+        std::ofstream scoreFile("scores/arcade_minesweeper.txt", std::ios::app);
+        if (scoreFile.is_open()) {
+            scoreFile << playerName << " " << score << std::endl;
+            scoreFile.close();
+            scoreHistory.push_back({playerName, score});
+            std::sort(scoreHistory.begin(), scoreHistory.end(),
+                [](const auto& a, const auto& b) { return a.second > b.second; });
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error saving score: " << e.what() << std::endl;
     }
 }
 

@@ -143,8 +143,6 @@ Core::StateCore Core::Core::events() {
 
     while (event.key != Key::KeyCode::NONE) {
         if (event.key == Key::KeyCode::ECHAP)
-            return StateCore::EXIT_TO_MENU;
-        if (event.key == Key::KeyCode::FUNCTION_4)
             return StateCore::EXIT;
         if (skipNext) {
             skipNext = false;
