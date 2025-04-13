@@ -5,7 +5,7 @@
 
 
 Core::CoreMenu::CoreMenu(Core &core)
-    : _window(std::make_pair(10, 10), "Arcade", "assets/arcade.png")
+    : _window(std::make_pair(30, 30), "Arcade", "assets/arcade.png")
 {
     std::vector<std::string> displays = core.getDisplayLibs();
     std::vector<std::string> games = core.getGameLibs();

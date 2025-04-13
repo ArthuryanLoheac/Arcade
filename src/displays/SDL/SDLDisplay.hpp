@@ -45,5 +45,5 @@ private:
 
     int LastMouseX, LastMouseY;
     App app;
-    int UNIT_TO_PIXEL = 80;
+    int UNIT_TO_PIXEL = 20;
 };

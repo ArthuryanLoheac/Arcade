@@ -39,10 +39,10 @@ void PacManGame::Init()
     invisbleTime = 0;
     scoreCombo = 200;
     ghosts.clear();
-    ghosts.push_back(Fantome(5, 5));
-    ghosts.push_back(Fantome(24, 4));
-    ghosts.push_back(Fantome(5, 10));
-    ghosts.push_back(Fantome(24, 11));
+    ghosts.push_back(Fantome(14, 5));
+    ghosts.push_back(Fantome(13, 5));
+    ghosts.push_back(Fantome(15, 5));
+    ghosts.push_back(Fantome(15, 6));
     player.timeLeftToMove = timeToMove;
     player.timeAnimLeft = timeAnim;
     player.isClose = false;
@@ -54,7 +54,7 @@ void PacManGame::InitScore()
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     try {
-        std::ifstream scoreFile("minesweeper_scores.txt");
+        std::ifstream scoreFile("pacman_scores.txt");
         if (scoreFile.is_open()) {
             std::string name;
             int playerScore;
@@ -75,6 +75,12 @@ bool PacManGame::update(float deltaTime)
 {
     sounds.clear();
     drawables.clear();
+    timeUntilOpen -= deltaTime;
+    if (timeUntilOpen <= 0.f) {
+        map[4][13] = 2;
+        map[4][14] = 2;
+        map[4][15] = 2;
+    }
     updateWalls();
     if (!gameOver) {
         for (int i = 0; i < ghosts.size(); i++) {
@@ -97,14 +103,14 @@ bool PacManGame::update(float deltaTime)
     updateText();
     AddDrawable(player.x, player.y,
         player.isClose ? "assets/PacMan/Pacman.png" : "assets/PacMan/PacManClose.png",
-        "C ", .25f, player.dir * 90.f);
+        "C ", .25f/4, player.dir * 90.f);
     for (int i = 0; i < ghosts.size(); i++){
         if (ghosts[i].isDead)
             continue;
         if (invisbleTime > 0)
-            AddDrawable(ghosts[i].x, ghosts[i].y, "assets/PacMan/Eatable.png", "E ", .25f, 0.f);
+            AddDrawable(ghosts[i].x, ghosts[i].y, "assets/PacMan/Eatable.png", "E ", .25f/4, 0.f);
         else
-            AddDrawable(ghosts[i].x, ghosts[i].y, ghostTexture[i], "G ", .25f, 0.f);
+            AddDrawable(ghosts[i].x, ghosts[i].y, ghostTexture[i], "G ", .25f/4, 0.f);
     }
     return false;
 }
@@ -154,13 +160,13 @@ void PacManGame::moveGhost(int PrevX, int PrevY, int i)
         ghosts[i].y += 1;
     // Min Max
     if (ghosts[i].x < 0)
-        ghosts[i].x = 0;
+        ghosts[i].x = 29;
     if (ghosts[i].y < 0)
-        ghosts[i].y = 0;
+        ghosts[i].y = 14;
     if (ghosts[i].x >= window.size.first)
-        ghosts[i].x = window.size.first - 1;
+        ghosts[i].x = 0;
     if (ghosts[i].y >= window.size.second)
-        ghosts[i].y = window.size.second - 1;
+        ghosts[i].y = 0;
     // Check if the player is on a wall
     if (map[ghosts[i].y][ghosts[i].x] == 1) {
         ghosts[i].x = PrevX;
@@ -173,7 +179,7 @@ void PacManGame::updateText(void)
 {
     auto statusText = std::make_unique<Text>();
     statusText->setPosition({0, 0});
-    statusText->setScale({30, 30});
+    statusText->setScale({10, 10});
     statusText->setGUI_Color({255, 255, 255, 255});
     statusText->setFontPath("assets/PacMan/NotoSans.ttf");
     std::stringstream ss;
@@ -194,12 +200,12 @@ void PacManGame::updateWalls(void)
     for (int i = 0; i < map.size(); i++) {
         for (int j = 0; j < map[i].size(); j++) {
             if (map[i][j] == 1)
-                AddDrawable(j, i, "assets/PacMan/Wall.jpg", "##", .165f, 0.f);
+                AddDrawable(j, i, "assets/PacMan/Wall.jpg", "##", .165f/4, 0.f);
             else if (map[i][j] == 0){
-                AddDrawable(j, i, "assets/PacMan/LittlePacGome.png", ".", .25f, 0.f);
+                AddDrawable(j, i, "assets/PacMan/LittlePacGome.png", ".", .25f/4, 0.f);
                 isEndPacGome = false;
             } else if (map[i][j] == 3){
-                AddDrawable(j, i, "assets/PacMan/PacGome.png", ".", .25f, 0.f);
+                AddDrawable(j, i, "assets/PacMan/PacGome.png", ".", .25f/4, 0.f);
                 isEndPacGome = false;
             }
         }
@@ -228,15 +234,16 @@ void PacManGame::updatePosPlayer(float deltaTime)
         else if (player.dir == PacMan::DOWN)
             player.y += 1;
 
+
         // Min Max
         if (player.x < 0)
-            player.x = 0;
+            player.x = 29;
         if (player.y < 0)
-            player.y = 0;
+            player.y = 14;
         if (player.x >= window.size.first)
-            player.x = window.size.first - 1;
+            player.x = 0;
         if (player.y >= window.size.second)
-            player.y = window.size.second - 1;
+            player.y = 0;
         
         // Check if the player is on a wall
         if (map[player.y][player.x] == 1) {
@@ -250,7 +257,7 @@ void PacManGame::updatePosPlayer(float deltaTime)
         if (map[player.y][player.x] == 3) {
             map[player.y][player.x] = 2;
             score += 100;
-            invisbleTime = 5;
+            invisbleTime = 10;
             scoreCombo = 200;
         }
     }
@@ -317,13 +324,9 @@ void PacManGame::AddDrawable(int x, int y, std::string texturePath,
 void PacManGame::respawnDeadGhost()
 {
     for (auto& ghost : ghosts) {
-        if (!ghost.isDead)
-            continue;
-        ghost.x = std::rand() % 30;
-        ghost.y = std::rand() % 13;
-        while (map[ghost.y][ghost.x] == 1 || (ghost.y == player.y && ghost.x == player.x)) {
-            ghost.x = std::rand() % 30;
-            ghost.y = std::rand() % 13;
+        if (ghost.isDead){
+            ghost.x = 14;   
+            ghost.y = 5;
             ghost.isDead = false;
         }
     }

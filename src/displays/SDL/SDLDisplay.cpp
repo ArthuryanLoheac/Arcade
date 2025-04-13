@@ -178,17 +178,18 @@ void SDLDisplay::drawText(const Text &txt)
 
 void SDLDisplay::drawSquare(const Sprite &sprite)
 {
-    SDL_Rect rect;
-    rect.x = sprite.getPosition().first * UNIT_TO_PIXEL;
-    rect.y = sprite.getPosition().second * UNIT_TO_PIXEL;
-    rect.w = sprite.getScale().first * UNIT_TO_PIXEL;
-    rect.h = sprite.getScale().second * UNIT_TO_PIXEL;
+    SDL_Rect square;
+    square.x = sprite.getPosition().first * UNIT_TO_PIXEL;
+    square.y = sprite.getPosition().second * UNIT_TO_PIXEL;
+    square.w = sprite.getScale().first * UNIT_TO_PIXEL;
+    square.h = sprite.getScale().second * UNIT_TO_PIXEL;
 
-    SDL2::SDL2_SetRenderDrawColor(app.renderer.get(), (Uint8)std::get<0>(sprite.getGUI_Color()),
-        (Uint8)std::get<1>(sprite.getGUI_Color()),
-        (Uint8)std::get<2>(sprite.getGUI_Color()),
-        (Uint8)std::get<3>(sprite.getGUI_Color()));
-    SDL2::SDL2_RenderFillRect(app.renderer.get(), &rect);
+    SDL2::SDL2_SetRenderDrawColor(app.renderer.get(),
+        std::get<0>(sprite.getGUI_Color()),
+        std::get<1>(sprite.getGUI_Color()),
+        std::get<2>(sprite.getGUI_Color()),
+        std::get<3>(sprite.getGUI_Color()));
+    SDL2::SDL2_RenderFillRect(app.renderer.get(), &square);
 }
 
 void SDLDisplay::drawSprite(const Sprite &sprite)
